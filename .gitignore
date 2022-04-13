@@ -1,0 +1,10 @@
+*.csv
+*.rds
+*.RData
+*.Rhistory
+*.log
+*.RDataTmp 
+*.DS_Store
+*.png
+*.jpg
+*.jpeg
