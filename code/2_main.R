@@ -74,7 +74,7 @@ simulate_brackets <- function(N) {
 }
 
 ### true brackets 
-num_t = 200 #100 #10^3
+num_t = 100 #100 #200 #1000
 true_brackets = simulate_brackets(num_t)
 
 
@@ -82,10 +82,12 @@ true_brackets = simulate_brackets(num_t)
 ### Plot Functions ###
 ######################
 
-get_max_scores <- function(brackets_set) {
+get_max_scores <- function(brackets_set, print_b=TRUE) {
   max_scores = tibble()
+  max_H1s = tibble()
+  max_H2s = tibble()
   for (b in 1:num_t) {
-    print(b)
+    if (print_b) {print(b)}
     true_b = true_brackets %>% filter(bracket_idx == b & round > 1)
     # true_b_teams = true_b$team_idx
     brackets1_b = tibble(brackets_set)
@@ -98,11 +100,16 @@ get_max_scores <- function(brackets_set) {
       # f3 = correct_pick*( 2^(round-2) + seed)
     )
     scores_b = brackets1_b %>% group_by(bracket_idx) %>% 
-      summarise(f1 = sum(f1), f2 = sum(f2))#, f3 = sum(f3))
-    max_scores_b = scores_b %>% summarise(f1 = max(f1), f2 = max(f2))#, f3 = max(f3))
+      summarise(f1 = sum(f1), f2 = sum(f2), log_prob_x = -sum(log(prob,base=2)) )#, f3 = sum(f3))
+    max_scores_b = scores_b %>% summarise(b=b, f1 = max(f1), f2 = max(f2))#, f3 = max(f3))
     max_scores = bind_rows(max_scores, max_scores_b)
+    
+    max_H1_b = scores_b %>% summarise(b=b, H1 = log_prob_x[f1==max(f1)])
+    max_H2_b = scores_b %>% summarise(b=b, H2 = log_prob_x[f2==max(f2)])
+    max_H1s = bind_rows(max_H1s, max_H1_b)
+    max_H2s = bind_rows(max_H2s, max_H2_b)
   }
-  max_scores
+  list(max_scores, max_H1s, max_H2s)
 }
 
 get_entropy_df <- function(brackets_set) {

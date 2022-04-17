@@ -106,10 +106,12 @@ S_38X = read_csv(paste0(plot_folder, "S_38X.csv"))
 F_hat_f1 <- function(S, str) {
   k1 = seq(0, 63, by=1)
   tib1 = tibble(k = k1, p = ecdf(S$f1)(k1)) %>% filter(0 < p & p < 1) %>% 
-    mutate(F_hat = -log(p, base=2), scoring_function="f1", bracket_set=str)
+    # mutate(F_hat = -log(p, base=2), scoring_function="f1", bracket_set=str)
+    mutate(F_hat = p, scoring_function="f1", bracket_set=str)
   k2 = seq(0, 1920, by=10)
   tib2 = tibble(k = k2, p = ecdf(S$f2)(k2)) %>% filter(0 < p & p < 1) %>% 
-    mutate(F_hat = -log(p, base=2), scoring_function="f2", bracket_set=str)
+    # mutate(F_hat = -log(p, base=2), scoring_function="f2", bracket_set=str)
+    mutate(F_hat = p, scoring_function="f2", bracket_set=str)
   bind_rows(tib1, tib2)
   
 }

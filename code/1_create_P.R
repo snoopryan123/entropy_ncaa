@@ -31,7 +31,7 @@ get_prob_matrix <- function(elos) {
 
 make_elo_plot <- function(elos) {
   elo_plot = tibble(elos = elos) %>% ggplot() + geom_histogram(aes(x=elos), bins=64, fill="black") +
-    labs(title="Histogram of Elo Ratings") +
+    # labs(title="Histogram of Elo Ratings") +
     scale_x_continuous(name="Elo", breaks=seq(70,93,by=5)) 
   elo_plot
 }
@@ -45,7 +45,7 @@ make_wp_plot <- function(P_matrix) {
   P1_plot = P1_tib %>% ggplot() +
     theme(legend.position="none") +
     geom_point(aes(x=t2_num, y=p, color=t1)) +
-    scale_x_continuous(breaks=seq(0,64,by=10),name="team index") +
+    scale_x_continuous(breaks=seq(0,64,by=10),name="team index j") +
     ylab("win probability")
   P1_plot
 }
