@@ -139,7 +139,7 @@ get_bracket_with_specified_upset <- function(upsets_012) {
     
     all_rounds = bind_rows(all_rounds, start_of_round)
   }
-  all_rounds
+  reformat_simulated_brackets(all_rounds)
 }
 
 
@@ -363,6 +363,29 @@ r100_scores[[2]] %>% ggplot() + geom_histogram(aes(x=H1))
 r1k_scores[[2]] %>% ggplot() + geom_histogram(aes(x=H1))
 r10k_scores[[2]] %>% ggplot() + geom_histogram(aes(x=H1))
 # r100k_scores[[2]] %>% ggplot() + geom_histogram(aes(x=H1))
+
+
+mean(r100_scores[[1]]$f1)
+mean(r1k_scores[[1]]$f1)
+mean(r10k_scores[[1]]$f1)
+mean(t100_of_100k_scores[[1]]$f1)
+mean(t1k_of_100k_scores[[1]]$f1)
+mean(t10k_of_100k_scores[[1]]$f1)
+mean(u013_t100_scores[[1]]$f1)
+mean(u013_t1k_scores[[1]]$f1)
+mean(u013_t10k_scores[[1]]$f1)
+
+mean(r100_scores[[1]]$f2)
+mean(r1k_scores[[1]]$f2)
+mean(r10k_scores[[1]]$f2)
+mean(t100_of_100k_scores[[1]]$f2)
+mean(t1k_of_100k_scores[[1]]$f2)
+mean(t10k_of_100k_scores[[1]]$f2)
+mean(u013_t100_scores[[1]]$f2)
+mean(u013_t1k_scores[[1]]$f2)
+mean(u013_t10k_scores[[1]]$f2)
+
+
 
 mean(r100_scores[[2]]$H1)
 mean(r1k_scores[[2]]$H1)

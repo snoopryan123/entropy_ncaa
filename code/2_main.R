@@ -88,11 +88,15 @@ get_max_scores <- function(brackets_set, print_b=TRUE) {
   max_H2s = tibble()
   for (b in 1:num_t) {
     if (print_b) {print(b)}
-    true_b = true_brackets %>% filter(bracket_idx == b & round > 1)
+    true_b = true_brackets %>% filter(bracket_idx == b)# & round > 1)
     # true_b_teams = true_b$team_idx
-    brackets1_b = tibble(brackets_set)
+    brackets1_b = tibble(brackets_set) #tibble(brackets_set)
     ll = nrow(brackets_set) / nrow(true_b)
-    brackets1_b$true_b_team = rep(true_b$team_idx, ll) 
+    brackets1_b$true_b_team = rep(true_b$team_idx, times=ll)
+    # brackets1_b = brackets1_b %>% mutate(rid = row_number()) %>%
+    #               left_join(tibble(true_b_team = rep(true_b$team_idx, times=ll)) %>% mutate(rid = row_number()),
+    #                                by="rid")
+    brackets1_b = brackets1_b %>% mutate(true_b_team = rep(true_b$team_idx, times=ll) )
     brackets1_b = brackets1_b %>% mutate(
       correct_pick = team_idx - true_b_team == 0,
       f1 = correct_pick*1,
