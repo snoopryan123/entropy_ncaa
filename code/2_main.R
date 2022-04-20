@@ -33,6 +33,43 @@ reformat_simulated_brackets <- function(brackets) {
 
 start_of_tourney = D %>% arrange(game_id) %>% select(team_idx, game_id) %>% mutate(round = 1)
 
+sample_brackets_h_range <- function(N, hL=-Inf, hU=Inf) {
+  ### sample N brackets x with hL <= H(x) <= hU
+  N_sample_at_a_time = 10^4 ##round(log(N, base=10))
+  result = tibble()
+  num_sampled = 0
+  while (num_sampled < N) {
+    print(num_sampled)
+    S = simulate_brackets(N_sample_at_a_time)
+    keep = get_entropy_df(S) %>% filter(hL <= log_prob_x & log_prob_x <= hU)
+    if ( min(c(N - num_sampled < nrow(keep))) ) {
+      keep = keep[1:(N - num_sampled),]
+    }
+    S = S %>% filter(bracket_idx %in% keep$bracket_idx)
+    result = bind_rows(result, S)
+    num_sampled = num_sampled + nrow(keep)
+  }
+  result = result %>% mutate(bracket_idx = 1+floor((row_number()-1)/ 63) )
+  result
+}
+
+get_S_scores <- function(submitted_bx, true_bx) {
+  # tibble of submitted brackets `submitted_bx`
+  # tibble of true brackets `true_bx`
+  # make sure the brackets in each set have the same size
+  S12 = tibble(submitted_bx)
+  S12$true_team_idx = true_bx$team_idx
+  S12 = S12 %>% mutate(
+    correct_pick = team_idx - true_team_idx == 0,
+    f1 = correct_pick*1,
+    f2 = correct_pick*2^(round-2)*10,
+    # f3 = correct_pick*( 2^(round-2) + seed)
+  )
+  S12 = S12 %>% group_by(bracket_idx) %>% summarise(f1 = sum(f1), f2 = sum(f2))
+  S12
+}
+
+
 ### in this file, reformat_simulated_brackets is called within this function!!
 simulate_brackets <- function(N) {
   start_of_round = start_of_tourney

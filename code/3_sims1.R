@@ -203,25 +203,6 @@ u013_t10k_ent = get_entropy_df(u013_t10k_brackets)
 
 ##############################  ############################## 
 
-sample_brackets_h_range <- function(N, hL=-Inf, hU=Inf) {
-  ### sample N brackets x with hL <= H(x) <= hU
-  N_sample_at_a_time = 10^4 ##round(log(N, base=10))
-  result = tibble()
-  num_sampled = 0
-  while (num_sampled < N) {
-    print(num_sampled)
-    S = simulate_brackets(N_sample_at_a_time)
-    keep = get_entropy_df(S) %>% filter(hL <= log_prob_x & log_prob_x <= hU)
-    if ( min(c(N - num_sampled < nrow(keep))) ) {
-      keep = keep[1:(N - num_sampled),]
-    }
-    S = S %>% filter(bracket_idx %in% keep$bracket_idx)
-    result = bind_rows(result, S)
-    num_sampled = num_sampled + nrow(keep)
-  }
-  result = result %>% mutate(bracket_idx = 1+floor((row_number()-1)/ 63) )
-  result
-}
 
 
 hr_100_a = sample_brackets_h_range(100, hL=47-5, hU=47+5)

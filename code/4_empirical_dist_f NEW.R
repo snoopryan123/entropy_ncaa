@@ -106,43 +106,69 @@ write_csv(S_35X,  paste0(plot_folder,"S_35X_1k.csv"))
 # plot_f2_hist(S_38X)
 
 
+######################################################
+########  E[max f(x|tau)] as a function of n #########
+######################################################
+
+M = 2*10^4
+h1tau = sample_brackets_h_range(M)
+h1r = sample_brackets_h_range(M)
+S1r = get_S_scores(h1r, h1tau) 
+h1a = sample_brackets_h_range(M, hU=46)
+S1a = get_S_scores(h1a, h1tau) 
+
+F_hat <- function(S, str="") {
+  k1 = seq(0, 63, by=1)
+  tib1 = tibble(k = k1, F_hat_k = ecdf(S$f1)(k1)) %>%
+    mutate(scoring_function="f1", bracket_set=str) %>%
+    mutate(F_hat_k = lag(F_hat_k, default=1)) ### need 1{f < k}, not 1{f <= k}
+  k2 = seq(0, 1920, by=1)
+  tib2 = tibble(k = k2, F_hat_k = ecdf(S$f2)(k2)) %>%
+    mutate(scoring_function="f2", bracket_set=str) %>%
+    mutate(F_hat_k = lag(F_hat_k, default=1)) ### need 1{f < k}, not 1{f <= k}
+  bind_rows(tib1, tib2)
+}
+
+# F_hat(S1r, "random N")
+
+E <- function(ns, S, str) {
+  Fh = F_hat(S, str) 
+  # data.frame(Fh)
+  E_final = tibble()
+  for (n in ns) {
+    E_k = Fh %>% group_by(scoring_function) %>% mutate(E_k = 1 - exp(n*log(F_hat_k))) #F_hat_k^n) 
+    # data.frame(E_k)
+    E_final = bind_rows(E_final, E_k %>% summarise(E = sum(E_k), n=n, bracket_set=str))
+  }
+  E_final %>% arrange(scoring_function, n)
+}
+
+
+ns = c(1,10,10^2,10^3,10^4,10^5)
+E(ns, S1r, "random N")
+E(ns, S1a, "random N, H <= 46")
+
+
+
 ###########################
 #########  PLOTS ##########
 ###########################
 
-# read csvs
-S_X.12 = read_csv(paste0(plot_folder, "S_X.12.csv"))
-S_41X = read_csv(paste0(plot_folder, "S_41X.csv"))
-S_38X = read_csv(paste0(plot_folder, "S_38X.csv"))
-
-F_hat_f1 <- function(S, str) {
-  k1 = seq(0, 63, by=1)
-  tib1 = tibble(k = k1, p = ecdf(S$f1)(k1)) %>% filter(0 < p & p < 1) %>% 
-    mutate(F_hat = -log(p, base=2), scoring_function="f1", bracket_set=str)
-  k2 = seq(0, 1920, by=10)
-  tib2 = tibble(k = k2, p = ecdf(S$f2)(k2)) %>% filter(0 < p & p < 1) %>% 
-    mutate(F_hat = -log(p, base=2), scoring_function="f2", bracket_set=str)
-  bind_rows(tib1, tib2)
-  
-}
-F_hat_tib = bind_rows(F_hat_f1(S_X.12, "all"), 
-                      F_hat_f1(S_41X, "h<=41"), 
-                      F_hat_f1(S_38X, "h<=38"),
-                      F_hat_f1(S_36X, "h<=36"))
-
-F_hat_tib 
-
-F_hat_tib %>% ggplot() +
-  facet_wrap(~scoring_function, scales = "free") +
-  geom_line(aes(x = k, y=F_hat, color=bracket_set))
-
-
-F_hat_tib %>% filter(k==40)
-F_hat_tib %>% filter(k==50)
+# F_hat_tib = bind_rows(F_hat_f1(S_X.12, "all"), 
+#                       F_hat_f1(S_41X, "h<=41"), 
+#                       F_hat_f1(S_38X, "h<=38"),
+#                       F_hat_f1(S_36X, "h<=36"))
+# 
+# F_hat_tib 
+# 
+# F_hat_tib %>% ggplot() +
+#   facet_wrap(~scoring_function, scales = "free") +
+#   geom_line(aes(x = k, y=F_hat, color=bracket_set))
+# 
 
 
 
-###plot_entropy_hist(r10k_ent, "r10k", title="10k randomly sampled brackets",savePlot=SAVE_PLOT)
+
 
 
 
