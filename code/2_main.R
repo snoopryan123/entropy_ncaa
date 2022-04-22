@@ -1,9 +1,14 @@
 library(tidyverse)
+library(latex2exp)
+theme_set(theme_bw())
+theme_update(text = element_text(size=16))
+theme_update(plot.title = element_text(hjust = 0.5))
 # library(purrr)
 theme_set(theme_bw())
 theme_update(text = element_text(size=18))
 theme_update(plot.title = element_text(hjust = 0.5))
 SAVE_PLOT = TRUE #TRUE #FALSE
+
 
 ################
 ### Get Data ###
@@ -13,6 +18,7 @@ D = read_csv("../data/538_ELO.csv") %>% rename(game_id = initial_game_num) ##%>%
 
 P_file = "P_538_2022" # "P_538_2022" # "P1"
 plot_folder = paste0("plot_", P_file, "/")
+##output_folder = paste0("job_outpit",P_file, "/")
 P_ = read.csv( paste0("../data/", P_file, ".csv"), row.names = 1, header= TRUE)
 
 P <- function(x) {
@@ -115,14 +121,17 @@ num_t = 100 #100 #200 #1000
 true_brackets = simulate_brackets(num_t)
 
 
+
+
 ######################
 ### Plot Functions ###
 ######################
 
-get_max_scores <- function(brackets_set, print_b=TRUE) {
+get_max_scores <- function(brackets_set, true_brackets=true_brackets, print_b=TRUE) {
   max_scores = tibble()
   max_H1s = tibble()
   max_H2s = tibble()
+  num_t = length(unique(true_brackets$bracket_idx))
   for (b in 1:num_t) {
     if (print_b) {print(b)}
     true_b = true_brackets %>% filter(bracket_idx == b)# & round > 1)
