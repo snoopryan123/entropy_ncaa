@@ -1,4 +1,4 @@
-source("2_main.R")
+source("a2_main.R")
 
 ######################################################
 ########  E[max f(x|tau)] as a function of n #########

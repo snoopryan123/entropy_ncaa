@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N 5_grid_search_1.R
+#$ -N a5_grid_search_1.R
 #$ -j y
 #$ -m e -M ryguy123@sas.upenn.edu 
 
@@ -14,4 +14,4 @@
 ## MORE RAM
 #$ -l m_mem_free=20G
 
-Rscript --vanilla 5_grid_search_1.R
+Rscript --vanilla a5_grid_search_1.R
