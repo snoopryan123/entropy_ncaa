@@ -105,11 +105,11 @@ grid_search_1a <- function(n) {
        avg_d0s=avg_d0s, avg_d1s=avg_d1s, avg_d2s=avg_d2s)
 }
 
-# gs1_100 = grid_search_1(100)
-# saveRDS(gs1_100, "gs1a_100.rds")
+gs1_100 = grid_search_1(100)
+saveRDS(gs1_100, "gs1a_100.rds")
 
-gs1a_1k = grid_search_1a(10^3)
-saveRDS(gs1a_1k, "gs1a_1k.rds")
+# gs1a_1k = grid_search_1a(10^3)
+# saveRDS(gs1a_1k, "gs1a_1k.rds")
 
 # gs1_10k = grid_search_1(10^4)
 # saveRDS(gs1_10k, "gs1a_10k.rds")
