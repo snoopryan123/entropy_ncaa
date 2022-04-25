@@ -1,5 +1,5 @@
 #!/bin/bash
 
-mv ./_.rds    ../../Dropbox/HPCC/_.rds  
+mv ./gs1_100.rds    ../../Dropbox/HPCC/gs1_100.rds
 boxup
-mv ../../Dropbox/HPCC/_.rds    ./_.rds  
+mv ../../Dropbox/HPCC/gs1_100.rds    ./gs1_100.rds  
