@@ -124,7 +124,7 @@ grid_search_2 <- function(ent_quantiles, n) {
 }
 
 for (n in c(100)) { #c(100,10^3,10^4)) {
-  for (k in c(5,7,10)) {#c(2,4,5,7,10)) {
+  for (k in c(2,4,5,7,10)) {
     print("!!!"); print(c(n,k)); print("!!!");
     ent_quantiles_k = readRDS(paste0("ent_quantile_",k,".rds"))
     gs2_k_n = grid_search_2(ent_quantiles_k, n)
