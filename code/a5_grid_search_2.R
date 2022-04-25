@@ -60,8 +60,8 @@ d1_2_matrix <- function(scores_tib) {
       f1j = f1s[j]
       f2i = f2s[i]
       f2j = f2s[j]
-      d1s = d(f1i, f1j)
-      d2s = d(f2i, f2j)
+      d1s[i,j] = d(f1i, f1j)
+      d2s[i,j] = d(f2i, f2j)
     }
   }
   list(d1s, d2s)
