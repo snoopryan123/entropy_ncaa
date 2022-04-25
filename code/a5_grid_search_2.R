@@ -129,7 +129,7 @@ for (n in c(100)) { #c(100,10^3,10^4)) {
     ent_quantiles_k = readRDS(paste0("ent_quantile_",k,".rds"))
     gs2_k_n = grid_search_2(ent_quantiles_k, n)
     print(gs2_k_n)
-    saveRDS(gs2_k_n, readRDS(paste0("ent_quantile_",k,".rds")))
+    saveRDS(gs2_k_n, paste0("gs2_",n,"_",k,".rds"))
   }
 }
 
