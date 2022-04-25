@@ -6,9 +6,9 @@ source("a2_main.R")
 
 # saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/2)), "ent_quantile_2.rds")
 # saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/4)), "ent_quantile_4.rds")
-# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/4)), "ent_quantile_5.rds")
-# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/4)), "ent_quantile_7.rds")
-# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/4)), "ent_quantile_10.rds")
+# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/5)), "ent_quantile_5.rds")
+# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/7)), "ent_quantile_7.rds")
+# saveRDS(quantile(r100k_ent$log_prob_x, seq(0,1,by=1/10)), "ent_quantile_10.rds")
 
 ent_quantile_2 = readRDS("ent_quantile_2.rds")
 ent_quantile_4 = readRDS("ent_quantile_4.rds")
@@ -123,13 +123,13 @@ grid_search_2 <- function(ent_quantiles, n) {
        avg_d0s=avg_d0s, avg_d1s=avg_d1s, avg_d2s=avg_d2s)
 }
 
-for (n in c(100,10^3,10^4)) {
-  for (k in c(2,4,5,7,10)) {
+for (n in c(100)) { #c(100,10^3,10^4)) {
+  for (k in c(5,7,10)) {#c(2,4,5,7,10)) {
     print("!!!"); print(c(n,k)); print("!!!");
     ent_quantiles_k = readRDS(paste0("ent_quantile_",k,".rds"))
     gs2_k_n = grid_search_2(ent_quantiles_k, n)
     print(gs2_k_n)
-    saveRDS(gs2_k_n, paste0("gs2_",n,"_",k,".rds"))
+    saveRDS(gs2_k_n, readRDS(paste0("ent_quantile_",k,".rds")))
   }
 }
 
@@ -142,6 +142,12 @@ for (n in c(100,10^3,10^4)) {
 ################################
 
 # read RDS
+gs2_100_2 = readRDS("gs2_100_2.rds")
+gs2_100_4 = readRDS("gs2_100_4.rds")
+gs2_100_5 = readRDS("gs2_100_5.rds")
+gs2_100_7 = readRDS("gs2_100_7.rds")
+gs2_100_10 = readRDS("gs2_100_10.rds")
+
 
 
 
