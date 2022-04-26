@@ -12,6 +12,6 @@
 #$ -pe openmp 1
 
 ## MORE RAM
-#$ -l m_mem_free=20G
+#$ -l m_mem_free=5G
 
 Rscript --vanilla a5_grid_search_2.R
