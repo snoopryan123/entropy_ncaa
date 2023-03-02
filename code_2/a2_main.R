@@ -46,7 +46,7 @@ even <- function(x) x%%2 == 0
 sample_winners <- function(probs) { as.numeric( runif(n = length(probs)) <= probs ) }
 
 ### sample N brackets
-sample_n_brackets <- function(n, prob_method="P_538_2022") {
+sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
   #####
   # n == number of brackets to be sampled
   # prob_method in {"P_538_2022", "naively_chalky"} 
@@ -62,6 +62,9 @@ sample_n_brackets <- function(n, prob_method="P_538_2022") {
     team_1s = curr_rd[odd(1:length(curr_rd))]
     team_2s = curr_rd[even(1:length(curr_rd))]
     probs = P(team_1s, team_2s, prob_method=prob_method)
+    if (keep_probs) {
+      tourney_n[[paste0("probs_rd",rd,"_n")]] = probs
+    }
     winners = sample_winners(probs)
     
     next_rd = team_1s*winners + team_2s*(1-winners)
@@ -134,6 +137,53 @@ compute_max_score <- function(submitted_brackets, true_brackets, scoring_method=
 # ex_score_diffs = ex_scores_elo - ex_scores_naiveChalky
 # ex_score_diffs = ex_score_diffs[ex_score_diffs != 0]
 # mean(ex_score_diffs > 0)
+
+#################################
+### Entropy of a  bracket set ###
+#################################
+
+compute_entropies <- function(bracket_set) {
+  #####
+  # output a vector of entropies, one for each bracket in bracket_set
+  #####
+  NUM_BRACKETS = bracket_set$n
+  entropies = numeric(NUM_BRACKETS)
+
+  for (rd in 1:6) {
+    rd_size = 2^(6-rd)
+    probs_rd = bracket_set[[paste0("probs_rd",rd,"_n")]]
+    if (is.null(probs_rd)) {
+      stop("need to use `keep_probs=TRUE` in `sample_n_brackets`")
+    }
+    ents_rd = -log(probs_rd, base=2)
+    ents_rd_mat = matrix(ents_rd, byrow = TRUE, nrow = NUM_BRACKETS, ncol = rd_size)
+    entropies = entropies + rowSums(ents_rd_mat)
+  }
+
+  return(entropies)
+}
+
+plot_entropy_hist <- function(entropies, filename_str, title="",savePlot=TRUE) {
+  entropy_hist = tibble(entropies) %>% ggplot() + 
+    geom_histogram(
+      aes(x=entropies, 
+          # y=after_stat(density)
+      ), fill="black",bins=100
+    ) + 
+    geom_vline(aes(xintercept = mean(entropies)), color="dodgerblue2") +
+    # theme(
+    #   axis.text.y=element_blank(),
+    #   axis.ticks.y=element_blank()
+    # ) +
+    xlab("H") +
+    labs(title=title)
+  entropy_hist
+  if (savePlot) {
+    ggsave(paste0(plot_folder, "entropy_hist_",filename_str,".png"), entropy_hist, width=8,height=7)
+  } else {
+    entropy_hist
+  }
+}
 
 
 
