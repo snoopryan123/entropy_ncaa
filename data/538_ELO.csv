@@ -1,0 +1,65 @@
+﻿team_idx,seed,team_name,elo,initial_game_num
+1,1,Gonzaga,96.5,1
+2,1,Kansas,91.3,25
+3,2,Kentucky,91.2,16
+4,1,Arizona,90.9,17
+5,2,Villanova,90.2,24
+6,4,UCLA,89.8,12
+7,2,Auburn,89.5,32
+8,2,Duke,89.3,8
+9,3,Purdue,89.1,14
+10,5,Iowa,89,27
+11,3,Tennessee,88.9,22
+12,5,Houston,88.7,19
+13,3,Texas Tech,88.7,6
+14,1,Baylor,87.7,9
+15,4,Illinois,86.8,20
+16,4,Arkansas,86.8,4
+17,5,UConn,86.4,3
+18,6,Texas,86.3,13
+19,6,LSU,85.7,29
+20,6,Alabama,85.2,5
+21,9,Memphis,84.9,2
+22,3,Wisconsin,84.7,30
+23,11,Michigan,84.7,21
+24,11,Virginia Tech,84.7,13
+25,5,St. Mary's,84.3,11
+26,7,Ohio State,84.2,23
+27,8,UNC,84,10
+28,10,Loyola (IL),83.7,23
+29,8,SDSU,83.5,26
+30,7,Michigan St.,83.5,7
+31,12,Indiana,83.4,11
+32,7,USC,83,31
+33,4,Providence,82.7,28
+34,8,Seton Hall,82.6,18
+35,8,Boise State,82.5,2
+36,11,Notre Dame,82.1,5
+37,9,TCU,81.9,18
+38,9,Marquette,81.9,10
+39,10,Davidson,81.8,7
+40,10,San Fran.,81.8,15
+41,6,Colorado St.,81.7,21
+42,9,Creighton,81.5,26
+43,7,Murray St.,81.3,15
+44,12,UAB,81.2,19
+45,10,Miami,81.1,31
+46,11,Iowa State,80.6,29
+47,13,Vermont,80.3,4
+48,12,Richmond,79.9,27
+49,13,S. Dakota St.,79.7,28
+50,13,Chatt.,78.7,20
+51,12,NM State,77.7,3
+52,13,Akron,76.7,12
+53,14,Colgate,76.4,30
+54,14,Yale,74.4,14
+55,14,Montana St.,74.3,6
+56,16,Wright State,74.3,17
+57,15,Saint Peter's,74.2,16
+58,15,Delaware,73.6,24
+59,16,Georgia St.,73.5,1
+60,14,Longwood,73.4,22
+61,15,J'ville State,73.2,32
+62,15,CSU-Full.,71.8,8
+63,16,Norfolk St.,71.4,9
+64,16,TXSO,71.1,25
