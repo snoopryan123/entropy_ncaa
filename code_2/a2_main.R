@@ -15,6 +15,10 @@ START_OF_TOURNEY = D %>% arrange(game_id) %>% select(team_idx, game_id, seed) %>
 START_OF_TOURNEY
 
 P_538_2022 = read.csv( paste0("../data/P_538_2022.csv"), row.names = 1, header= TRUE)
+# P_538_2022 = read.csv( paste0("../data/P1.csv"), row.names = 1, header= TRUE)
+
+# PROB_METHOD = "P_538_2022"
+# PROB_METHOD = "P1"
 
 P <- function(team_1s, team_2s, prob_method="P_538_2022") {
   if (prob_method == "P_538_2022") {
@@ -55,7 +59,8 @@ sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
   tourney_n = list()
   tourney_n$n = n
   tourney_n$rd0_n = rep(START_OF_TOURNEY$team_idx, n)
-  
+  tourney_n$probs = keep_probs
+
   for (rd in 1:6) {
     curr_rd = tourney_n[[paste0("rd",rd-1,"_n")]]
     
@@ -80,6 +85,72 @@ sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
 # bracket_set_d = sample_n_brackets(n=5, prob_method = "naive_chalky")
 # bracket_set_b = sample_n_brackets(n=1e4)
 # bracket_set_c = sample_n_brackets(n=1e5)
+
+###########################
+### Bracket Set Methods ###
+###########################
+
+# extract_bracket <- function(bracket_set, i) {
+  ###
+  # create a new bracket set which contains just the i^th bracket from bracket_set
+  ###
+  bracket_set$n = 1
+  for (rd in 1:6) {
+    rd_size = 2^(6-rd)
+    curr_rd = bracket_set[[paste0("rd",rd,"_n")]]
+    bracket_i_idxs = (1:rd_size)+(i-1)*rd_size
+    bracket_set[[paste0("rd",rd,"_n")]] = curr_rd[bracket_i_idxs]
+  }
+  return(bracket_set)
+}
+
+extract_brackets <- function(bracket_set, bracket_idxs) {
+  ###
+  # create a new bracket set which contains just the i^th bracket from bracket_set
+  ###
+  bracket_set$n = length(bracket_idxs)
+  for (rd in 1:6) {
+    rd_size = 2^(6-rd)
+    curr_rd = bracket_set[[paste0("rd",rd,"_n")]]
+  
+    A = matrix(1:rd_size, nrow=length(bracket_idxs), ncol=rd_size, byrow = TRUE)
+    B = matrix(bracket_idxs, nrow=length(bracket_idxs), ncol=rd_size)
+    C = A + (B-1)*rd_size
+    idxs = as.numeric(t(C))
+    bracket_set[[paste0("rd",rd,"_n")]] = curr_rd[idxs]
+    
+    if (bracket_set$probs) {
+      curr_probs_rd = bracket_set[[paste0("probs_rd",rd,"_n")]]
+      bracket_set[[paste0("probs_rd",rd,"_n")]] = curr_probs_rd[idxs]
+    }
+  }
+  return(bracket_set)
+}
+
+merge_brackets <- function(bracket_set_1, bracket_set_2) {
+  ###
+  # create a new bracket set which contains the brackets from bracket_set_1 and bracket_set_2
+  ###
+  bracket_set = list()
+  bracket_set$n = bracket_set_1$n + bracket_set_2$n
+  bracket_set$probs = bracket_set_1$probs & bracket_set_2$probs
+  for (rd in 1:6) {
+    rd_size = 2^(6-rd)
+    curr1_rd = bracket_set_1[[paste0("rd",rd,"_n")]]
+    curr2_rd = bracket_set_2[[paste0("rd",rd,"_n")]]
+    curr_rd = c(curr1_rd, curr2_rd)
+    bracket_set[[paste0("rd",rd,"_n")]] = curr_rd
+    
+    if (bracket_set$probs) {
+      curr1_probs_rd = bracket_set_1[[paste0("probs_rd",rd,"_n")]]
+      curr2_probs_rd = bracket_set_2[[paste0("probs_rd",rd,"_n")]]
+      curr_probs_rd = c(curr1_probs_rd, curr2_probs_rd)
+      bracket_set[[paste0("probs_rd",rd,"_n")]] = curr_probs_rd
+    }
+    
+  }
+  return(bracket_set)
+}
 
 ###########################
 ###  Score bracket sets ###
@@ -175,7 +246,7 @@ plot_entropy_hist <- function(entropies, filename_str, title="",savePlot=TRUE) {
     #   axis.text.y=element_blank(),
     #   axis.ticks.y=element_blank()
     # ) +
-    xlab("H") +
+    xlab("h(x)") +
     labs(title=title)
   entropy_hist
   if (savePlot) {
@@ -185,8 +256,130 @@ plot_entropy_hist <- function(entropies, filename_str, title="",savePlot=TRUE) {
   }
 }
 
+#####################
+### Entropy Range ###
+#####################
 
+sample_n_brackets_entropyRange <- function(n, hL, hU) {
+  bracket_set = NULL
+  bracket_set_trunc = NULL
+  while(TRUE) {
+    ### sample some brackets
+    bracket_set = sample_n_brackets(n=3*n, keep_probs=T) 
+    ### keep sampled brackets that are within the entropy range (inclusive)
+    entropies = compute_entropies(bracket_set)
+    bracket_idxs_keep = which(hL <= entropies & entropies <= hU)
+    bracket_set_trunc_i = extract_brackets(bracket_set, bracket_idxs_keep)
+    ### merge newly sampled brackets with previous brackets
+    if (is.null(bracket_set_trunc)) {
+      bracket_set_trunc = bracket_set_trunc_i
+    } else {
+      bracket_set_trunc = merge_brackets(bracket_set_trunc, bracket_set_trunc_i)
+    }
+    ### make sure there are exactly n brackets
+    if (bracket_set_trunc$n > n) {
+      bracket_set_trunc = extract_brackets(bracket_set_trunc, 1:n)
+    }
+    ### end the loop once we have n brackets
+    if (bracket_set_trunc$n >= n) {
+      break
+    }
+    print(paste0("sampling: have found ", bracket_set_trunc$n, " brackets so far"))
+  }
+  return(bracket_set_trunc)
+}
 
+# bracket_set = sample_n_brackets_entropyRange(n, 46, 49)
+# entropies = compute_entropies(bracket_set)
+# c(min(entropies), max(entropies))
 
+#########################
+### Bracket Diverstiy ###
+#########################
 
+compute_bracket_diversity <- function(bracket_set, print_every_n=50, output_distmat=FALSE) {
+  ###
+  # compute the FN (min, mean, or max) of the
+  # pairwise distances between each bracket in bracket_set
+  # takes a long time!
+  ###
+  n = bracket_set$n
+  dist_mat = matrix(nrow=n, ncol=n)
+  for (i in 1:n) {
+    if (i %% print_every_n == 0) print(paste0(i, "/", n))
+    j = 1
+    while (j < i) {
+      # print(c(i,j))
+      bracket_i = extract_brackets(bracket_set, i)
+      bracket_j = extract_brackets(bracket_set, j)
+      dist_ij = 63 - compute_max_score(bracket_i, bracket_j, scoring_method="num_correct", expected_score=F)
+      dist_mat[i,j] = dist_ij
+      j = j+1
+    }
+  }
+  
+  if (output_distmat) {
+    dist_mat
+  } else {
+    tibble(
+      min = min(dist_mat, na.rm=T),
+      mean = mean(dist_mat, na.rm=T),
+      max = max(dist_mat, na.rm=T)
+    )
+  }
+}
+
+sample_n_greedy_diverse_brackets <- function(n, prob_method="P_538_2022", 
+                                             keep_probs=FALSE, print_every_n=50,
+                                             entropy_range=NULL) {
+  if (n > 1000) {
+    stop("careful: this is an intensive procedure")
+  }
+  
+  n0 = max(1000, 2*n) #FIXME
+  if (is.null(entropy_range)) {
+    bracket_set = sample_n_brackets(n0, prob_method=prob_method, keep_probs=keep_probs)
+  } else {
+    hL = entropy_range[1]
+    hU = entropy_range[2]
+    if (!is.numeric(hL) | !is.numeric(hU) | !(hL<hU)) {
+      stop("`entropy_range` must be c(hL,hU) where hL,hU are numeric and hL<hU")
+    }
+    bracket_set = sample_n_brackets_entropyRange(n0, hL, hU)
+  }
+  ### get bracket diversity matrix, and modify it
+  bracket_diversity = compute_bracket_diversity(bracket_set, print_every_n=print_every_n, output_distmat=TRUE) 
+  bracket_diversity_1 = ifelse(is.na(bracket_diversity), 0, bracket_diversity)
+  bracket_diversity_2 = bracket_diversity_1 + t(bracket_diversity_1)
+  diag(bracket_diversity_2) = NA
+  
+  ### greedy algorithm: at each step, select the bracket which has largest min. distance to all other remaining brackets
+  DISTMAT = bracket_diversity_2
+  rownames(DISTMAT) = 1:nrow(DISTMAT)
+  colnames(DISTMAT) = 1:ncol(DISTMAT)
+  ### initialize by selecting the first bracket
+  selected_bracket_idxs = c(1)
+  DISTMAT = DISTMAT[,2:ncol(DISTMAT)]
+  
+  for (i in 2:n) {
+    distmat_i = DISTMAT[selected_bracket_idxs,]
+    ### for each remaining bracket (cols), compute its min. distance to all the selected brackets (rows)
+    if (i == 2) {
+      min_dists_i = distmat_i
+    } else {
+      min_dists_i = apply(distmat_i, MARGIN=2, FUN=min) ### min
+    }
+    ### select the remaining bracket (col) which has largest min. dist to the already selected brackets
+    selected_bracket_idx = as.numeric(names(  which(min_dists_i == max(min_dists_i))[1]  ))
+    selected_bracket_idxs = c(selected_bracket_idxs, selected_bracket_idx)
+    ### remove columns of the brackets which have already been selected;
+    ### so that we don't select the same bracket twice
+    col_idx_to_remove = which(as.numeric(colnames(DISTMAT)) == selected_bracket_idx)
+    remaining_col_idxs = setdiff(1:ncol(DISTMAT), col_idx_to_remove)
+    DISTMAT = DISTMAT[, remaining_col_idxs]
+  }
+  
+  ### 
+  extract_brackets(bracket_set, selected_bracket_idxs)
+}
 

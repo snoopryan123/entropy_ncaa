@@ -13,7 +13,7 @@ mean(entropies)
 var(entropies)
 sd(entropies)
 
-plot_entropy_hist(entropies, "random_100k", title="100k randomly sampled brackets",savePlot=T)
+plot_entropy_hist(entropies, "random_1m", title="1 million randomly sampled brackets",savePlot=T)
 
 H_ = 48.7
 V_ = 10.8
@@ -39,8 +39,15 @@ typical_set_log2_size_bounds(0.99)
 typical_set_log2_size_bounds(0.95)
 typical_set_log2_size_bounds(0.9)
 typical_set_log2_size_bounds(0.8)
+typical_set_log2_size_bounds(0.3)
 
-  
+
+typical_set_prob_to_epsilon(.99)
+typical_set_prob_to_epsilon(.95)
+typical_set_prob_to_epsilon(.9)
+typical_set_prob_to_epsilon(.8)
+typical_set_prob_to_epsilon(.3)
+
   
 
 
