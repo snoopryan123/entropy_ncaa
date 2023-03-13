@@ -29,7 +29,7 @@ P <- function(team_1s, team_2s, prob_method="P_538_2022") {
     ### team i beats team j w.p. 0.90 if better seed
     seed_1s = (tibble(team_idx = team_1s) %>% left_join(START_OF_TOURNEY, by = "team_idx"))$seed
     seed_2s = (tibble(team_idx = team_2s) %>% left_join(START_OF_TOURNEY, by = "team_idx"))$seed
-    probs = (seed_1s - seed_2s < 1)*0.9 + (abs(seed_1s - seed_2s) <= 1)*0.5 + (seed_1s - seed_2s > 1)*0.1
+    probs = (seed_1s - seed_2s < -1)*0.9 + (abs(seed_1s - seed_2s) <= 1)*0.5 + (seed_1s - seed_2s > 1)*0.1
     # probs = (seed_1s - seed_2s < 0)*0.9 + (seed_1s - seed_2s == 0)*0.5 + (seed_1s - seed_2s > 0)*0.1
   } else {
     stop("prob_method not implemented in P function")
