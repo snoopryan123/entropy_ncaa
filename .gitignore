@@ -5,6 +5,7 @@
 *.log
 *.RDataTmp 
 *.DS_Store
+*.png
 literature
 code
 writeup

@@ -306,7 +306,7 @@ plot_escore_nRandomBrackets =
   ggplot(aes(x=p)) +
   geom_line(aes(y=random, color=n), linewidth=1) +
   scale_color_manual(values= my_palette_1) +
-  labs(title="n random brackets") +
+  labs(title="n purely random brackets") +
   ylab("expected max Hamming score") 
 plot_escore_nRandomBrackets
 ggsave("plot_thm1/plot_escore_nRandomBrackets.png", 
@@ -315,7 +315,8 @@ ggsave("plot_thm1/plot_escore_nRandomBrackets.png",
 ##### tibbles containing expected score as a function of (n,p) for chalky brackets ##### 
 
 # UMAX = 3 #FIXME #3 #10
-for (UMAX in 1:25) {
+# for (UMAX in 1:25) {
+for (UMAX in 26:63) {
   ### takes 5 minutes
   plot_df_escore_nChalkyBrackets =
     plot_grid %>%
@@ -370,7 +371,7 @@ plot_escore_nChalkyBrackets_vary_umax =
   geom_line(aes(y=chalky, color=n), linewidth=1) +
   scale_color_manual(values= my_palette_1) +
   theme(panel.spacing = unit(2, "lines")) +
-  labs(title=paste0("n chalky brackets")) +
+  labs(title=paste0("n randomly sampled U-chalky brackets")) +
   ylab("expected max Hamming score") 
 plot_escore_nChalkyBrackets_vary_umax
 ggsave(paste0("plot_thm1/plot_escore_nChalkyBrackets_vary_umax.png"), 
@@ -426,12 +427,13 @@ plot_escore_nbrackets_2 =
   filter(u_max %% 3 == 1) %>%
   # filter(u_max==UMAX) %>%
   # mutate(u_max_ = paste0("u_max = ", u_max)) %>%
-  pivot_longer(c(random, chalky)) %>%
+  rename(`purely random` = random) %>%
+  pivot_longer(c(`purely random`, chalky)) %>%
   mutate(
     # name = ifelse(name=="chalky", paste0("chalky (u_max=",u_max,")"), name),
     # name_ = factor(name, levels=c( paste0("chalky (u_max=",seq(1,25,by=3),")"), "random") ),
     name = ifelse(name=="chalky", paste0("chalky (U=",u_max,")"), name),
-    name_ = factor(name, levels=c( paste0("chalky (U=",seq(1,25,by=3),")"), "random") ),
+    name_ = factor(name, levels=c( paste0("chalky (U=",seq(1,25,by=3),")"), "purely random") ),
     n_ = paste0("n=",n)
   ) %>%
   ggplot(aes(x=p)) +
@@ -452,3 +454,76 @@ plot_escore_nbrackets_2 =
 plot_escore_nbrackets_2
 ggsave(paste0("plot_thm1/plot_escore_nbrackets_2.png"), plot_escore_nbrackets_2, width=12, height=7)
  
+
+###############################################
+### number of U chalky brackets as a function of U ###
+###############################################
+
+plot_num_U_chalky_brackets = tibble(u_max = 0:m) %>%
+  mutate(
+    num = choose(m,u_max),
+    num = cumsum(num),
+    num = log(num, base=10),
+  ) %>%
+  ggplot(aes(x=u_max, y=num)) +
+  # ylab("log#(U)") + 
+  ylab(TeX("$\\log_{10}($#U)")) + 
+  xlab("U") +
+  scale_x_continuous(breaks=seq(0,m,by=5)) +
+  # scale_y_continuous(breaks=seq(0,m,by=5)) +
+  labs(title="number of U-chalky brackets") +
+  geom_point(size=2) +
+  geom_line(size=1)
+plot_num_U_chalky_brackets
+ggsave("plot_thm1/plot_num_U_chalky_brackets.png",plot_num_U_chalky_brackets,
+      width=8, height=5)
+
+
+plot_num_U_chalky_brackets_1 = tibble(u_max = 0:m) %>%
+  mutate(
+    num = choose(m,u_max),
+    num = cumsum(num),
+    num = log(num, base=10),
+  ) %>%
+  filter(u_max <= 5) %>%
+  ggplot(aes(x=u_max, y=num)) +
+  # ylab("log#(U)") + 
+  ylab(TeX("$\\log_{10}($#U)")) + 
+  xlab("U") +
+  scale_x_continuous(breaks=seq(0,m,by=1)) +
+  # scale_y_continuous(breaks=seq(0,m,by=5)) +
+  labs(title="number of U-chalky brackets") +
+  geom_point(size=2) +
+  geom_line(size=1)
+plot_num_U_chalky_brackets_1
+ggsave("plot_thm1/plot_num_U_chalky_brackets_1.png",plot_num_U_chalky_brackets_1,
+       width=8, height=5)
+
+
+tibble(u_max = 0:m) %>%
+  mutate(
+    num = choose(m,u_max),
+    num = cumsum(num)
+  )
+
+###############################################
+### optimal U ###
+###############################################
+
+plot_U_star = 
+  bind_rows(
+    plot_df_escore_nChalkyBrackets %>% rename(escore=chalky),
+    plot_df_escore_nRandomBrackets%>% rename(escore=random),
+  ) %>% 
+  mutate(u_max = replace_na(u_max, 63)) %>%
+  filter(p >= 0.6) %>%
+  group_by(p,n) %>%
+  summarise(U_star = u_max[which( escore == max(escore) )]) %>%
+  ungroup() %>%
+  ggplot(aes(x=p, color=factor(n), y=U_star)) +
+  geom_point() +
+  geom_line() +
+  xlab("p") + ylab(TeX("$U^{*}$")) +
+  # labs(title=TeX("optimal chalkiness parameter $U^{*}(n,p)$")) +
+  scale_color_manual(values = my_palette_n2, name="n")
+plot_U_star
