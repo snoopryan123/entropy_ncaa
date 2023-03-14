@@ -248,7 +248,7 @@ plot_entropy_hist <- function(entropies, filename_str, title="",savePlot=TRUE) {
     #   axis.text.y=element_blank(),
     #   axis.ticks.y=element_blank()
     # ) +
-    xlab("h(x)") +
+    xlab("H(x)") +
     labs(title=title)
   entropy_hist
   if (savePlot) {

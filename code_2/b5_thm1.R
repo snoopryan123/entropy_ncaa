@@ -83,8 +83,10 @@ color_vec =  c(
   "random"="dodgerblue2"
 )
 name_vec1 = c(
-  "chalky3"="one\nchalky\nbracket\n(u_max=3)\n", 
-  "chalky10"="one\nchalky\nbracket\n(u_max=10)\n",
+  # "chalky3"="one\nchalky\nbracket\n(u_max=3)\n", 
+  # "chalky10"="one\nchalky\nbracket\n(u_max=10)\n",
+  "chalky3"="one\nchalky\nbracket\n(U=3)\n", 
+  "chalky10"="one\nchalky\nbracket\n(U=10)\n",
   "random"="one\nrandom\nbracket\n"
 )
 
@@ -360,7 +362,8 @@ for (UMAX in 1:25) {
 plot_escore_nChalkyBrackets_vary_umax = 
   plot_df_escore_nChalkyBrackets %>%
   filter(u_max %% 3 == 1) %>%
-  mutate(u_max_ = paste0("u_max = ", u_max)) %>%
+  # mutate(u_max_ = paste0("u_max = ", u_max)) %>%
+  mutate(u_max_ = paste0("U = ", u_max)) %>%
   mutate(n = factor(n)) %>%
   ggplot(aes(x=p)) +
   facet_wrap(~fct_reorder(u_max_, u_max)) +
@@ -393,7 +396,8 @@ for (UMAX in seq(1,25,by=3)) {
     filter(u_max==UMAX) %>%
     pivot_longer(c(random, chalky)) %>%
     mutate(
-      name = ifelse(name=="chalky", paste0("chalky (u_max=",UMAX,")"), name),
+      # name = ifelse(name=="chalky", paste0("chalky (u_max=",UMAX,")"), name),
+      name = ifelse(name=="chalky", paste0("chalky (U=",UMAX,")"), name),
       n_ = paste0("n=",n)
     ) %>%
     ggplot(aes(x=p)) +
@@ -424,8 +428,10 @@ plot_escore_nbrackets_2 =
   # mutate(u_max_ = paste0("u_max = ", u_max)) %>%
   pivot_longer(c(random, chalky)) %>%
   mutate(
-    name = ifelse(name=="chalky", paste0("chalky (u_max=",u_max,")"), name),
-    name_ = factor(name, levels=c( paste0("chalky (u_max=",seq(1,25,by=3),")"), "random") ),
+    # name = ifelse(name=="chalky", paste0("chalky (u_max=",u_max,")"), name),
+    # name_ = factor(name, levels=c( paste0("chalky (u_max=",seq(1,25,by=3),")"), "random") ),
+    name = ifelse(name=="chalky", paste0("chalky (U=",u_max,")"), name),
+    name_ = factor(name, levels=c( paste0("chalky (U=",seq(1,25,by=3),")"), "random") ),
     n_ = paste0("n=",n)
   ) %>%
   ggplot(aes(x=p)) +

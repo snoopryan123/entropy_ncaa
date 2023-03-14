@@ -48,7 +48,25 @@ typical_set_prob_to_epsilon(.9)
 typical_set_prob_to_epsilon(.8)
 typical_set_prob_to_epsilon(.3)
 
-  
+#############################################
+### Entropy equivalent to iid Ber(p) case ###
+#############################################
+
+### 
+mean(entropies)
+H_ = 48.7
+H_/63
+
+entropy_Ber_p = function(p) { -p*log(p,base=2) - (1-p)*log(1-p,base=2) }
+entropy_Ber_p
+
+# p = uniroot(function(p) entropy_Ber_p(p) - H_/63, lower=0.5, upper=0.999)$root
+p = uniroot(function(p) 63*entropy_Ber_p(p) - H_, lower=0.5, upper=0.999)$root
+
+p
+
+entropy_Ber_p(p)
+p
 
 
 

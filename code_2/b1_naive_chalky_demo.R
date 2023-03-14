@@ -34,9 +34,11 @@ scores
 ### using expected score ###
 ############################
 
+set.seed(99) ###
+
 ex_true_backets = sample_n_brackets(n=250)
 # ns = 10**(1:4)
-ns = 10**(1:6)
+ns = 10**(0:6)
 escores_elo = numeric(length(ns))
 escores_nc = numeric(length(ns))
 for (i in 1:length(ns)) {
