@@ -253,14 +253,19 @@ plot_U_star =
     plot_df_escore_nRandomBrackets%>% rename(escore=random),
   ) %>% 
   mutate(u_max = replace_na(u_max, 63)) %>%
-  filter(p >= 0.6) %>%
+  filter(p >= 0.65) %>%
+  filter(p <= 0.95) %>%
   group_by(p,n) %>%
   summarise(U_star = u_max[which( escore == max(escore) )]) %>%
   ungroup() %>%
   ggplot(aes(x=p, color=factor(n), y=U_star)) +
   geom_point() +
-  geom_line() +
+  # geom_line() +
   xlab("p") + ylab(TeX("$U^{*}$")) +
   # labs(title=TeX("optimal chalkiness parameter $U^{*}(n,p)$")) +
   scale_color_manual(values = my_palette_n2, name="n")
 plot_U_star
+ggsave("plot_thm1/plot_U_star.png", plot_U_star,
+       width=8, height=5)
+
+

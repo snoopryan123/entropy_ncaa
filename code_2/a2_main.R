@@ -11,6 +11,9 @@ SAVE_PLOT = TRUE #TRUE #FALSE
 ### Get Data ###
 ################
 
+###
+m = 63 ### number of games in March Madness
+
 D = read_csv("../data/538_ELO.csv") %>% rename(game_id = initial_game_num) ##%>% arrange(game_id)
 START_OF_TOURNEY = D %>% arrange(game_id) %>% select(team_idx, game_id, seed) %>% mutate(round = 1)
 START_OF_TOURNEY
@@ -314,10 +317,35 @@ compute_bracket_diversity <- function(bracket_set, print_every_n=50, output_dist
       # print(c(i,j))
       bracket_i = extract_brackets(bracket_set, i)
       bracket_j = extract_brackets(bracket_set, j)
-      dist_ij = 63 - compute_max_score(bracket_i, bracket_j, scoring_method="num_correct", expected_score=F)
+      dist_ij = m - compute_max_score(bracket_i, bracket_j, scoring_method="num_correct", expected_score=F)
       dist_mat[i,j] = dist_ij
       j = j+1
     }
+  }
+  
+  if (output_distmat) {
+    dist_mat
+  } else {
+    tibble(
+      min = min(dist_mat, na.rm=T),
+      mean = mean(dist_mat, na.rm=T),
+      max = max(dist_mat, na.rm=T)
+    )
+  }
+}
+
+compute_bracket_diversity_1 <- function(bracket_set, bracket, print_every_n=50, output_distmat=FALSE) {
+  ###
+  # compute the FN (min, mean, or max) of the
+  # distance between bracket and each bracket in bracket_set
+  ###
+  n = bracket_set$n
+  dist_mat = numeric(n)
+  for (i in 1:n) {
+    if (i %% print_every_n == 0) print(paste0(i, "/", n))
+    bracket_i = extract_brackets(bracket_set, i)
+    dist_i0 = m - compute_max_score(bracket_i, bracket, scoring_method="num_correct", expected_score=F)
+    dist_mat[i] = dist_i0
   }
   
   if (output_distmat) {
@@ -383,5 +411,51 @@ sample_n_greedy_diverse_brackets <- function(n, prob_method="P_538_2022",
   
   ### 
   extract_brackets(bracket_set, selected_bracket_idxs)
+}
+
+sample_n_delta_diverse_brackets <- function(n, n0, delta, prob_method="P_538_2022", 
+                                             keep_probs=FALSE, print_every_n=50,
+                                             entropy_range=NULL) {
+  ###
+  # n is the number of brackets to sample with delta diversity
+  # n0 is the larger pool of brackets initially sampled prior to selecting delta diverse brackets
+  # delta is the bracket diversity parameter
+  ###
+  
+  if (n > 1000) {
+    stop("careful: this is an intensive procedure")
+  }
+  
+  n0 = max(n0, max(1000, 2*n))    #FIXME
+  if (is.null(entropy_range)) {
+    bracket_set = sample_n_brackets(n0, prob_method=prob_method, keep_probs=keep_probs)
+  } else {
+    hL = entropy_range[1]
+    hU = entropy_range[2]
+    if (!is.numeric(hL) | !is.numeric(hU) | !(hL<hU)) {
+      stop("`entropy_range` must be c(hL,hU) where hL,hU are numeric and hL<hU")
+    }
+    bracket_set = sample_n_brackets_entropyRange(n0, hL, hU)
+  }
+  
+  selected_bracket_set = extract_bracket(bracket_set, 1)
+
+  for (i in 2:n0) {
+    bracket_i = extract_bracket(bracket_set, i)
+    bracket_dist_i = compute_bracket_diversity_1(selected_bracket_set, bracket_i, print_every_n=print_every_n)$min
+    if (bracket_dist_i >= delta) {
+      ### if exceeds bracket diversity threshold, select the bracket
+      selected_bracket_set = merge_brackets(selected_bracket_set, bracket_i)
+    } 
+    if (selected_bracket_set$n >= n) {
+      break
+    }
+  }
+  
+  if (selected_bracket_set$n < n) {
+    stop("need to increase n0")
+  }
+  
+  return(selected_bracket_set)
 }
 
