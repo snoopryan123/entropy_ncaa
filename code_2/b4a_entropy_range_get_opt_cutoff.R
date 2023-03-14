@@ -42,6 +42,36 @@ write.csv(scores_num_correct, "df_scores_num_correct_b4a.csv")
 ### Optimal Entropy Range Cutoff ###
 ####################################
 
+scores_espn = read.csv("df_scores_espn_b4a.csv")
+scores_num_correct = read.csv("df_scores_num_correct_b4a.csv")
+ns = 10^(0:4)
+colnames(scores_espn) = c("hU", ns)
+colnames(scores_num_correct) = c("hU", ns)
+
+### argmax over each column to get the optimal entropy score hU for each n
+scores_espn %>%
+  pivot_longer(!hU) %>%
+  rename(n = name) %>%
+  filter(n >= 100) %>%
+  rename(escore = value) %>%
+  group_by(n) %>%
+  filter(escore == max(escore)) %>%
+  ungroup() %>%
+  arrange(n)
+
+scores_num_correct %>%
+  pivot_longer(!hU) %>%
+  rename(n = name) %>%
+  filter(n >= 100) %>%
+  rename(escore = value) %>%
+  group_by(n) %>%
+  filter(escore == max(escore)) %>%
+  ungroup() %>%
+  arrange(n)
+
+
+
+
 
 
 

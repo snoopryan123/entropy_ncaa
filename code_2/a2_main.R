@@ -440,7 +440,8 @@ sample_n_delta_diverse_brackets <- function(n, n0, delta, prob_method="P_538_202
   
   selected_bracket_set = extract_bracket(bracket_set, 1)
 
-  for (i in 2:n0) {
+  i = 2
+  while (i <= n0) {
     bracket_i = extract_bracket(bracket_set, i)
     bracket_dist_i = compute_bracket_diversity_1(selected_bracket_set, bracket_i, print_every_n=print_every_n)$min
     if (bracket_dist_i >= delta) {
@@ -450,11 +451,31 @@ sample_n_delta_diverse_brackets <- function(n, n0, delta, prob_method="P_538_202
     if (selected_bracket_set$n >= n) {
       break
     }
+    if (i == n0) {
+      ### need new bracket set
+      print("sampling a new bracket set...")
+      i = 1
+      #FIXME
+      
+      if (is.null(entropy_range)) {
+        bracket_set = sample_n_brackets(n0, prob_method=prob_method, keep_probs=keep_probs)
+      } else {
+        hL = entropy_range[1]
+        hU = entropy_range[2]
+        if (!is.numeric(hL) | !is.numeric(hU) | !(hL<hU)) {
+          stop("`entropy_range` must be c(hL,hU) where hL,hU are numeric and hL<hU")
+        }
+        bracket_set = sample_n_brackets_entropyRange(n0, hL, hU)
+      }
+      
+    } else {
+      i = i + 1
+    }
   }
   
-  if (selected_bracket_set$n < n) {
-    stop("need to increase n0")
-  }
+  # if (selected_bracket_set$n < n) {
+  #   stop("need to increase n0")
+  # }
   
   return(selected_bracket_set)
 }
