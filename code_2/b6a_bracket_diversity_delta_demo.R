@@ -21,7 +21,7 @@ hU <- function(n,scoring_method) {
   }
 }
 ns = 100 #10^(2:3)
-deltas = 0:10 #4 #20
+deltas = 17:23 #0:10 
 scores_espn = matrix(0, nrow=length(ns), ncol=length(deltas))
 rownames(scores_espn) = ns
 colnames(scores_espn) = deltas
@@ -29,7 +29,7 @@ scores_espn_R = scores_espn
 scores_espn_E = scores_espn
 scores_num_correct_R = scores_espn
 scores_num_correct_E = scores_espn
-num_runs = 10 #1 #3#15
+num_runs = 3 #10 #1 #3#15
 for (M in 1:num_runs) {
   for (i in 1:length(ns)) {
     for (j in 1:length(deltas)) {
@@ -60,6 +60,21 @@ write.csv(scores_espn_R, "df_scores_espn_R_b6a.csv")
 write.csv(scores_espn_E, "df_scores_espn_E_b6a.csv")
 write.csv(scores_num_correct_R, "df_scores_num_correct_R_b6a.csv")
 write.csv(scores_num_correct_E, "df_scores_num_correct_E_b6a.csv")
+
+
+################################################################################
+
+scores_espn_R = read_csv("df_scores_espn_R_b6a.csv")
+scores_espn_E = read_csv("df_scores_espn_E_b6a.csv")
+scores_num_correct_R = read_csv("df_scores_num_correct_R_b6a.csv")
+scores_num_correct_E = read_csv("df_scores_num_correct_E_b6a.csv")
+
+
+plot(as.numeric(scores_espn_R[1,2:length(scores_espn_R)]))
+plot(as.numeric(scores_espn_E[1,2:length(scores_espn_R)]))
+plot(as.numeric(scores_num_correct_R[1,2:length(scores_espn_R)]))
+plot(as.numeric(scores_num_correct_E[1,2:length(scores_espn_R)]))
+
 
 
 
