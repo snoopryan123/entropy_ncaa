@@ -322,7 +322,7 @@ WP_nq_vs_kr <- function(m,p,n,q,k,r) {
   sum(result)
 }
 ### check
-WP_nq_vs_kr(m=m,p=0.7,n=10,q=0.5,k=1000,r=0.9) ### takes abt 1 minute
+# WP_nq_vs_kr(m=m,p=0.7,n=10,q=0.5,k=1000,r=0.9) ### takes abt 1 minute
 
 
 

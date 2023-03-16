@@ -5,7 +5,6 @@ source("b5_simplified_MM_main.R")
 args = commandArgs(trailingOnly=TRUE)
 FOLD = as.numeric(args[1])
 NUM_FOLDS = 50 #FIXME
-library(caret)
 folds <- createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS, list = TRUE, returnTrain = FALSE)
 GRID = plot_grid_pnqkr[folds[[FOLD]], ]
   
