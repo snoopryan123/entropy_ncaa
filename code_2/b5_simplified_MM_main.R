@@ -125,17 +125,17 @@ escore_Mn_random <- function(p,n) {
 # escore_Mn_random(p=0.9, n=100)
 # escore_Mn_random(p=1, n=100)
 
-###############################################
-### Expected Max Score of n Chalky Brackets ###
-###############################################
+#################################################
+### Expected Max Score of n U-Chalky Brackets ###
+#################################################
 
-h <- function(y,m,u,v) {
-  ### y is a vector of integers; return(sum(h(y)))
+h <- function(a,m,u,v) {
+  ### a is a vector of integers; return(sum(h(a)))
   ### m is an integer, the total number of bits
   ### u is an integer, number of bits that are 0 in tau
   ### v is an integer, number of bits that are 0 in x
   u1 = max(u,v)
-  d = y - abs(u-v)
+  d = a - abs(u-v)
   d1 = d/2
   d1_L = 0
   d1_U = min(u,v,m-u1)
@@ -145,35 +145,35 @@ h <- function(y,m,u,v) {
   return(sum(vec))
 }
 # ### check
-# h(y=0,m=12,u=8,v=5)
-# h(y=1,m=12,u=8,v=5)
-# h(y=2,m=12,u=8,v=5)
-# h(y=3,m=12,u=8,v=5)
+# h(a=0,m=12,u=8,v=5)
+# h(a=1,m=12,u=8,v=5)
+# h(a=2,m=12,u=8,v=5)
+# h(a=3,m=12,u=8,v=5)
 # choose(8,3)
-# h(y=4,m=12,u=8,v=5)
-# h(y=5,m=12,u=8,v=5)
+# h(a=4,m=12,u=8,v=5)
+# h(a=5,m=12,u=8,v=5)
 # choose(8,4)*choose(4,1)
-# h(y=6,m=12,u=8,v=5)
-# h(y=7,m=12,u=8,v=5)
+# h(a=6,m=12,u=8,v=5)
+# h(a=7,m=12,u=8,v=5)
 # choose(8,5)*choose(4,2)
-# h(y=8,m=12,u=8,v=5)
-# h(y=9,m=12,u=8,v=5)
+# h(a=8,m=12,u=8,v=5)
+# h(a=9,m=12,u=8,v=5)
 # choose(8,6)*choose(4,3)
-# h(y=10,m=12,u=8,v=5)
-# h(y=11,m=12,u=8,v=5)
+# h(a=10,m=12,u=8,v=5)
+# h(a=11,m=12,u=8,v=5)
 # choose(8,7)*choose(4,4)
-# h(y=12,m=12,u=8,v=5)
-# h(y=13,m=12,u=8,v=5)
-# h(y=14,m=12,u=8,v=5)
-# h(y=0:12,m=12,u=8,v=5)
-# h(y=3,m=12,u=8,v=5)+h(y=5,m=12,u=8,v=5)+h(y=7,m=12,u=8,v=5)+h(y=9,m=12,u=8,v=5)+h(y=11,m=12,u=8,v=5)
+# h(a=12,m=12,u=8,v=5)
+# h(a=13,m=12,u=8,v=5)
+# h(a=14,m=12,u=8,v=5)
+# h(a=0:12,m=12,u=8,v=5)
+# h(a=3,m=12,u=8,v=5)+h(a=5,m=12,u=8,v=5)+h(a=7,m=12,u=8,v=5)+h(a=9,m=12,u=8,v=5)+h(a=11,m=12,u=8,v=5)
   
 cdf_Mn_chalky_given_u <- function(p,n,u,k,u_max=10) {
   vec = numeric(u_max+1)
   for (v in 0:u_max) {
     # browser()
-    t1 = h(y = ((m-k):m) , m,u,v)
-    t2 = h(y = 0:m , m,u,v)
+    t1 = h(a = ((m-k):m) , m,u,v)
+    t2 = h(a = 0:m , m,u,v)
     t3 = dbinom(v, size=m, prob=1-p)/pbinom(u_max, size=m, prob=1-p, lower.tail = TRUE)
     vec[v+1] = t1/t2 * t3
   }
@@ -213,12 +213,124 @@ escore_Mn_chalky <- function(p,n,u_max=10) {
 # escore_Mn_chalky(p=0.7, n=100)
 
 #################################################
-### Plot the Expected Max Score of n Brackets ###
+### Expected Max Score of n q-Chalky Brackets ###
+#################################################
+
+cdfScore_q_chalky_given_uv <- function(m,k,u,v) {
+  # print("a1")
+  # browser()
+  t1 = h(a = ((m-k):m) , m,u,v)
+  t2 = h(a = 0:m , m,u,v)
+  result = t1 / t2
+  result
+}
+### check
+# cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=20)
+# cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=40)
+
+### precompute cdfScore_q_chalky_given_uv(m,k,u,v)
+filename = paste0("plot_thm1/df_cdfScore_q_chalky_given_uv_array_m",m,".csv")
+if ( file.exists((filename)) ) {
+  cdfScore_q_chalky_given_uv_array = readRDS(filename)
+} else {
+  cdfScore_q_chalky_given_uv_array <- array(dim=c(m+1,m+1,m+1))
+  for (u in 0:m) {
+    for (v in 0:m) {
+      for (k in 0:m) {
+        print(paste0("precomputing cdfScore_q_chalky_given_uv_array", "u=",u,", v=",v,", k=",k))
+        cdfScore_q_chalky_given_uv_array[u+1,v+1,k+1] = cdfScore_q_chalky_given_uv(m,k,u,v)
+      }
+    }
+  }
+  dimnames(cdfScore_q_chalky_given_uv_array) = list(paste0("u",0:m), paste0("v",0:m), paste0("k",0:m))
+  saveRDS(cdfScore_q_chalky_given_uv_array, filename)
+}
+
+cdfScore_q_chalky_given_uv <- function(m,k,u,v) {
+  if (k < 0) {
+    0
+  } else if (k > m) {
+    1
+  } else {
+    cdfScore_q_chalky_given_uv_array[u+1,v+1,k+1]
+  }
+}
+### check
+# cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=20)
+# cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=40)
+
+cdfScore_q_chalky <- function(m,p,q,k) {
+  # print("a2")
+  vec = matrix(0, m+1, m+1)
+  for (u in 0:m) {
+    for (v in 0:m) {
+      vec[u+1,v+1] = cdfScore_q_chalky_given_uv(m,k,u,v) * dbinom(u, size=m, prob=1-p) * dbinom(v, size=m, prob=1-q)
+    }
+  }
+  sum(vec)
+}
+### check
+# cdfScore_q_chalky(m=m,p=0.7,q=0.5,k=30)
+# cdfScore_q_chalky(m=m,p=0.7,q=0.5,k=40)
+# cdfScore_q_chalky(m=m,p=0.7,q=0.5,k=50)
+# cdfScore_q_chalky(m=m,p=0.7,q=0.75,k=30)
+# cdfScore_q_chalky(m=m,p=0.7,q=0.75,k=40)
+# cdfScore_q_chalky(m=m,p=0.7,q=0.75,k=50)
+
+eMaxScore_q_chalky <- function(m,n,p,q) {
+  # print("a3")
+  # print(paste0("eMaxScore_q_chalky, ", " n=", n, ", p=", p, ", q=", q))
+  vec = numeric(m+1)
+  for (k in 0:m) {
+    vec[k+1] = 1 - cdfScore_q_chalky(m,p,q,k)^n
+  }
+  sum(vec)
+}
+### check
+# eMaxScore_q_chalky(m=m,n=10,p=0.7,q=0.5)
+# eMaxScore_q_chalky(m=m,n=10,p=0.7,q=0.7)
+# eMaxScore_q_chalky(m=m,n=10,p=0.7,q=0.9)
+
+######################################################################
+### Win Probability of n q-Chalky Brackets vs. k r-Chalky Brackets ###
+######################################################################
+
+WP_nq_vs_kr <- function(m,p,n,q,k,r) {
+  num_pairs = sum( max(n,k) - (1:min(n,k)) )
+  # result = array(dim=c(m+1,m+1,m+1,m+1))
+  result = array(0, dim=c(m+1,m+1,m+1,m+1))
+  for (u in 0:m) {
+    print(paste("u =", u) )
+    # browser()
+    for (v in 0:m) {
+      for (w in 0:m) {
+        pu = dbinom(u, size=m, prob=1-p)
+        pv = dbinom(u, size=m, prob=1-q)
+        pw = dbinom(u, size=m, prob=1-r)
+        for (l in 0:m) {
+          # print(paste("c(u,v,w,l) =", u,v,w,l) )
+          
+          t1 = 1 - cdfScore_q_chalky_given_uv(m=m,k=l-1,u=u,v=v) #FIXME
+          t1 = t1^num_pairs
+          t2 = cdfScore_q_chalky_given_uv(m=m,k=m-l,u=u,v=w) - cdfScore_q_chalky_given_uv(m=m,k=m-l-1,u=u,v=w)
+            
+          result[u+1,v+1,w+1,l+1] = t1*t2*pu*pv*pw
+        }
+      }
+    }
+  }
+  sum(result)
+}
+### check
+WP_nq_vs_kr(m=m,p=0.7,n=10,q=0.5,k=1000,r=0.9) ### takes abt 1 minute
+
+
+
+#################################################
+### Plotting ###
 #################################################
 
 ##### tibbles containing expected score as a function of (n,p) for random brackets ##### 
-
-plot_grid = expand.grid(p=seq(0.5, 0.99, length=101), n=10^(0:8)) %>% as_tibble()
 
 color_vec =  c(
   "chalky3"="firebrick2", 
@@ -250,4 +362,31 @@ my_palette_n2 = c(
   rev(brewer.pal(name="PuRd",n=9)[4:9]),
   brewer.pal(name="Blues",n=9)[4:6]#[3:9]
 )
+
+
+plot_grid = expand.grid(p=seq(0.5, 0.99, length=101), n=10^(0:8)) %>% as_tibble()
+
+plot_grid_npq = expand.grid(
+  # p = seq(0.5, 0.99, length=50),
+  # q = seq(0.5, 0.99, length=50),
+  p = seq(0.5, 0.95, by=0.05),
+  q = seq(0.05, 0.95, by=0.05),
+  n = 10^(0:8)
+)
+# as_tibble(plot_grid_npq)
+
+plot_grid_pnqkr = expand.grid(
+  n = 10^(0:8),
+  k = 10^(0:8),
+  # p = seq(0.5, 0.95, by=0.05),
+  # q = seq(0.5, 0.95, by=0.05),
+  # r = seq(0.5, 0.95, by=0.05)
+  p = seq(0.5, 0.9, by=0.1),
+  q = seq(0.1, 0.9, by=0.1),
+  r = seq(0.5, 0.9, by=0.1)
+) %>% 
+  # filter(n <= k) %>%
+  filter(r >= p) %>%
+  arrange(p,n,q,k,r)
+as_tibble(plot_grid_pnqkr)
 
