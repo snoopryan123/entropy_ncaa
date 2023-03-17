@@ -12,8 +12,8 @@ plot_grid_pnqkr = expand.grid(
   q = seq(0,   1, by=0.05),
   r = seq(0.5, 1, by=0.05)
 ) %>% 
-  # filter(n <= k) %>%
-  filter(r >= p) %>%
+  ## filter(n <= k) %>%
+  # filter(r >= p) %>%
   arrange(p,n,q,k,r)
 as_tibble(plot_grid_pnqkr)
 
@@ -27,7 +27,7 @@ GRID = plot_grid_pnqkr[folds[[FOLD]], ]
 ##### for n q-chalky brackets vs. k r-chalky brackets         #####
 result = numeric(nrow(GRID))
 for (i in 1:nrow(GRID)) {
-  print(paste0("i=",i))
+  print(paste0("i=",i, " of ", nrow(GRID)))
   print(GRID[i,])
   
   n = GRID[i,]$n

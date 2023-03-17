@@ -1,5 +1,5 @@
 
-NUM_FOLDS_WPDF_PARALLELIZATION = 50 #FIXME
+NUM_FOLDS_WPDF_PARALLELIZATION = 100 #FIXME
 
 ###################################
 ### Code for Simplied Theorem 1 ###
