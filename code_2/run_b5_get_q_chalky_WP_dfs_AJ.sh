@@ -10,7 +10,7 @@
 #$ -l m_mem_free=1G
 
 ## ARRAY JOB
-#$ -t 1-100
+#$ -t 1-50
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
 Rscript --vanilla b5_simplified_MM_get_q_chalky_WP_dfs.R ${SGE_TASK_ID}
