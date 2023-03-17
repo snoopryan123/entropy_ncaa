@@ -1,4 +1,6 @@
 
+NUM_FOLDS_WPDF_PARALLELIZATION = 50 #FIXME
+
 ###################################
 ### Code for Simplied Theorem 1 ###
 ###################################
@@ -296,34 +298,80 @@ eMaxScore_q_chalky <- function(m,n,p,q) {
 ######################################################################
 
 WP_nq_vs_kr <- function(m,p,n,q,k,r) {
-  num_pairs = sum( max(n,k) - (1:min(n,k)) )
-  # result = array(dim=c(m+1,m+1,m+1,m+1))
-  result = array(0, dim=c(m+1,m+1,m+1,m+1))
+  # result = array(0, dim=c(m+1,m+1))
+  result = array(dim=c(m+1,m+1))
   for (u in 0:m) {
-    print(paste("u =", u) )
+    # print(paste("u =", u) )
     # browser()
-    for (v in 0:m) {
-      for (w in 0:m) {
-        pu = dbinom(u, size=m, prob=1-p)
-        pv = dbinom(u, size=m, prob=1-q)
-        pw = dbinom(u, size=m, prob=1-r)
-        for (l in 0:m) {
-          # print(paste("c(u,v,w,l) =", u,v,w,l) )
-          
-          t1 = 1 - cdfScore_q_chalky_given_uv(m=m,k=l-1,u=u,v=v) #FIXME
-          t1 = t1^num_pairs
-          t2 = cdfScore_q_chalky_given_uv(m=m,k=m-l,u=u,v=w) - cdfScore_q_chalky_given_uv(m=m,k=m-l-1,u=u,v=w)
-            
-          result[u+1,v+1,w+1,l+1] = t1*t2*pu*pv*pw
-        }
+    pu = dbinom(u, size=m, prob=1-p)
+    for (l in 0:m) {
+      # print(paste("c(u,l) =", u,l) )
+     
+      S1 = numeric(m+1)
+      S2 = numeric(m+1)
+      S3 = numeric(m+1)
+      for (v in 0:m) {
+        cdf_l1_uv = cdfScore_q_chalky_given_uv(m=m,k=l-1,u=u,v=v)
+        cdf_l_uv = cdfScore_q_chalky_given_uv(m=m,k=l,u=u,v=v)
+        
+        S1[v+1] = cdf_l1_uv * dbinom(v, size=m, prob=1-q)
+        S2[v+1] = cdf_l_uv  * dbinom(v, size=m, prob=1-r)
+        S3[v+1] = cdf_l1_uv * dbinom(v, size=m, prob=1-r)
       }
+      S1n = sum(S1)^n
+      S2k = sum(S2)^k
+      S3k = sum(S3)^k
+      
+      result[u+1,l+1] = pu*S1n*(S2k-S3k)
     }
   }
-  sum(result)
+  1 - sum(result)
 }
-### check
-# WP_nq_vs_kr(m=m,p=0.7,n=10,q=0.5,k=1000,r=0.9) ### takes abt 1 minute
+# ### check.  takes ~2 secs to run
+# ### should be close to 1:
+# WP_nq_vs_kr(m=m,p=0.5,n=1000000,q=0.5,k=10,r=0.5)
+# WP_nq_vs_kr(m=m,p=1,n=10,q=1,k=10,r=0)
+# WP_nq_vs_kr(m=m,p=0.9,n=100,q=0.9,k=100,r=0.1)
+# ### should be close to 0:
+# WP_nq_vs_kr(m=m,p=0.5,n=10,q=0.5,k=1000000,r=0.5)
+# WP_nq_vs_kr(m=m,p=1,n=10,q=0,k=10,r=1)
+# WP_nq_vs_kr(m=m,p=0.9,n=100,q=0.1,k=100,r=0.9)
+# WP_nq_vs_kr(m=m,p=0,n=10,q=0.5,k=1000,r=0.1)
+# ### should be 0.5:
+# WP_nq_vs_kr(m=m,p=0,n=1,q=0.1,k=1,r=0.1) 
+# WP_nq_vs_kr(m=m,p=0,n=100,q=0.1,k=100,r=0.1) 
+# WP_nq_vs_kr(m=m,p=0,n=1000,q=0.1,k=1000,r=0.1) 
 
+
+
+
+
+# WP_nq_vs_kr <- function(m,p,n,q,k,r) {
+#   # result = array(dim=c(m+1,m+1,m+1,m+1))
+#   result = array(0, dim=c(m+1,m+1,m+1,m+1))
+#   for (u in 0:m) {
+#     pu = dbinom(u, size=m, prob=1-p)
+#     
+#     print(paste("u =", u) )
+#     # browser()
+#     for (v in 0:m) {
+#       pv = dbinom(u, size=m, prob=1-q)
+#       for (w in 0:m) {
+#         pw = dbinom(u, size=m, prob=1-r)
+#         for (l in 0:m) {
+#           # print(paste("c(u,v,w,l) =", u,v,w,l) )
+#           
+#           #FIXME
+#           t1 = cdfScore_q_chalky_given_uv(m=m,k=l-1,u=u,v=v)^(n*k) 
+#           t2 = cdfScore_q_chalky_given_uv(m=m,k=m-l,u=u,v=w) - cdfScore_q_chalky_given_uv(m=m,k=m-(l-1),u=u,v=w)
+#             
+#           result[u+1,v+1,w+1,l+1] = t1*t2*pu*pv*pw
+#         }
+#       }
+#     }
+#   }
+#   1 - sum(result)
+# }
 
 
 #################################################
@@ -368,18 +416,5 @@ plot_grid = expand.grid(p=seq(0.5, 0.99, length=101), n=10^(0:8)) %>% as_tibble(
 
 
 
-plot_grid_pnqkr = expand.grid(
-  n = 10^(0:8),
-  k = 10^(0:8),
-  # p = seq(0.5, 0.95, by=0.05),
-  # q = seq(0.5, 0.95, by=0.05),
-  # r = seq(0.5, 0.95, by=0.05)
-  p = seq(0.5, 0.9, by=0.1),
-  q = seq(0.1, 0.9, by=0.1),
-  r = seq(0.5, 0.9, by=0.1)
-) %>% 
-  # filter(n <= k) %>%
-  filter(r >= p) %>%
-  arrange(p,n,q,k,r)
-as_tibble(plot_grid_pnqkr)
+
 

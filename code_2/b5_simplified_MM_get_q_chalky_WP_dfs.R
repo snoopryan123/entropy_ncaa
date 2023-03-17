@@ -1,11 +1,26 @@
 
 source("b5_simplified_MM_main.R")
 
+### grid of (p,n,q,k,r)
+plot_grid_pnqkr = expand.grid(
+  n = 10^(0:8),
+  k = 10^(0:8),
+  # p = seq(0.5, 0.95, by=0.05),
+  # q = seq(0.5, 0.95, by=0.05),
+  # r = seq(0.5, 0.95, by=0.05)
+  p = seq(0.5, 0.9, by=0.1),
+  q = seq(0.1, 0.9, by=0.1),
+  r = seq(0.5, 0.9, by=0.1)
+) %>% 
+  # filter(n <= k) %>%
+  filter(r >= p) %>%
+  arrange(p,n,q,k,r)
+as_tibble(plot_grid_pnqkr)
+
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 FOLD = as.numeric(args[1])
-NUM_FOLDS = 50 #FIXME
-folds <- createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS, list = TRUE, returnTrain = FALSE)
+folds <- createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
 GRID = plot_grid_pnqkr[folds[[FOLD]], ]
   
 ##### tibble of win probability as a function of (p,n,q,k,r)  ##### 
@@ -27,9 +42,5 @@ GRID$wp = result
 filename = paste0("plot_thm1/df_WP_nq_vs_kr_fold",FOLD,".csv")
 write_csv(GRID, paste0(filename))
 print("done")
-
-
-
-# filename = paste0("plot_thm1/df_WP_nq_vs_kr.csv")
 
 
