@@ -5,12 +5,12 @@ source("b5_simplified_MM_main.R")
 plot_grid_pnqkr = expand.grid(
   n = 10^(0:8),
   k = 10^(0:8),
-  # p = seq(0.5, 0.95, by=0.05),
-  # q = seq(0.5, 0.95, by=0.05),
-  # r = seq(0.5, 0.95, by=0.05)
-  p = seq(0.5, 0.9, by=0.1),
-  q = seq(0.1, 0.9, by=0.1),
-  r = seq(0.5, 0.9, by=0.1)
+  # p = seq(0.5, 1, by=0.1),
+  # q = seq(0,   1, by=0.1),
+  # r = seq(0.5, 1, by=0.1)
+  p = seq(0.5, 1, by=0.05),
+  q = seq(0,   1, by=0.05),
+  r = seq(0.5, 1, by=0.05)
 ) %>% 
   # filter(n <= k) %>%
   filter(r >= p) %>%
