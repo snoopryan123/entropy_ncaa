@@ -26,7 +26,7 @@ for (i in 1:nrow(GRID)) {
 GRID$wp = result
 filename = paste0("plot_thm1/df_WP_nq_vs_kr_fold",FOLD,".csv")
 write_csv(GRID, paste0(filename))
-
+print("done")
 
 
 
