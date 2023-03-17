@@ -259,12 +259,12 @@ cdfScore_q_chalky_given_uv <- function(m,k,u,v) {
 # cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=20)
 # cdfScore_q_chalky_given_uv(m=m,k=30,u=20,v=40)
 
-cdfScore_q_chalky <- function(m,p,q,k) {
+cdfMaxScore_q_chalky <- function(m,p,q,k) {
   # print("a2")
   vec = matrix(0, m+1, m+1)
   for (u in 0:m) {
     for (v in 0:m) {
-      vec[u+1,v+1] = cdfScore_q_chalky_given_uv(m,k,u,v) * dbinom(u, size=m, prob=1-p) * dbinom(v, size=m, prob=1-q)
+      vec[u+1,v+1] = cdfScore_q_chalky_given_uv(m,k,u,v)^n * dbinom(u, size=m, prob=1-p) * dbinom(v, size=m, prob=1-q)
     }
   }
   sum(vec)
@@ -282,7 +282,7 @@ eMaxScore_q_chalky <- function(m,n,p,q) {
   # print(paste0("eMaxScore_q_chalky, ", " n=", n, ", p=", p, ", q=", q))
   vec = numeric(m+1)
   for (k in 0:m) {
-    vec[k+1] = 1 - cdfScore_q_chalky(m,p,q,k)^n
+    vec[k+1] = 1 - cdfMaxScore_q_chalky(m,p,q,k)
   }
   sum(vec)
 }
@@ -366,14 +366,7 @@ my_palette_n2 = c(
 
 plot_grid = expand.grid(p=seq(0.5, 0.99, length=101), n=10^(0:8)) %>% as_tibble()
 
-plot_grid_npq = expand.grid(
-  # p = seq(0.5, 0.99, length=50),
-  # q = seq(0.5, 0.99, length=50),
-  p = seq(0.5, 0.95, by=0.05),
-  q = seq(0.05, 0.95, by=0.05),
-  n = 10^(0:8)
-)
-# as_tibble(plot_grid_npq)
+
 
 plot_grid_pnqkr = expand.grid(
   n = 10^(0:8),
