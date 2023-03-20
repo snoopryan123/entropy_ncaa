@@ -1,7 +1,7 @@
 library(tidyverse)
 library(latex2exp)
 library(RColorBrewer)
-library(caret)
+# library(caret)
 # library(purrr)
 theme_set(theme_bw())
 theme_update(text = element_text(size=25))

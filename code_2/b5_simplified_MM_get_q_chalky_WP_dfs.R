@@ -1,26 +1,30 @@
 
 source("b5_simplified_MM_main.R")
 
-### grid of (p,n,q,k,r)
-plot_grid_pnqkr = expand.grid(
-  n = 10^(0:8),
-  k = 10^(0:8),
-  # p = seq(0.5, 1, by=0.1),
-  # q = seq(0,   1, by=0.1),
-  # r = seq(0.5, 1, by=0.1)
-  p = seq(0.5, 1, by=0.05),
-  q = seq(0,   1, by=0.05),
-  r = seq(0.5, 1, by=0.05)
-) %>% 
-  ## filter(n <= k) %>%
-  # filter(r >= p) %>%
-  arrange(p,n,q,k,r)
-as_tibble(plot_grid_pnqkr)
+### for some reason, expand.grid and tidyverse::crossing WEREN'T WORKING
+### in that they were MISSING SOME COMBINATIONS of (n,k,p,q,r)...
+### this was driving me crazy
+### so I instead mdae the combos in PYTHON and import them here...
+plot_grid_pnqkr = read_csv("plot_grid_pnqkr.csv") %>% select(-`...1`)
+plot_grid_pnqkr
+plot_grid_pnqkr = plot_grid_pnqkr %>% filter(p >= 0.5 & r >= 0.5)
+plot_grid_pnqkr
+
+# ### checks
+# plot_grid_pnqkr %>% filter(p == 0.9)
+# plot_grid_pnqkr %>% filter(p == 0.95)
+# plot_grid_pnqkr %>% filter(r == 0.95)
+# plot_grid_pnqkr %>% filter(p == 0.95) %>% filter(r == 0.95)
+# unique(plot_grid_pnqkr$q)
+# plot_grid_pnqkr %>% filter(q == 0.95)
+# plot_grid_pnqkr[plot_grid_pnqkr$q==.95,]
+# plot_grid_pnqkr[plot_grid_pnqkr$q==.05,]
+# plot_grid_pnqkr %>% filter(p == 0.95 & r == 0.95 & q == 0.95)
 
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 FOLD = as.numeric(args[1])
-folds <- createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
+folds <- caret::createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
 GRID = plot_grid_pnqkr[folds[[FOLD]], ]
   
 ##### tibble of win probability as a function of (p,n,q,k,r)  ##### 
