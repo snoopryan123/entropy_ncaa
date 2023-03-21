@@ -4,11 +4,13 @@ source("b5_simplified_MM_main.R")
 ### for some reason, expand.grid and tidyverse::crossing WEREN'T WORKING
 ### in that they were MISSING SOME COMBINATIONS of (n,k,p,q,r)...
 ### this was driving me crazy
-### so I instead mdae the combos in PYTHON and import them here...
+### so I instead made the combos in PYTHON and import them here...
+### run `b5_simplified_MM_get_q_chalky_WP_dfs_get_plot_fird_npqkr.ipynb`
 plot_grid_pnqkr = read_csv("plot_grid_pnqkr.csv") %>% select(-`...1`)
-plot_grid_pnqkr
-plot_grid_pnqkr = plot_grid_pnqkr %>% filter(p >= 0.5 & r >= 0.5)
-plot_grid_pnqkr
+print(plot_grid_pnqkr)
+# plot_grid_pnqkr = plot_grid_pnqkr %>% filter(p >= 0.5 & r >= 0.5)
+plot_grid_pnqkr = plot_grid_pnqkr %>% filter(p == 0.75 & r >= 0.5)
+print(plot_grid_pnqkr)
 
 # ### checks
 # plot_grid_pnqkr %>% filter(p == 0.9)
@@ -24,8 +26,11 @@ plot_grid_pnqkr
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 FOLD = as.numeric(args[1])
-folds <- caret::createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
-GRID = plot_grid_pnqkr[folds[[FOLD]], ]
+# folds <- caret::createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
+# GRID = plot_grid_pnqkr[folds[[FOLD]], ]
+idxs_lower = nrow(plot_grid_pnqkr)/NUM_FOLDS_WPDF_PARALLELIZATION * (FOLD-1)
+idxs_upper = nrow(plot_grid_pnqkr)/NUM_FOLDS_WPDF_PARALLELIZATION * FOLD
+GRID = plot_grid_pnqkr[floor(idxs_lower):ceiling(idxs_upper),]
   
 ##### tibble of win probability as a function of (p,n,q,k,r)  ##### 
 ##### for n q-chalky brackets vs. k r-chalky brackets         #####
