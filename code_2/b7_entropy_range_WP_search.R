@@ -17,7 +17,12 @@ args = commandArgs(trailingOnly=TRUE)
 GRID_ROW_IDX = as.numeric(args[1])
 PARAMS = GRID[GRID_ROW_IDX,]
 
-NUM_RUNS = 20
+if (min(PARAMS$n, PARAMS$k) <= 100) {
+  NUM_RUNS = 50
+} else {
+  NUM_RUNS = 20
+}
+
 hU_stars = numeric(NUM_RUNS)
 hL_stars = numeric(NUM_RUNS)
 for (RUN in 1:NUM_RUNS) {
