@@ -17,7 +17,8 @@ GRID = expand.grid(
     opp_prob_method = c("naive_chalky", "P_538_2022"),
     scoring_method = c("ESPN", "num_correct")
   ) %>%
-  filter(n <= k)
+  filter(n <= k) %>% 
+  arrange(k)
 GRID
 
 
