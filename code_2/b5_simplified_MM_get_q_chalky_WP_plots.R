@@ -3,93 +3,90 @@ source("b5_simplified_MM_main.R")
 
 df_WP_nq_vs_kr = read_csv("df_WP_nq_vs_kr.csv")
 
-# get_WP <- function(p_,n_,q_,k_,r_) {
-#   # browser()
-#   (df_WP_nq_vs_kr %>% filter(p==p_&n==n_&q==q_&k==k_&r==r_))$wp
-# }
-# get_WP(p=.6,n=100,q=.6,k=1e8,r=.6)
-# get_WP(p=.95,n=1e4,q=.95,k=1e8,r=.95)
-# get_WP(p=.95,n=1e7,q=.95,k=1e8,r=.95)
-
 #############
 ### PLOTS ###
 #############
 
 #### WP, p, n, q, k, r
 
-df_WP_nq_vs_kr %>%
-  filter(k == 1e8) %>%
-  ggplot(aes(x=q, y=r)) +
-  facet_wrap(~n) +
-  geom_tile(aes(fill=wp))
+p_ = 0.75
+ks = 10^(0:8)
+for (k_ in ks) {
+  plot_wp1_kp =
+    df_WP_nq_vs_kr %>%
+    filter(k == k_) %>%
+    mutate(n_ = paste0("n = ", n)) %>%
+    ggplot(aes(x=q, y=r)) +
+    facet_wrap(~n_) +
+    theme(panel.spacing = unit(2, "lines")) +
+    labs(title=paste0("k = ", k_, ", p = ", p_)) +
+    geom_tile(aes(fill=wp)) +
+    geom_vline(aes(xintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+    geom_hline(aes(yintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+    geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
+    # scale_fill_gradientn(name="win\nprobability", colours = terrain.colors(7))
+    scale_fill_gradientn(name="win\nprobability", colours = rev(terrain.colors(7)))
+  ggsave(paste0("plot_thm1/plot_wp1_k",k_,"p",p_,".png"), plot_wp1_kp,
+         width=12,height=8)
+  
+  plot_wp2_kp = 
+    df_WP_nq_vs_kr %>%
+    mutate(n_ = paste0("n = ", n)) %>%
+    filter(k == k_) %>%
+    ggplot(aes(x=q, color=factor(r), y=wp)) +
+    facet_wrap(~n_) +
+    theme(panel.spacing = unit(2, "lines")) +
+    # geom_vline
+    labs(title=paste0("k = ", k_, ", p = ", p_)) +
+    geom_line(linewidth=1) +
+    geom_vline(aes(xintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+    ylab("win probability") +
+    scale_color_manual(name="r", values=my_palette_nk1)
+  ggsave(paste0("plot_thm1/plot_wp2_k",k_,"p",p_,".png"), plot_wp2_kp,
+         width=12,height=8)
+}
 
-df_WP_nq_vs_kr %>%
-  filter(k == 1e8) %>%
-  filter(r == p) %>%
-  filter(0.65 <= p & p <= 0.8) %>%
-  ggplot(aes(x=p, color=factor(q), y=wp)) +
-  facet_wrap(~n) +
-  geom_line()
+########################################
+### CHOOSE OPTIMAL q*,n* GIVEN P,K,R ###
+########################################
 
-df_WP_nq_vs_kr %>%
+qn_star = df_WP_nq_vs_kr %>%
+  select(p,k,r,n,q,wp) %>%
+  group_by(p,k,r) %>%
+  filter(
+    wp == max(wp)
+  ) %>%
+  filter(
+    n == max(n)
+  ) %>%
+  ungroup()
+qn_star
+
+q_star = df_WP_nq_vs_kr %>%
+  select(p,k,r,n,q,wp) %>%
+  group_by(p,k,r,n) %>%
+  filter(
+    wp == max(wp)
+  ) %>%
+  ungroup()
+q_star
+
+
+plot_q_star_nkrp = q_star %>%
+  filter(r < 1) %>%
   mutate(n_ = paste0("n = ", n)) %>%
-  filter(k == 1e8) %>%
-  filter(r == p) %>%
-  # filter(p == 0.75) %>%
-  filter(0.65 <= p & p <= 0.8) %>%
-  ggplot(aes(x=q, color=factor(r), y=wp)) +
+  ggplot(aes(y=q, x=r, color=factor(k))) +
   facet_wrap(~n_) +
-  # geom_vline
-  labs(title=paste0("k = ", 1e8)) +
-  geom_line()
-
-df_WP_nq_vs_kr %>%
-  filter(p == 0.8 & q==1 & r==0.8 & n==1e8 & k==1e8)
-
-data.frame(
-  plot_grid_pnqkr %>%
-    filter(p == 0.8 & r==0.8 & n==1e8 & k==1e8)
-)
-
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=.75,k=1e8,r=.8)
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=.8,k=1e8,r=.8)
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=.85,k=1e8,r=.8)
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=.9,k=1e8,r=.8)
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=.95,k=1e8,r=.8)
-WP_nq_vs_kr(m=m,p=0.8,n=1e8,q=1,k=1e8,r=.8)
-
-
-
-df_WP_nq_vs_kr %>%
-  filter(p == .75) %>%
-  filter(q == .75) %>%
-  filter(r == .75) %>%
-  ggplot(aes(x=log(k,base=10), y=wp)) +
-  facet_wrap(~n) +
-  geom_line() +
-  geom_point()
-
-df_WP_nq_vs_kr %>%
-  filter(p == .75) %>%
-  filter(q == .75) %>%
-  filter(r == .75) %>%
-  ggplot(aes(x=log(n,base=10), y=log(k,base=10))) +
-  # geom_line() +
-  geom_point()
-
-plot_grid_pnqkr %>%
-  filter(p == .75) %>%
-  filter(q == .75) %>%
-  filter(r == .75) %>%
-  ggplot(aes(x=log(n,base=10), y=log(k,base=10))) +
-  # geom_line() +
-  geom_point()
-
-plot_grid_pnqkr %>%
-  filter(p == .95) %>%
-  filter(q == .95) %>%
-  filter(r == .95) %>%
-  # facet_wrap(~factor(p)) +
-  ggplot(aes(x=log(n,base=10), y=log(k,base=10))) +
-  # geom_line() +
-  geom_point()
+  theme(panel.spacing = unit(2, "lines")) +
+  ylab(TeX("$q^*$")) +
+  geom_vline(aes(xintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+  geom_hline(aes(yintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+  geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
+  # scale_fill_gradientn(name="win\nprobability", colours = terrain.colors(7))
+  labs(title=paste0("p = ", p_)) +
+  scale_color_manual(name="k", values=my_palette_nk1) +
+  geom_point(size=2)
+  # geom_line(linewidth=1)
+# plot_q_star_nkrp
+ggsave(paste0("plot_thm1/plot_q_star_nkr","p",p_,".png"), plot_q_star_nkrp,
+       width=12,height=8)

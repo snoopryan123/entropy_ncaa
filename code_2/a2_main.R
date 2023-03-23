@@ -1,8 +1,6 @@
 library(tidyverse)
 library(latex2exp)
 library(RColorBrewer)
-# library(caret)
-# library(purrr)
 theme_set(theme_bw())
 theme_update(text = element_text(size=25))
 theme_update(plot.title = element_text(hjust = 0.5))
@@ -266,12 +264,12 @@ plot_entropy_hist <- function(entropies, filename_str, title="",savePlot=TRUE) {
 ### Entropy Range ###
 #####################
 
-sample_n_brackets_entropyRange <- function(n, hL, hU) {
+sample_n_brackets_entropyRange <- function(n, hL, hU, prob_method="P_538_2022") {
   bracket_set = NULL
   bracket_set_trunc = NULL
   while(TRUE) {
     ### sample some brackets
-    bracket_set = sample_n_brackets(n=3*n, keep_probs=T) 
+    bracket_set = sample_n_brackets(n=3*n, prob_method=prob_method, keep_probs=T) 
     ### keep sampled brackets that are within the entropy range (inclusive)
     entropies = compute_entropies(bracket_set)
     bracket_idxs_keep = which(hL <= entropies & entropies <= hU)

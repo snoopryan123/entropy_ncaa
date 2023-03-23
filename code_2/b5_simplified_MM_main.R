@@ -411,6 +411,11 @@ my_palette_n2 = c(
   brewer.pal(name="Blues",n=9)[4:6]#[3:9]
 )
 
+my_palette_nk1 = c(
+  rev(brewer.pal(name="PuRd",n=9)[4:9]),
+  brewer.pal(name="Blues",n=9)[4:9]
+)
+
 
 plot_grid = expand.grid(p=seq(0.5, 0.99, length=101), n=10^(0:8)) %>% as_tibble()
 

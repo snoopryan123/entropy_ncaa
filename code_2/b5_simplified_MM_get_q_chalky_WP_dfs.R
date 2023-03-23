@@ -26,8 +26,6 @@ print(plot_grid_pnqkr)
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 FOLD = as.numeric(args[1])
-# folds <- caret::createFolds(1:nrow(plot_grid_pnqkr), k = NUM_FOLDS_WPDF_PARALLELIZATION, list = TRUE, returnTrain = FALSE)
-# GRID = plot_grid_pnqkr[folds[[FOLD]], ]
 idxs_lower = nrow(plot_grid_pnqkr)/NUM_FOLDS_WPDF_PARALLELIZATION * (FOLD-1)
 idxs_upper = nrow(plot_grid_pnqkr)/NUM_FOLDS_WPDF_PARALLELIZATION * FOLD
 GRID = plot_grid_pnqkr[floor(idxs_lower):ceiling(idxs_upper),]
