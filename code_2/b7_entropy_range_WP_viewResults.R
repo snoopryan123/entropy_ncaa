@@ -11,6 +11,19 @@ source("b7_entropy_range_WP_search_main.R")
 
 GRID_results = read_csv("df_entropy_range_grid_results.csv")
 
+GRID_results %>% arrange(opp_prob_method, scoring_method)
 
-GRID_results
+
+
+
+
+GRID_results %>%
+  arrange(opp_prob_method, scoring_method) %>%
+  ggplot() +
+  facet_wrap()
+
+
+
+
+
 

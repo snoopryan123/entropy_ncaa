@@ -20,7 +20,7 @@ PARAMS = GRID[GRID_ROW_IDX,]
 if (min(PARAMS$n, PARAMS$k) <= 100) {
   NUM_RUNS = 25
 } else {
-  NUM_RUNS = 1 #FIXME
+  NUM_RUNS = 5 #FIXME
 }
 
 hU_stars = numeric(NUM_RUNS)
