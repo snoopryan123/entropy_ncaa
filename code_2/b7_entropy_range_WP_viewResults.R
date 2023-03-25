@@ -9,22 +9,8 @@ source("b7_entropy_range_WP_search_main.R")
 ### should you submit brackets?                                    ###
 ######################################################################
 
-GRID_results = tibble()
-idxs_not_successful = numeric()
-for (GRID_ROW_IDX in 1:nrow(GRID)) {
-  PARAMS = GRID[GRID_ROW_IDX,]
-  filename = paste0("dfs/df_h_star_i",GRID_ROW_IDX,".csv")
-  if (file.exists(filename)) {
-    dfi = read_csv(filename)
-    dfi = bind_cols(PARAMS, dfi)
-    GRID_results = bind_rows(GRID_results, dfi)
-  } else {
-    idxs_not_successful = c(idxs_not_successful, GRID_ROW_IDX)
-  }
-}
+GRID_results = read_csv("df_entropy_range_grid_results.csv")
 
-write_csv(GRID_results, "df_entropy_range_grid_results.csv")
-print("idxs_not_successful")
-print(idxs_not_successful)
 
+GRID_results
 
