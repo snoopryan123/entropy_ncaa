@@ -46,9 +46,9 @@ for (RUN in 1:NUM_RUNS) {
   hU_star = GRID_hU[last(which(wp_hU == max(wp_hU)))]
   
   ### given hU, find best hL
-  hdiff = 3
+  hdiff = 2
   GRID_hL = c(-Inf, 38:(hU_star - hdiff))
-  if (hU - hdiff > 38) {
+  if (hU_star - hdiff > 38) {
     wp_hL = numeric(length(GRID_hL))
     names(wp_hL) = GRID_hL
     for (i in 1:length(GRID_hL)) {
