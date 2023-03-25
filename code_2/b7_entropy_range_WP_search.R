@@ -20,7 +20,7 @@ PARAMS = GRID[GRID_ROW_IDX,]
 if (min(PARAMS$n, PARAMS$k) <= 100) {
   NUM_RUNS = 50
 } else {
-  NUM_RUNS = 20
+  NUM_RUNS = 1 #FIXME
 }
 
 hU_stars = numeric(NUM_RUNS)
@@ -46,9 +46,9 @@ for (RUN in 1:NUM_RUNS) {
   hU_star = GRID_hU[last(which(wp_hU == max(wp_hU)))]
   
   ### given hU, find best hL
-  hdiff = 4
+  hdiff = 2
   GRID_hL = c(-Inf, 38:(hU_star - hdiff))
-  if (hU - hdiff >= 38) {
+  if (hU - hdiff > 38) {
     wp_hL = numeric(length(GRID_hL))
     names(wp_hL) = GRID_hL
     for (i in 1:length(GRID_hL)) {
