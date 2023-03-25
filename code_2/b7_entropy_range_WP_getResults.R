@@ -17,6 +17,7 @@ for (GRID_ROW_IDX in 1:nrow(GRID)) {
   if (file.exists(filename)) {
     dfi = read_csv(filename)
     dfi = bind_cols(PARAMS, dfi)
+    dfi$i = GRID_ROW_IDX
     GRID_results = bind_rows(GRID_results, dfi)
   } else {
     idxs_not_successful = c(idxs_not_successful, GRID_ROW_IDX)
