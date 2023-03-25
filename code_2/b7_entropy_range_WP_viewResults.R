@@ -18,9 +18,10 @@ GRID_results %>% arrange(opp_prob_method, scoring_method)
 
 
 GRID_results %>%
-  arrange(opp_prob_method, scoring_method) %>%
   ggplot() +
-  facet_wrap()
+  facet_wrap(~scoring_method) +
+  geom_point(aes(y=opp_prob_method, x=k, color=factor(n)), 
+             size=3)
 
 
 
