@@ -288,7 +288,7 @@ sample_n_brackets_entropyRange <- function(n, hL, hU, prob_method="P_538_2022") 
     if (bracket_set_trunc$n >= n) {
       break
     }
-    print(paste0("sampling: have found ", bracket_set_trunc$n, " brackets so far"))
+    print(paste0("sampling: have found ", bracket_set_trunc$n, " brackets so far with hL=",hL, " and hU=", hU))
   }
   return(bracket_set_trunc)
 }
