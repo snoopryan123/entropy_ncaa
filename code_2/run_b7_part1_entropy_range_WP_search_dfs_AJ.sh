@@ -10,7 +10,7 @@
 #$ -l m_mem_free=3G
 
 ## ARRAY JOB
-#$ -t 1-20
+#$ -t 1-10 ##1-20
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
 Rscript --vanilla b7_entropy_range_WP_search.R ${SGE_TASK_ID}
