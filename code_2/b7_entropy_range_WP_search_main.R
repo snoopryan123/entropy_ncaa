@@ -21,6 +21,22 @@ source("a2_main.R")
 #   arrange(k)
 # GRID
 
+# ### grid to search over
+# GRID = expand.grid(
+#   # n = 10^(0:6),
+#   # k = c(10,100,1.73*1e7),
+#   # k = c(10,100,10^6),
+#   # opp_prob_method = c("naive_chalky", "P_538_2022"),
+#   #### scoring_method = c("ESPN", "num_correct")
+#   n = 10^(0:3),
+#   k = 10^(0:3),
+#   opp_prob_method = c("naive_chalky")
+# ) %>%
+#   filter(n <= k) %>% 
+#   arrange(n,k)
+# GRID
+
+
 ### grid to search over
 GRID = expand.grid(
   # n = 10^(0:6),
@@ -28,12 +44,14 @@ GRID = expand.grid(
   # k = c(10,100,10^6),
   # opp_prob_method = c("naive_chalky", "P_538_2022"),
   #### scoring_method = c("ESPN", "num_correct")
-  n = 10^(0:3),
-  k = 10^(0:3),
-  opp_prob_method = c("naive_chalky")
+  n = 10^(2:4),
+  k = 10^(2:4),
+  # opp_prob_method = c("naive_chalky")
+  opp_prob_method = c("naive_chalky", "P_538_2022")
 ) %>%
   filter(n <= k) %>% 
-  arrange(n,k)
+  arrange(opp_prob_method,n,k)
+  # arrange(n,k)
 GRID
 
 

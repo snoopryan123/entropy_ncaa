@@ -9,15 +9,11 @@ source("b7_entropy_range_WP_search_main.R")
 ### should you submit brackets?                                    ###
 ######################################################################
 
-### true_backets
-set.seed(99) # Aaron Donald
-true_backets = sample_n_brackets(n=250)
-
 args = commandArgs(trailingOnly=TRUE)
 GRID_ROW_IDX = as.numeric(args[1])
 PARAMS = GRID[GRID_ROW_IDX,]
 
-if (max(PARAMS$n, PARAMS$k) <= 1000) {
+if (max(PARAMS$n, PARAMS$k) <= 10000) {
   NUM_RUNS = 150
 } else {
   NUM_RUNS = 5 #FIXME
@@ -28,6 +24,10 @@ hU_stars_espn = numeric(NUM_RUNS)
 hU_stars_num_correct = numeric(NUM_RUNS)
 # hL_stars = numeric(NUM_RUNS)
 for (RUN in 1:NUM_RUNS) {
+  ### true_backets
+  set.seed(423942347+RUN*2) 
+  true_backets = sample_n_brackets(n=250)
+  
   opp_submitted_backets = sample_n_brackets(n=PARAMS$k, prob_method = PARAMS$opp_prob_method)
   opp_scores_espn = compute_max_score(opp_submitted_backets, true_backets, "ESPN")
   opp_scores_num_correct = compute_max_score(opp_submitted_backets, true_backets, "num_correct")
@@ -44,7 +44,6 @@ for (RUN in 1:NUM_RUNS) {
     hU = GRID_hU[i]
     print(paste0("run = ", RUN, " of ", NUM_RUNS, ", i = ", i, " of ", length(GRID_hU), ", and hU = ", hU))
     our_submitted_backets = sample_n_brackets_entropyRange(PARAMS$n, -Inf, hU, prob_method="P_538_2022") 
-    # our_scores = compute_max_score(our_submitted_backets, true_backets, scoring_method=PARAMS$scoring_method)
     scores_espn = compute_max_score(our_submitted_backets, true_backets, "ESPN")
     scores_num_correct = compute_max_score(our_submitted_backets, true_backets, "num_correct")
     wp_hU_espn[i] = mean(scores_espn >= opp_scores_espn)
