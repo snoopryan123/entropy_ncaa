@@ -51,8 +51,7 @@ GRID = expand.grid(
 ) %>%
   filter(n <= k) %>% 
   # arrange(opp_prob_method,n,k)
-  arrange(k,n)
-  # arrange(n,k)
+  arrange(n,k)
 GRID
 
 

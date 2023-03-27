@@ -88,7 +88,7 @@ h_star =
     hU_star_espn = mean(hU_stars_espn),
     hU_star_num_correct = mean(hU_stars_num_correct)
   )
-h_star
+h_star = bind_cols(PARAMS, h_star)
 write_csv(h_star, paste0("dfs/df_h_star_i",GRID_ROW_IDX,".csv"))
 
 

@@ -16,8 +16,8 @@ for (GRID_ROW_IDX in 1:nrow(GRID)) {
   filename = paste0("dfs/df_h_star_i",GRID_ROW_IDX,".csv")
   if (file.exists(filename)) {
     dfi = read_csv(filename)
-    dfi = bind_cols(PARAMS, dfi)
     dfi$i = GRID_ROW_IDX
+    # dfi = bind_cols(PARAMS, dfi)
     GRID_results = bind_rows(GRID_results, dfi)
   } else {
     idxs_not_successful = c(idxs_not_successful, GRID_ROW_IDX)
