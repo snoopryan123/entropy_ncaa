@@ -14,7 +14,7 @@ GRID_ROW_IDX = as.numeric(args[1])
 PARAMS = GRID[GRID_ROW_IDX,]
 
 if (max(PARAMS$n, PARAMS$k) <= 10000) {
-  NUM_RUNS = 150
+  NUM_RUNS = 500
 } else {
   NUM_RUNS = 5 #FIXME
 }

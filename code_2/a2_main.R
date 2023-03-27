@@ -72,11 +72,13 @@ sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
     
     team_1s = curr_rd[odd(1:length(curr_rd))]
     team_2s = curr_rd[even(1:length(curr_rd))]
-    probs = P(team_1s, team_2s, prob_method=prob_method)
+    probs_actual = P(team_1s, team_2s)
+    probs_createBracket = P(team_1s, team_2s, prob_method=prob_method)
     if (keep_probs) {
-      tourney_n[[paste0("probs_rd",rd,"_n")]] = probs
+      tourney_n[[paste0("probs_rd",rd,"_n")]] = probs_actual
+      tourney_n[[paste0("probs_createBracket_rd",rd,"_n")]] = probs_createBracket
     }
-    winners = sample_winners(probs)
+    winners = sample_winners(probs_createBracket)
     
     next_rd = team_1s*winners + team_2s*(1-winners)
     tourney_n[[paste0("rd",rd,"_n")]] = next_rd

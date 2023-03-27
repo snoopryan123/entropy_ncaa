@@ -49,8 +49,8 @@ GRID = expand.grid(
   # opp_prob_method = c("naive_chalky")
   opp_prob_method = c("naive_chalky", "P_538_2022", "naive_random")
 ) %>%
-  filter(n <= k) %>% 
-  # arrange(opp_prob_method,n,k)
+  # filter(n <= k) %>% 
+  filter(n < k) %>% 
   arrange(n,k)
 GRID
 
