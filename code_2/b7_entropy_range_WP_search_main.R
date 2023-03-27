@@ -47,10 +47,11 @@ GRID = expand.grid(
   n = 10^(2:4),
   k = 10^(2:4),
   # opp_prob_method = c("naive_chalky")
-  opp_prob_method = c("naive_chalky", "P_538_2022")
+  opp_prob_method = c("naive_chalky", "P_538_2022", "naive_random")
 ) %>%
   filter(n <= k) %>% 
-  arrange(opp_prob_method,n,k)
+  # arrange(opp_prob_method,n,k)
+  arrange(k,n)
   # arrange(n,k)
 GRID
 
