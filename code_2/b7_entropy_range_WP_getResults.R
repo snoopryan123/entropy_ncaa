@@ -13,7 +13,7 @@ GRID_results = tibble()
 idxs_not_successful = numeric()
 for (GRID_ROW_IDX in 1:nrow(GRID)) {
   PARAMS = GRID[GRID_ROW_IDX,]
-  filename = paste0("dfs/df_h_star_i",GRID_ROW_IDX,".csv")
+  filename = paste0("dfs/df_H_star_i",GRID_ROW_IDX,".csv")
   if (file.exists(filename)) {
     dfi = read_csv(filename)
     dfi$i = GRID_ROW_IDX

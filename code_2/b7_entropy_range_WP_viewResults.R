@@ -20,14 +20,14 @@ mean(compute_entropies(bracket_set_super_chalky))
 ### should you submit brackets?                                    ###
 ######################################################################
 
-# GRID_results = read_csv("df_entropy_range_grid_results.csv")
-GRID_results = read_csv("df_entropy_range_grid_results OLD.csv")
+GRID_results = read_csv("df_entropy_range_grid_results.csv")
+# GRID_results = read_csv("df_entropy_range_grid_results OLD.csv")
 
-# GRID_results =
-#   GRID_results %>%
-#   # filter(opp_prob_method != "naive_chalky")
-#   # filter(opp_prob_method != "naive_random")
-#   filter(opp_prob_method != "P_538_2022")
+GRID_results =
+  GRID_results %>%
+  filter(opp_prob_method != "naive_chalky")
+  # filter(opp_prob_method != "naive_random")
+  # filter(opp_prob_method != "P_538_2022")
 
 GRID_results
 
@@ -42,6 +42,7 @@ mean_entropies =
     function(i) mean(compute_entropies(sample_n_brackets_entropyRange(250, -Inf, df_wp_entropy_range_results$hU_star[i])))
 )
 df_wp_entropy_range_results$mean_entropies = mean_entropies
+df_wp_entropy_range_results
 
 my_palette_0 = c(
   rev(brewer.pal(name="PuRd",n=9)[3:9]),
@@ -62,13 +63,15 @@ plot_wp_entropy_range_results =
     opp_entropy = case_when(
       opp_prob_method=="naive_chalky" ~ 48.2,
       opp_prob_method=="P_538_2022" ~ 48.7,
-      opp_prob_method=="naive_random"~52.3
+      opp_prob_method=="naive_random"~52.3,
+      opp_prob_method=="super_chalky"~44
     ),
   ) %>%
   mutate(opp_prob_method_ = case_when(
     opp_prob_method=="naive_chalky" ~ "\ncolloquially\nchalky\nopponents\n",
     opp_prob_method=="P_538_2022" ~ "\npurely\nrandom\nopponents\n",
-    opp_prob_method=="naive_random"~"\ncolloquially\nrandom\nopponents\n"
+    opp_prob_method=="naive_random"~"\ncolloquially\nrandom\nopponents\n",
+    opp_prob_method=="super_chalky"~"\nquite\nchalky\nopponents\n"
   ),
   # opp_prob_method_ = paste0("opponents: ", opp_prob_method_)
   ) %>%
@@ -87,10 +90,12 @@ plot_wp_entropy_range_results =
   geom_point(aes(
     # x=hU_star, 
     x = mean_entropies,
-    y=opp_prob_method_, fill=factor(n), stroke=(n==k)*2 
+    # stroke=(n==k)*2 ,
+    y=opp_prob_method_, 
+    fill=factor(n)
     ), shape=21, color="black", size=5) +
   # xlab(TeX("$h_U^*$")) +
-  xlab("mean entropy") +
+  xlab("mean entropy of the submitted bracket set") +
   scale_fill_manual(name="n", values=my_palette_a) +
   geom_point(aes(x=opp_entropy, y=opp_prob_method_), color="gray20", shape=4, size=3) +
   geom_vline(xintercept=48.7, color="gray60", linetype="dashed") +
@@ -99,11 +104,13 @@ plot_wp_entropy_range_results =
   # # xlab(TeX("$log_{10}(k)$")) +
   # xlab("k") +
   # theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) +
+  theme(axis.text.y = element_text(size=14)) +
   ylab("") 
+  # ylab("opponents' bracket strategy") 
 # plot_wp_entropy_range_results
 ggsave("plot_wp_entropy_range_results.png",
        plot_wp_entropy_range_results,
-       width=12, height=10)
+       width=14, height=8)
 
 
 

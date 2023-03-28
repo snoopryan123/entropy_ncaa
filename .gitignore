@@ -13,3 +13,4 @@ writeup
 !data/*
 !df_cdfScore_q_chalky_given_uv_array_m63.csv
 !df_eMaxScore_q_chalky_npq.csv
+!df_entropy_conversion.csv
