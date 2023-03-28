@@ -14,7 +14,7 @@ GRID_ROW_IDX = as.numeric(args[1])
 PARAMS = GRID[GRID_ROW_IDX,]
 
 if (max(PARAMS$n, PARAMS$k) <= 10000) {
-  NUM_RUNS = 500
+  NUM_RUNS = 150 #500
 } else {
   NUM_RUNS = 5 #FIXME
 }
@@ -28,7 +28,11 @@ for (RUN in 1:NUM_RUNS) {
   set.seed(423942347+RUN*2) 
   true_backets = sample_n_brackets(n=250)
   
-  opp_submitted_backets = sample_n_brackets(n=PARAMS$k, prob_method = PARAMS$opp_prob_method)
+  if (PARAMS$opp_prob_method == "super_chalky") {
+    opp_submitted_backets = sample_n_brackets_entropyRange(n=PARAMS$k, hL=-Inf, hU=45.75)
+  } else {
+    opp_submitted_backets = sample_n_brackets(n=PARAMS$k, prob_method = PARAMS$opp_prob_method)
+  }
   opp_scores_espn = compute_max_score(opp_submitted_backets, true_backets, "ESPN")
   opp_scores_num_correct = compute_max_score(opp_submitted_backets, true_backets, "num_correct")
   
