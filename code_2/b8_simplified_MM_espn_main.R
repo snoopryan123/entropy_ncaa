@@ -54,7 +54,8 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   ncol_ = length(pgpbinom(NULL, rep(0.5,m), w_vec, zero_vec, method = "DivideFFT")) ### number of possible ESPN scores
   # cdf_mat = matrix(nrow = nrow(u_vecs), ncol = ncol_)
   cdf_array = array(dim = c(nrow(u_vecs), ncol_, length(ns)))
-  for (i in 1:nrow(u_vecs)) {
+  for (i in 1:1000) {
+  # for (i in 1:nrow(u_vecs)) {
     if (i %% print_every_n == 0) print(paste0("GRID idx ",print_num0," of ",print_num1,"; cdf_maxEspnScore_SMM iter i=",i," of ",nrow(u_vecs)))
     
     urs = u_vecs[i,] ### vector (u1,...,uR)
@@ -78,7 +79,7 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   escore = 1 - apply(cdf_array, MARGIN=c(2,3), FUN=sum)
   escore = colSums(escore)*10 ### multiply by 10 to get the real ESPN score
   names(escore) = paste0("n=",ns)
-  rm(u_vecs,w_vec,zero_vec,ncol_,cdf_array) ### for HPCC using less memory
+  rm(R,wrs,mrs,mrs_lst,u_vecs,w_vec,zero_vec,ncol_,cdf_array) ### for HPCC using less memory
   return(escore)
 }
 
