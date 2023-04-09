@@ -90,12 +90,14 @@ sum(df_q_star_npq$count!=1)
 
 plot_q_star_npq = 
   df_q_star_npq %>%
+  filter(p > 0.5 & p < 1) %>%
   ggplot(aes(x=p,y=q_star,color=factor(n))) +
-  geom_line(data = . %>% filter(p==q_star), color="gray50", linetype="dashed", linewidth=1, alpha=0.4) +
-  geom_line(linewidth=1) +
+  # geom_line(data = . %>% filter(p==q_star), color="gray50", linetype="dashed", linewidth=1, alpha=0.4) +
+  geom_abline(intercept=0, slope=1, color="gray50", linetype="dashed", linewidth=1, alpha=0.4) +
+  geom_point(size=3) +
   ylab(TeX("$q^*$")) +
   scale_color_manual(name="n", values=my_palette_npq1)
-# plot_q_star_npq
+plot_q_star_npq
 ggsave("plot_thm1/plot_npq_q_star.png", plot_q_star_npq, width=8,height=5)
 
 

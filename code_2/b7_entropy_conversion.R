@@ -35,15 +35,16 @@ plot_entropy_conversion =
     h = c(paste0("(-", bquote("\U221E"),", ", GRID_h, "]"), paste0("[", GRID_h, ", ",bquote("\U221E"),"]")),
     H = c(entropies_left_tail, entropies_right_tail),
   ) %>%
-    ggplot() +
-    geom_point(aes(x=h, y=H)) +
-    xlab("entropy range of sampled brackets") +
-    ylab("mean entropy of sampled brackets") +
-    geom_hline(yintercept=48.7, color="gray60", linetype="dashed") +
-    theme(
-      # axis.title.x = element_text(size=15),
-      axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size=10)
-    )
+  filter(row_number() %% 2 == 1) %>%
+  ggplot() +
+  geom_point(aes(x=h, y=H), size=3) +
+  xlab("entropy range of sampled brackets") +
+  ylab("mean entropy of sampled brackets") +
+  geom_hline(yintercept=48.7, color="gray60", linetype="dashed") +
+  theme(
+    # axis.title.x = element_text(size=15),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size=15)
+  )
 # plot_entropy_conversion
 ggsave("plot_entropy_conversion.png", plot_entropy_conversion,
        width=10, height=7)

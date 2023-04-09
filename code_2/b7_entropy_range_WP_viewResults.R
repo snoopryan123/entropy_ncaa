@@ -31,18 +31,19 @@ GRID_results =
 
 GRID_results
 
-df_wp_entropy_range_results = 
+
+df_wp_entropy_range_results =
   GRID_results %>%
-  pivot_longer(c("hU_star_espn", "hU_star_num_correct")) %>%
-  rename(hU_star = value) 
-df_wp_entropy_range_results 
-mean_entropies = 
-  sapply(
-    1:nrow(df_wp_entropy_range_results),
-    function(i) mean(compute_entropies(sample_n_brackets_entropyRange(250, -Inf, df_wp_entropy_range_results$hU_star[i])))
-)
-df_wp_entropy_range_results$mean_entropies = mean_entropies
+  pivot_longer(c("H_star_espn", "H_star_num_correct")) %>%
+  rename(H_star = value)
 df_wp_entropy_range_results
+# mean_entropies = 
+#   sapply(
+#     1:nrow(df_wp_entropy_range_results),
+#     function(i) mean(compute_entropies(sample_n_brackets_entropyRange(250, -Inf, df_wp_entropy_range_results$H_star[i])))
+# )
+# df_wp_entropy_range_results$mean_entropies = mean_entropies
+# df_wp_entropy_range_results
 
 my_palette_0 = c(
   rev(brewer.pal(name="PuRd",n=9)[3:9]),
@@ -58,7 +59,7 @@ my_palette_a = c(
 plot_wp_entropy_range_results = 
   df_wp_entropy_range_results %>%
   rename(scoring_method = name) %>%
-  mutate(scoring_method = str_sub(scoring_method, start=9)) %>%
+  mutate(scoring_method = str_sub(scoring_method, start=8)) %>%
   mutate(
     opp_entropy = case_when(
       opp_prob_method=="naive_chalky" ~ 48.2,
@@ -88,14 +89,14 @@ plot_wp_entropy_range_results =
   # scale_color_manual(values=my_palette_a) +
   theme(panel.spacing = unit(3, "lines")) +
   geom_point(aes(
-    # x=hU_star, 
-    x = mean_entropies,
+    # x=H_star, 
+    x = H_star,
     # stroke=(n==k)*2 ,
     y=opp_prob_method_, 
     fill=factor(n)
     ), shape=21, color="black", size=5) +
   # xlab(TeX("$h_U^*$")) +
-  xlab("mean entropy of the submitted bracket set") +
+  xlab("entropy of the submitted bracket set") +
   scale_fill_manual(name="n", values=my_palette_a) +
   geom_point(aes(x=opp_entropy, y=opp_prob_method_), color="gray20", shape=4, size=3) +
   geom_vline(xintercept=48.7, color="gray60", linetype="dashed") +
@@ -118,8 +119,8 @@ ggsave("plot_wp_entropy_range_results.png",
 
 
 # GRID_results %>%
-#   pivot_longer(c("hU_star_espn", "hU_star_num_correct")) %>%
-#   rename(hU_star = value) %>%
+#   pivot_longer(c("H_star_espn", "H_star_num_correct")) %>%
+#   rename(H_star = value) %>%
 #   rename(scoring_method = name) %>%
 #   mutate(scoring_method = str_sub(scoring_method, start=9)) %>%
 #   mutate(opp_prob_method_ = case_when(
@@ -141,7 +142,7 @@ ggsave("plot_wp_entropy_range_results.png",
 #   # scale_color_manual(values=my_palette_a) +
 #   scale_color_manual(name="n", values=my_palette_a) +
 #   theme(panel.spacing = unit(3, "lines")) +
-#   geom_point(aes(y=hU_star, x=log(k,base=10), color=factor(n)), size=5) +
+#   geom_point(aes(y=H_star, x=log(k,base=10), color=factor(n)), size=5) +
 #   scale_x_continuous(breaks=0:10, labels=10^(0:10)) +
 #   # xlab(TeX("$log_{10}(k)$")) +
 #   xlab("k") +
