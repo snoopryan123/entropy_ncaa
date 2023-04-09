@@ -61,19 +61,16 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
     u = sum(urs)
     
     probs = flatten_dbl(sapply(1:R, function(r) c(rep(1-qrs[r], urs[r]),  rep(qrs[r], mrs[r]-urs[r]))  ))
-    val_p = w_vec ### value of a bit being matched
-    val_q = zero_vec ### value of a bit not being matched
-
-    cdf_eScore_given_u = pgpbinom(NULL, probs, val_p, val_q, method = "DivideFFT")
+    cdf_eScore_given_u = pgpbinom(NULL, probs, val_p=w_vec, val_q=zero_vec, method = "DivideFFT")
     pu = prod(sapply(1:R, function(r) dbinom(urs[1,r], size=mrs[r], prob=p) )) ### assuming constant p for each "true" bit
     # cdf_mat[i,] = pu * cdf_eScore_given_u^ns
-    
-    
     
     for (j in 1:length(ns)) {
       n = ns[j]
       cdf_array[i,,j] = pu * cdf_eScore_given_u^n
     }
+    
+    rm(urs,u,probs,cdf_eScore_given_u,pu,n) ### for HPCC using less memory
   }
   
   # escore = sum(1 - colSums(cdf_mat, na.rm=T))
@@ -81,6 +78,7 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   escore = 1 - apply(cdf_array, MARGIN=c(2,3), FUN=sum)
   escore = colSums(escore)*10 ### multiply by 10 to get the real ESPN score
   names(escore) = paste0("n=",ns)
+  rm(u_vecs,w_vec,zero_vec,ncol_,cdf_array) ### for HPCC using less memory
   return(escore)
 }
 
