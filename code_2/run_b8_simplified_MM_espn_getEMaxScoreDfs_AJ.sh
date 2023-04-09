@@ -7,7 +7,7 @@
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 
 ## MORE RAM
-#$ -l m_mem_free=2G
+#$ -l m_mem_free=5G
 
 ## ARRAY JOB
 #$ -t 1-1
