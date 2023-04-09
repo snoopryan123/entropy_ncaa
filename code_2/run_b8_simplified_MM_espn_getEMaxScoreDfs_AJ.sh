@@ -10,7 +10,7 @@
 #$ -l m_mem_free=1G
 
 ## ARRAY JOB
-#$ -t 1-100
+#$ -t 1-1
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
 Rscript --vanilla b8_simplified_MM_espn_getEMaxScoreDfs.R ${SGE_TASK_ID}
