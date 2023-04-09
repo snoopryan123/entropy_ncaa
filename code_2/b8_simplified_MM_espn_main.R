@@ -54,8 +54,8 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   ncol_ = length(pgpbinom(NULL, rep(0.5,m), w_vec, zero_vec, method = "DivideFFT")) ### number of possible ESPN scores
   # cdf_mat = matrix(nrow = nrow(u_vecs), ncol = ncol_)
   cdf_array = array(dim = c(nrow(u_vecs), ncol_, length(ns)))
-  for (i in 1:1000) {
-  # for (i in 1:nrow(u_vecs)) {
+  # for (i in 1:1000) {
+  for (i in 1:nrow(u_vecs)) {
     if (i %% print_every_n == 0) print(paste0("GRID idx ",print_num0," of ",print_num1,"; cdf_maxEspnScore_SMM iter i=",i," of ",nrow(u_vecs)))
     
     urs = u_vecs[i,] ### vector (u1,...,uR)
