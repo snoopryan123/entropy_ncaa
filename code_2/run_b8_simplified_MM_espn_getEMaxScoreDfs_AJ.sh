@@ -13,7 +13,7 @@
 #$ -t 1-100
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
-Rscript --vanilla b8_simplified_MM_espn_getEMaxScoreDfs ${SGE_TASK_ID}
+Rscript --vanilla b8_simplified_MM_espn_getEMaxScoreDfs.R ${SGE_TASK_ID}
 
 
 
