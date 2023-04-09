@@ -15,15 +15,14 @@ for (i in 1:nrow(GRID)) {
   print(paste0("Grid iter i = ",i, " of ", nrow(GRID)))
   print(GRID[i,])
   
-  result_i = eMaxEspnScore_SMM(
+  result[i,] = eMaxEspnScore_SMM(
      m,  
      p=GRID$p[i], 
      qrs=as.numeric(GRID[i,str_detect(colnames(GRID),"^q")]), 
      score="ESPN",
      print_num0=i, print_num1=nrow(GRID), print_every_n=10000
   ) ### takes ~5 minutes
-  result[i,] = result_i
-  gc() ### garbage collector, to free up memory for HPCC 
+   # result[i,] = result_i
 }
 GRID = cbind(GRID, result)
 filename = paste0("dfs/df_eMaxEspnScore_SMM_",FOLD,".csv")

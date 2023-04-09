@@ -80,6 +80,7 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   escore = colSums(escore)*10 ### multiply by 10 to get the real ESPN score
   names(escore) = paste0("n=",ns)
   rm(R,wrs,mrs,mrs_lst,u_vecs,w_vec,zero_vec,ncol_,cdf_array) ### for HPCC using less memory
+  gc(reset=TRUE) ### garbage collector, to free up memory for HPCC
   return(escore)
 }
 
