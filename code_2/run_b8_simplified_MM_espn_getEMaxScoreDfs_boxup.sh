@@ -1,9 +1,9 @@
 
 #!/bin/bash
 
-mv df_eMaxEspnScoreSmm.csv				../../Dropbox/HPCC/.
+mv df_eMaxEspnScoreSmm*					../../Dropbox/HPCC/.
 boxup
-mv ../../Dropbox/HPCC/df_eMaxEspnScoreSmm.csv		.
+mv ../../Dropbox/HPCC/df_eMaxEspnScoreSmm*		.
 
 
 
