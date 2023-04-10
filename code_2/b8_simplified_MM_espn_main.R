@@ -32,6 +32,8 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
     ### wrs is a vector of length R, one value of w for each round, 
     ### where w is the number of points scored in this round
     wrs = 2^(1:R-1)
+  } else if (score == "Hamming") {
+    wrs = rep(1,R)
   } else {
     stop("this scoring method hasn't been implemented")
   }
@@ -108,6 +110,8 @@ wpEspnScore_SMM <- function(m,p,qrs,rrs,score="ESPN",print_num0="",print_num1=""
     ### wrs is a vector of length R, one value of w for each round, 
     ### where w is the number of points scored in this round
     wrs = 2^(1:R-1)
+  } else if (score == "Hamming") {
+    wrs = rep(1,R)
   } else {
     stop("this scoring method hasn't been implemented")
   }
@@ -174,25 +178,27 @@ wpEspnScore_SMM <- function(m,p,qrs,rrs,score="ESPN",print_num0="",print_num1=""
 ### Plot Grids ###
 ##################
 
-# plot_grid_maxEspnScore_SMM = tibble(expand.grid(
-#   # p = 0.75,
-#   p = 0.8,
-#   q1 = seq(0.5, 1, by=0.1),
-#   q2 = seq(0.5, 1, by=0.1),
-#   q3 = seq(0.5, 1, by=0.1),
-#   q4 = seq(0.5, 1, by=0.1),
-#   q5 = seq(0.5, 1, by=0.1),
-#   q6 = seq(0.5, 1, by=0.1)
-# ))
-# plot_grid_maxEspnScore_SMM
+plot_grid_maxEspnScore_SMM_v1 = tibble(expand.grid(
+  p = seq(0.5, 1, by=0.1),
+  q = seq(0, 1, by=0.1),
+  score = c("Hamming", "ESPN")
+  )) %>%
+  mutate(
+    q1=q,q2=q,q3=q,q4=q,q5=q,q6=q
+  ) %>%
+  select(-c(q))
+plot_grid_maxEspnScore_SMM_v1
 
-plot_grid_maxEspnScore_SMM = tibble(expand.grid(
+
+plot_grid_maxEspnScore_SMM_v2 = tibble(expand.grid(
     # p = 0.80,
     # qE = seq(0.5, 1, by=0.1),
     # qL = seq(0.5, 1, by=0.1)
     p = 0.75,
     qE = seq(0.5, 1, by=0.05),
-    qL = seq(0.5, 1, by=0.05)
+    qL = seq(0.5, 1, by=0.05),
+    score = c("ESPN")
+    # score = c("Hamming", "ESPN")
   )) %>%
   mutate(
     q1 = qE, q2 = qE, q3 = qE,
@@ -201,7 +207,7 @@ plot_grid_maxEspnScore_SMM = tibble(expand.grid(
     q5 = qL, q6 = qL
   ) %>%
   select(-c(qE,qL))
-plot_grid_maxEspnScore_SMM
+plot_grid_maxEspnScore_SMM_v2
 
 
 plot_grid_wpEspnScore_SMM = tibble(expand.grid(
