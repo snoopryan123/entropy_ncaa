@@ -168,7 +168,7 @@ wpEspnScore_SMM <- function(m,p,qrs,rrs,score="ESPN",print_num0="",print_num1=""
   return(prob_mat)
 }
 
-wpEspnScore_SMM(m, p=0.75, qrs=c(0.6,0.65,0.7,0.75,0.8,0.9), rrs = c(0.6,0.65,0.7,0.75,0.8,0.9), score="ESPN") ### takes ~5 minutes
+# wpEspnScore_SMM(m, p=0.75, qrs=c(0.6,0.65,0.7,0.75,0.8,0.9), rrs = c(0.6,0.65,0.7,0.75,0.8,0.9), score="ESPN") ### takes ~5 minutes
 
 ##################
 ### Plot Grids ###
