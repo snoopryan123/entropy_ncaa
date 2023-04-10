@@ -1,5 +1,5 @@
 
-NUM_FOLDS_WPDF_PARALLELIZATION = 100 #FIXME
+NUM_FOLDS_WPDF_PARALLELIZATION = 50 #FIXME
 
 source("a2_main.R")
 
@@ -90,16 +90,34 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
 ### Plot Grids ###
 ##################
 
+# plot_grid_maxEspnScore_SMM = tibble(expand.grid(
+#   # p = 0.75,
+#   p = 0.8,
+#   q1 = seq(0.5, 1, by=0.1),
+#   q2 = seq(0.5, 1, by=0.1),
+#   q3 = seq(0.5, 1, by=0.1),
+#   q4 = seq(0.5, 1, by=0.1),
+#   q5 = seq(0.5, 1, by=0.1),
+#   q6 = seq(0.5, 1, by=0.1)
+# ))
+# plot_grid_maxEspnScore_SMM
+
+
 plot_grid_maxEspnScore_SMM = tibble(expand.grid(
-  # p = 0.75,
-  p = 0.8,
-  q1 = seq(0.5, 1, by=0.1),
-  q2 = seq(0.5, 1, by=0.1),
-  q3 = seq(0.5, 1, by=0.1),
-  q4 = seq(0.5, 1, by=0.1),
-  q5 = seq(0.5, 1, by=0.1),
-  q6 = seq(0.5, 1, by=0.1)
-))
+    # p = 0.80,
+    # qE = seq(0.5, 1, by=0.1),
+    # qL = seq(0.5, 1, by=0.1)
+    p = 0.75,
+    qE = seq(0.5, 1, by=0.05),
+    qL = seq(0.5, 1, by=0.05)
+  )) %>%
+  mutate(
+    q1 = qE, q2 = qE, q3 = qE,
+    # q4 = qE,
+    q4 = qL,
+    q5 = qL, q6 = qL
+  ) %>%
+  select(-c(qE,qL))
 plot_grid_maxEspnScore_SMM
 
 
