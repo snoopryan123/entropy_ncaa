@@ -33,6 +33,7 @@ for (i in 1:nrow(GRID)) {
   ) ### takes ~5 minutes
 }
 GRID = cbind(GRID, result)
+# write_csv(GRID, "dfs/df_eMaxHamming_ogScore_SMM.csv")
 filename = paste0("dfs/df_eMaxEspnScore_SMM_f",FOLD,"v",version_,".csv")
 write_csv(GRID, paste0(filename))
 print("done")

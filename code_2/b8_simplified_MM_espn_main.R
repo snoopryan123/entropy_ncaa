@@ -18,6 +18,34 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   ### R = log2(m+1) is the number of rounds in the tournament
   ### qrs is a vector of length R, one value of q for each round, where q is our submitted bit prob.
   ### return a vector of Expected_Max_Score for various values of n (num submitted brackets)
+  
+  ############# quick version of running the Hamming Score results #############
+  if (score == "Hamming_og") {
+    # browser()
+    if (length(unique(qrs))!=1) {
+      stop("qrs should have one unique value")
+    }
+    q = qrs[1]
+    p_a = matrix(0, nrow=m+1, ncol=length(ns))
+    colnames(p_a) = paste0("n=",ns)
+    rownames(p_a) = paste0("l=",0:m)
+    for (u in 0:m) {
+      pu = dbinom(u, size=m, prob=1-p) 
+      probs = c(rep(1-q,u), rep(q,m-u))
+      # probs = c(rep(q,u), rep(1-q,m-u))
+      cdf_eScore_given_u = poibin::ppoibin(0:m, probs)
+      # cdf_eScore_given_u1 = poisbinom::ppoisbinom(0:m, probs)
+      # cdf_eScore_given_u2 = PoissonBinomial::pgpbinom(0:m, probs, rep(1,m), rep(0,m))
+      for (j in 1:length(ns)) {
+        n = ns[j]
+        p_a[,j] = p_a[,j] + cdf_eScore_given_u^n * pu
+      }
+    }
+    escore = colSums(1 - p_a)
+    return(escore)
+  }
+  ##############################################################################  
+  
   R = log2(m+1) # number of rounds
   ### assume m is a power of 2
   if (R %% 1 != 0) {
@@ -51,39 +79,37 @@ eMaxEspnScore_SMM <- function(m,p,qrs,score="ESPN",print_num0="",print_num1="",p
   zero_vec = rep(0, m)
   
   ### iterate over all possible combinations of u_vec
-  ncol_ = length(pgpbinom(NULL, rep(0.5,m), w_vec, zero_vec, method = "DivideFFT")) ### number of possible ESPN scores
-  # cdf_mat = matrix(nrow = nrow(u_vecs), ncol = ncol_)
-  cdf_array = array(dim = c(nrow(u_vecs), ncol_, length(ns)))
+  num_a = length(pgpbinom(NULL, rep(0.5,m), w_vec, zero_vec, method = "DivideFFT")) ### number of possible ESPN scores
+  p_a = matrix(0, ncol = length(ns), nrow = num_a)
+  colnames(p_a) = paste0("n=",ns)
   # for (i in 1:1000) {
   for (i in 1:nrow(u_vecs)) {
     if (i %% print_every_n == 0) print(paste0("GRID idx ",print_num0," of ",print_num1,"; cdf_maxEspnScore_SMM iter i=",i," of ",nrow(u_vecs)))
     
     urs = u_vecs[i,] ### vector (u1,...,uR)
-
-    probs = flatten_dbl(sapply(1:R, function(r) c(rep(1-qrs[r], urs[r]),  rep(qrs[r], mrs[r]-urs[r]))  ))
+    probs = flatten_dbl(sapply(1:R, function(r) c(rep(1-qrs[r], urs[1,r]),  rep(qrs[r], mrs[r]-urs[1,r]))  ))
     cdf_eScore_given_u = pgpbinom(NULL, probs, val_p=w_vec, val_q=zero_vec, method = "DivideFFT")
     pu = prod(sapply(1:R, function(r) dbinom(urs[1,r], size=mrs[r], prob=1-p) )) ### assuming constant p for each "true" bit
-    # cdf_mat[i,] = pu * cdf_eScore_given_u^ns
-    
+
     for (j in 1:length(ns)) {
       n = ns[j]
-      cdf_array[i,,j] = pu * cdf_eScore_given_u^n
+      p_a[,j] = p_a[,j] + pu * cdf_eScore_given_u^n
     }
-    
-    rm(urs,probs,cdf_eScore_given_u,pu,n) ### for HPCC using less memory
   }
-  
-  # escore = sum(1 - colSums(cdf_mat, na.rm=T))
-  # escore*10 ### multiply by 10 to get the real ESPN score
-  escore = 1 - apply(cdf_array, MARGIN=c(2,3), FUN=sum)
-  escore = colSums(escore)*10 ### multiply by 10 to get the real ESPN score
-  names(escore) = paste0("n=",ns)
-  rm(R,wrs,mrs,mrs_lst,u_vecs,w_vec,zero_vec,ncol_,cdf_array) ### for HPCC using less memory
-  gc(reset=TRUE) ### garbage collector, to free up memory for HPCC
+  escore = colSums(1 - p_a)
+  if (score == "ESPN") {
+    escore = escore*10
+  }
   return(escore)
 }
 
 # eMaxEspnScore_SMM(m, p=0.75, qrs=c(0.6,0.65,0.7,0.75,0.8,0.9), score="ESPN") ### takes ~5 minutes
+# eMaxEspnScore_SMM(m, p=0.7, qrs=rep(0.8,6), score="Hamming")
+
+# eMaxEspnScore_SMM(m, p=0.7, qrs=rep(0.8,6), score="Hamming")
+# eMaxEspnScore_SMM(m, p=0.7, qrs=rep(0.8,6), score="Hamming_og")
+# n=1      n=10     n=100    n=1000   n=10000  n=1e+05  n=1e+06  n=1e+07  n=1e+08 
+# 39.06000 43.85450 46.76256 48.91129 50.66224 52.16266 53.48593 54.67411 55.75376 
 
 ######################################################################
 ### Win Probability of n q-Chalky Brackets vs. k r-Chalky Brackets ###
@@ -177,17 +203,50 @@ wpEspnScore_SMM <- function(m,p,qrs,rrs,score="ESPN",print_num0="",print_num1=""
 ### Plot Grids ###
 ##################
 
+plot_grid_maxEspnScore_SMM_v0 = tibble(expand.grid(
+  # p = seq(0.5, 1, by=0.05),
+  # q = seq(0, 1, by=0.05),
+  p = seq(0.5, 1, by=0.1),
+  q = seq(0, 1, by=0.1),
+  score = c("Hamming_og")
+)) %>%
+  mutate(
+    q1=q,q2=q,q3=q,q4=q,q5=q,q6=q
+  ) %>%
+  select(-c(q))
+plot_grid_maxEspnScore_SMM_v0
+
+##### tibble of expected max score as a function of (n,p,q)  ##### 
+GRID = plot_grid_maxEspnScore_SMM_v0
+result = matrix(nrow=nrow(GRID), ncol=length(ns))
+colnames(result) = paste0("eMaxEspnScore_n=",ns)
+for (i in 1:nrow(GRID)) {
+  print(paste0("Grid iter i = ",i, " of ", nrow(GRID)))
+  print(GRID[i,])
+  
+  result[i,] = eMaxEspnScore_SMM(
+    m,  
+    p=GRID$p[i], 
+    qrs=as.numeric(GRID[i,str_detect(colnames(GRID),"^q")]), 
+    score=GRID$score[i],
+    print_num0=i, print_num1=nrow(GRID), print_every_n=10000
+  ) ### takes ~5 minutes
+}
+GRID = cbind(GRID, result)
+write_csv(GRID, "df_eMaxHamming_ogScore_SMM.csv")
+
+
 plot_grid_maxEspnScore_SMM_v1 = tibble(expand.grid(
   p = seq(0.5, 1, by=0.1),
   q = seq(0, 1, by=0.1),
-  score = c("Hamming", "ESPN")
-  )) %>%
+  # score = c("Hamming", "ESPN")
+  score = c("Hamming_og")
+)) %>%
   mutate(
     q1=q,q2=q,q3=q,q4=q,q5=q,q6=q
   ) %>%
   select(-c(q))
 plot_grid_maxEspnScore_SMM_v1
-
 
 plot_grid_maxEspnScore_SMM_v2 = tibble(expand.grid(
     # p = 0.80,

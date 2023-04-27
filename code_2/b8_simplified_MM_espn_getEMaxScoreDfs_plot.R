@@ -1,39 +1,125 @@
 
 source("b8_simplified_MM_espn_main.R")
 
-df_eMaxEspnScoreSmm_v1 = read_csv(paste0("df_eMaxEspnScoreSmm_v1.csv"))
-p_ = 0.75
+prep_plot_df <- function(df) {
+  df %>%
+    mutate(q = q1) %>%
+    select(-c(q1,q2,q3,q4,q5,q6)) %>%
+    pivot_longer(starts_with("eMax")) %>%
+    mutate(n = str_sub(name, start=17)) %>%
+    mutate(n = as.numeric(n)) %>%
+    rename(eMaxScore = value)
+}
 
-df_eMaxEspnScoreSmm_v1a = df_eMaxEspnScoreSmm_v1 %>%
-  mutate(q = q1) %>%
+df_eMaxEspnScoreSmm_v0 = read_csv("df_eMaxHamming_ogScore_SMM.csv")
+df_eMaxEspnScoreSmm_v0a = prep_plot_df(df_eMaxEspnScoreSmm_v0)
+df_eMaxEspnScoreSmm_v0a
+
+df_eMaxEspnScoreSmm_v1 = read_csv(paste0("df_eMaxEspnScoreSmm_v1.csv"))
+df_eMaxEspnScoreSmm_v1a = prep_plot_df(df_eMaxEspnScoreSmm_v1) 
+df_eMaxEspnScoreSmm_v1a
+
+df_eMaxEspnScoreSmm_v2 = read_csv(paste0("df_eMaxEspnScoreSmm.csv"))
+df_eMaxEspnScoreSmm_v2a = 
+  df_eMaxEspnScoreSmm_v2 %>%
+  mutate(qE = q1, qL = q6) %>%
   select(-c(q1,q2,q3,q4,q5,q6)) %>%
   pivot_longer(starts_with("eMax")) %>%
   mutate(n = str_sub(name, start=17)) %>%
   mutate(n = as.numeric(n)) %>%
   rename(eMaxScore = value)
-df_eMaxEspnScoreSmm_v1a
+df_eMaxEspnScoreSmm_v2a
 
-# df_eMaxEspnScoreSmm_v2a = df_eMaxEspnScoreSmm_v2 %>%
-#   mutate(qE = q1, qL = q6) %>%
+# p_ = 0.75
+# 
+# df_eMaxEspnScoreSmm_v1a = df_eMaxEspnScoreSmm_v1 %>%
+#   mutate(q = q1) %>%
 #   select(-c(q1,q2,q3,q4,q5,q6)) %>%
 #   pivot_longer(starts_with("eMax")) %>%
 #   mutate(n = str_sub(name, start=17)) %>%
 #   mutate(n = as.numeric(n)) %>%
 #   rename(eMaxScore = value)
-# df_eMaxEspnScoreSmm_v2a
+# df_eMaxEspnScoreSmm_v1a
+# 
+# # df_eMaxEspnScoreSmm_v2a = df_eMaxEspnScoreSmm_v2 %>%
+# #   mutate(qE = q1, qL = q6) %>%
+# #   select(-c(q1,q2,q3,q4,q5,q6)) %>%
+# #   pivot_longer(starts_with("eMax")) %>%
+# #   mutate(n = str_sub(name, start=17)) %>%
+# #   mutate(n = as.numeric(n)) %>%
+# #   rename(eMaxScore = value)
+# # df_eMaxEspnScoreSmm_v2a
+
+# my_palette_npq_v0 = c(
+#   rev(brewer.pal(name="Reds",n=9)[3:9]), #[3:9]
+#   rev(brewer.pal(name="PuRd",n=9)[4:6]),
+#   "gray50",
+#   rev(brewer.pal(name="PuRd",n=9)[7:9]),
+#   brewer.pal(name="Blues",n=9)[3:9]#[3:9]
+# )
+
+my_palette_npq_v0 = c(
+  rev(brewer.pal(name="Reds",n=9)[4:8]), #[3:9]
+  "gray50",
+  # rev(brewer.pal(name="PuRd",n=9)[4:9]),
+  brewer.pal(name="Blues",n=9)[3:8]#[3:9]
+)
 
 my_palette_npq_v1 = c(
   rev(brewer.pal(name="Reds",n=9)[4:8]), #[3:9]
   "gray50",
   # rev(brewer.pal(name="PuRd",n=9)[4:9]),
-  brewer.pal(name="Blues",n=9)[4:8]#[3:9]
+  brewer.pal(name="Blues",n=9)[3:8]#[3:9]
 )
 
-###########################
-### Plots: q1=q2=...=q6 ###
-###########################
+#######################################
+### Plots: q1=q2=...=q6, Hamming_og ###
+#######################################
 
-df_eMaxEspnScoreSmm_v1a %>%
+plot_eMaxHammingScoreSmm_v0a = 
+  df_eMaxEspnScoreSmm_v0a %>%
+  filter(score=="Hamming_og") %>%
+  mutate(
+    n_ = paste0("n = ", n),
+    q = factor(q),
+    eMaxScore = eMaxScore
+  ) %>%
+  ggplot(aes(x=p,color=q,y=eMaxScore)) +
+  facet_wrap(~n_) +
+  geom_line(linewidth=1) +
+  geom_line(data = . %>% filter(p==q), color="green", linewidth=1.5) +
+  scale_color_manual(name="q", values=my_palette_npq_v0) +
+  theme(panel.spacing = unit(2, "lines")) +
+  ylab("expected max Hamming score")
+plot_eMaxHammingScoreSmm_v0a
+ggsave("plots_smm_ESPNScore/plot_eMaxHammingScoreSmm_v0a.png",
+       plot_eMaxHammingScoreSmm_v0a,width=12,height=8)
+
+# plot_eMaxHammingScoreSmm_v0b = 
+#   df_eMaxEspnScoreSmm_v0a %>%
+#   filter(score=="Hamming_og") %>%
+#   mutate(
+#     n_ = factor(n),
+#     q = paste0("q=",q),
+#     eMaxScore = eMaxScore
+#   ) %>%
+#   ggplot(aes(x=p,color=n_,y=eMaxScore)) +
+#   facet_wrap(~q) +
+#   geom_line(linewidth=1) +
+#   # geom_line(data = . %>% filter(p==q), color="green", linewidth=1.5) +
+#   scale_color_manual(name="n", values=my_palette_npq_v0) +
+#   theme(panel.spacing = unit(2, "lines")) +
+#   ylab("expected max Hamming score")
+# # plot_eMaxHammingScoreSmm_v0a
+# ggsave("plots_smm_ESPNScore/plot_eMaxHammingScoreSmm_v0b.png",
+#        plot_eMaxHammingScoreSmm_v0b,width=12,height=8)
+
+####################################
+### Plots: q1=q2=...=q6, Hamming ###
+####################################
+
+plot_eMaxHammingScoreSmm_v1a = 
+  df_eMaxEspnScoreSmm_v1a %>%
   filter(score=="Hamming") %>%
   mutate(
     n_ = paste0("n = ", n),
@@ -48,10 +134,17 @@ df_eMaxEspnScoreSmm_v1a %>%
   scale_color_manual(name="q", values=my_palette_npq_v1) +
   theme(panel.spacing = unit(2, "lines")) +
   ylab("expected max Hamming score")
+# plot_eMaxHammingScoreSmm_v1a
+ggsave("plots_smm_ESPNScore/plot_eMaxHammingScoreSmm_v1a.png",
+       plot_eMaxHammingScoreSmm_v1a,width=12,height=8)
 
+#################################
+### Plots: q1=q2=...=q6, ESPN ###
+#################################
 
-df_eMaxEspnScoreSmm_v1a %>%
+plot_eMaxEspnScoreSmm_v1a = df_eMaxEspnScoreSmm_v1a %>%
   filter(score=="ESPN") %>%
+  # filter(q != 0 & (q != 1 | q == p))  %>%
   mutate(
     n_ = paste0("n = ", n),
     q = factor(q),
@@ -63,27 +156,31 @@ df_eMaxEspnScoreSmm_v1a %>%
   scale_color_manual(name="q", values=my_palette_npq_v1) +
   theme(panel.spacing = unit(2, "lines")) +
   ylab("expected max ESPN score")
+# plot_eMaxEspnScoreSmm_v1a
+ggsave("plots_smm_ESPNScore/plot_eMaxEspnScoreSmm_v1a.png",
+       plot_eMaxEspnScoreSmm_v1a,width=12,height=8)
 
+#######################################
+### Plots: q1=q2=q3, q4=q5=q6, ESPN ###
+#######################################
 
-
-
-
-
-
-
-#############
-### Plots ###
-#############
-
-df_eMaxEspnScoreSmm_v1a %>%
-  filter(score=="Hamming") %>%
-  ggplot(aes(x=p, y=eMaxScore, color=factor(q))) +
+p_ = unique(df_eMaxEspnScoreSmm_v2a$p)
+p_
+plot_eMaxEspnScoreSmm_v2a = 
+  df_eMaxEspnScoreSmm_v2a %>%
+  # filter(n <= 100) %>%
+  ggplot(aes(x=qE, y=qL, fill=eMaxScore)) +
   facet_wrap(~n) +
-  # guides(fill=guide_legend(title=TeX("$q_L$"))) +
-  ylab("expected maximum ESPN score") +
+  geom_tile() +
+  labs(title="p=0.75") +
   geom_vline(aes(xintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
-  geom_line(linewidth=1) +
-  scale_color_manual(values=my_palette_npq_v1)
+  geom_hline(aes(yintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+  geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
+  scale_fill_gradientn(name="Expected\nMax\nScore", colours = rev(terrain.colors(7))) +
+  xlab(TeX("$q_1=q_2=q_3$")) + ylab(TeX("$q_4=q_5=q_6$"))
+# plot_eMaxEspnScoreSmm_v2a
+ggsave("plots_smm_ESPNScore/plot_eMaxEspnScoreSmm_v2a.png",
+       plot_eMaxEspnScoreSmm_v2a,width=12,height=8)
 
 
 
