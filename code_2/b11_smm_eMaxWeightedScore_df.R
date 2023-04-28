@@ -29,8 +29,8 @@ if (version_ == 1) {
 } else {
   stop("this version_ has not yet been implemented")
 }
-idxs_lower = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * (fold_-1)
-idxs_upper = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * fold_
+idxs_lower = nrow(GRID)/num_folds_parralelization_ * (fold_-1)
+idxs_upper = nrow(GRID)/num_folds_parralelization_ * fold_
 GRID = GRID[floor(idxs_lower):ceiling(idxs_upper),]
 
 results = matrix(nrow=nrow(GRID), ncol=length(ns))
