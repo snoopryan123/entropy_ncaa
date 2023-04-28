@@ -310,7 +310,7 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   names(escore) = paste0("n=",ns)
   for (j in 1:length(ns)) {
     n = ns[j]
-    escore[j] = escore[j] - sum(pus * rowSums(cdfs_u)^n)
+    escore[j] = escore[j] - sum(cdfs_u^n * pus)
   }
   escore
 }
