@@ -289,8 +289,8 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   ### this is the main for loop, which is very time consuming!
   pus = numeric(nrow(urs_vec))
   cdfs_u = numeric(nrow(urs_vec))
-  # for (i in 1:nrow(urs_vec)) {
-  for (i in 1:1500) {
+  for (i in 1:nrow(urs_vec)) {
+  # for (i in 1:1500) {
     if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
     
     urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
@@ -324,14 +324,17 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
 
 
 
-ptm <- proc.time() # Start the clock!
-# eMaxWeightedScoreByRound_gpb_Compiled(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
-eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
-ptm1 = proc.time() - ptm # Stop the clock
-ptm1
-### about 8 minutes to do just one of these
-### check that the three EScores are the same
-eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1, score_method = "Hamming")
+# ptm <- proc.time() # Start the clock!
+# # eMaxWeightedScoreByRound_gpb_Compiled(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
+# eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
+# ptm1 = proc.time() - ptm # Stop the clock
+# ptm1
+# ### about 8 minutes to do just one of these
+# ### check that the three EScores are the same
+# eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1, score_method = "Hamming")
+
+
+
 
 # eMaxHammingScore(m,p=0.7,q=0.8,method="pb")
 # eMaxHammingScore(m,p=0.7,q=0.8,method="gpb")

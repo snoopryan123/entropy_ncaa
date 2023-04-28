@@ -40,7 +40,7 @@ for (i in 1:nrow(GRID)) {
   prs = c(GRID$p1[i], GRID$p2[i], GRID$p3[i], GRID$p4[i], GRID$p5[i], GRID$p6[i])
   qrs = c(GRID$q1[i], GRID$q2[i], GRID$q3[i], GRID$q4[i], GRID$q5[i], GRID$q6[i])
   
-  results[i,] = eMaxWeightedScoreByRound_gpb(m,prs,qrs,ns,score_method=GRID$score_method[i],print_every_n=2500)
+  results[i,] = eMaxWeightedScoreByRound_gpb(m,prs,qrs,ns,score_method=GRID$score_method[i],print_every_n=1000)
 }
 GRID = bind_cols(GRID,results)
 GRID
