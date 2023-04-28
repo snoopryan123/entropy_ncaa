@@ -284,38 +284,55 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   }
   urs_vec = expand.grid(mrs_lst)
   
-  ### iterate over all possible combinations of urs
-  # escore = matrix(nrow=nrow(urs_vec), ncol=length(ns))
-  # num_a = length(
-  #   cdf_eMaxWeightedScoreByRound_given_u_gpb(
-  #     mrs,wrs,as.numeric(urs_vec[1,]),qrs)
-  #   ) - 1# max possible weighted score
-  num_a = length(
-    cdf_eMaxWeightedScoreByRound_given_u_gpb(
-      mrs,w_vec,as.numeric(urs_vec[1,]),qrs)
-  ) - 1# max possible weighted score
-  escore = rep(num_a, length(ns))
-  names(escore) = paste0("n=",ns)
   # browser()
-
-  for (i in 1:nrow(urs_vec)) {
+  ### iterate over all possible combinations of urs
+  ### this is the main for loop, which is very time consuming!
+  pus = numeric(nrow(urs_vec))
+  cdfs_u = numeric(nrow(urs_vec))
+  # for (i in 1:nrow(urs_vec)) {
+  for (i in 1:1500) {
     if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
     
     urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
+    pu = prod(sapply(1:R, function(r) dbinom(urs[r], size=mrs[r], prob=1-prs[r]) )) ### assuming constant p for each "true" bit
+    # ### compute the CDF of a Generalized Poisson Binomial distribution
     # cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,wrs,urs,qrs)
     cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,w_vec,urs,qrs)
-    pu = prod(sapply(1:R, function(r) dbinom(urs[r], size=mrs[r], prob=1-prs[r]) )) ### assuming constant p for each "true" bit
-    for (j in 1:length(ns)) {
-      n = ns[j]
-      escore[j] = escore[j] - pu*sum(cdf_given_u^n)
-    }
+    pus[i] = pu
+    cdfs_u[i] = cdf_given_u
+  }
+  
+  num_a = length(
+    cdf_eMaxWeightedScoreByRound_given_u_gpb(
+      mrs,w_vec,as.numeric(urs_vec[1,]),qrs)
+  ) - 1 # max possible weighted score
+  escore = rep(num_a, length(ns))
+  names(escore) = paste0("n=",ns)
+  for (j in 1:length(ns)) {
+    n = ns[j]
+    escore[j] = escore[j] - sum(pu * cdfs_u^n)
   }
   escore
 }
 
-eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
+# library(compiler)
+# eMaxWeightedScoreByRound_gpb_Compiled <- cmpfun(eMaxWeightedScoreByRound_gpb)
 
+# library(doParallel)
+# registerDoParallel(cores=12)
+# system.time(loopParallelD <- foreach(i=1:dim(m)[1], .combine=c) %dopar% mean(m[i,]))
+
+
+
+ptm <- proc.time() # Start the clock!
+# eMaxWeightedScoreByRound_gpb_Compiled(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
+eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
+ptm1 = proc.time() - ptm # Stop the clock
+ptm1
+### about 8 minutes to do just one of these
 ### check that the three EScores are the same
+eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1, score_method = "Hamming")
+
 # eMaxHammingScore(m,p=0.7,q=0.8,method="pb")
 # eMaxHammingScore(m,p=0.7,q=0.8,method="gpb")
 # eMaxHammingScore(m,p=0.7,q=0.8,method="combinatorics")
