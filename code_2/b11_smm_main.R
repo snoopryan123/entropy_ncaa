@@ -287,8 +287,12 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   # browser()
   ### iterate over all possible combinations of urs
   ### this is the main for loop, which is very time consuming!
+  num_a = length(
+    cdf_eMaxWeightedScoreByRound_given_u_gpb(
+      mrs,w_vec,as.numeric(urs_vec[1,]),qrs)
+  ) # max possible weighted score
   pus = numeric(nrow(urs_vec))
-  cdfs_u = numeric(nrow(urs_vec))
+  cdfs_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
   for (i in 1:nrow(urs_vec)) {
   # for (i in 1:1500) {
     if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
@@ -299,19 +303,14 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
     # cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,wrs,urs,qrs)
     cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,w_vec,urs,qrs)
     pus[i] = pu
-    cdfs_u[i] = cdf_given_u
+    cdfs_u[i,] = cdf_given_u
   }
-  # browser()
   
-  num_a = length(
-    cdf_eMaxWeightedScoreByRound_given_u_gpb(
-      mrs,w_vec,as.numeric(urs_vec[1,]),qrs)
-  ) - 1 # max possible weighted score
   escore = rep(num_a, length(ns))
   names(escore) = paste0("n=",ns)
   for (j in 1:length(ns)) {
     n = ns[j]
-    escore[j] = escore[j] - sum(pu * cdfs_u^n)
+    escore[j] = escore[j] - sum(pus * rowSums(cdfs_u)^n)
   }
   escore
 }

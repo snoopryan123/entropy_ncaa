@@ -10,6 +10,10 @@ GRID1 = expand.grid(
 )
 GRID1
 
+# version_=1
+# fold_=30
+# num_folds_parralelization_=66
+
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 fold_ = as.numeric(args[1])
@@ -49,6 +53,8 @@ GRIDa = GRID %>%
   pivot_longer(cols=-c(p1,p2,p3,p4,p5,p6,q1,q2,q3,q4,q5,q6,score_method)) %>%
   rename(eMaxScore = value) %>%
   mutate(n = as.numeric(str_sub(name, start=3))) %>%
+  relocate(eMaxScore, .before=score_method) %>%
+  relocate(n, .after=eMaxScore) %>%
   select(-name)
 GRIDa
 
