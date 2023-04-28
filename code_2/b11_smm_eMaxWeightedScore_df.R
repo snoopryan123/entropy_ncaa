@@ -11,10 +11,10 @@ GRID1 = expand.grid(
 GRID1
 
 ### since this is so computationally intensive, split into folds
-NUM_FOLDS_WPDF_PARALLELIZATION = 50 #FIXME
 args = commandArgs(trailingOnly=TRUE)
-FOLD = as.numeric(args[1])
+fold_ = as.numeric(args[1])
 version_ = as.numeric(args[2])
+num_folds_parralelization_ = as.numeric(args[3])
 if (version_ == 1) {
   GRID =
     GRID1 %>%
@@ -29,8 +29,8 @@ if (version_ == 1) {
 } else {
   stop("this version_ has not yet been implemented")
 }
-idxs_lower = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * (FOLD-1)
-idxs_upper = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * FOLD
+idxs_lower = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * (fold_-1)
+idxs_upper = nrow(GRID)/NUM_FOLDS_WPDF_PARALLELIZATION * fold_
 GRID = GRID[floor(idxs_lower):ceiling(idxs_upper),]
 
 results = matrix(nrow=nrow(GRID), ncol=length(ns))
@@ -52,6 +52,6 @@ GRIDa = GRID %>%
   select(-name)
 GRIDa
 
-write_csv(GRIDa, paste0(output_folder,"plot_grid_eMaxScore_v",version_,"_fold",FOLD,".csv"))
+write_csv(GRIDa, paste0(output_folder,"plot_grid_eMaxScore_v",version_,"_fold",fold_,".csv"))
 
 

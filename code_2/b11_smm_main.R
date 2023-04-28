@@ -301,6 +301,7 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
     pus[i] = pu
     cdfs_u[i] = cdf_given_u
   }
+  # browser()
   
   num_a = length(
     cdf_eMaxWeightedScoreByRound_given_u_gpb(
