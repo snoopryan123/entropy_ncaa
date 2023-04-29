@@ -7,7 +7,7 @@ GRID1 = expand.grid(
   p = seq(0.5,1,by=0.1),
   q = seq(0,1,by=0.1),
   score_method = "Hamming"
-)
+) %>% as_tibble()
 GRID1
 
 GRID2 = expand.grid(
@@ -17,7 +17,7 @@ GRID2 = expand.grid(
   qE = seq(0.5,1,by=0.05),
   qL = seq(0.5,1,by=0.05),
   score_method = "ESPN"
-)
+) %>% as_tibble()
 GRID2
 
 # version_=1
@@ -30,8 +30,8 @@ fold_ = as.numeric(args[1])
 version_ = as.numeric(args[2])
 num_folds_parralelization_ = as.numeric(args[3])
 if (version_ == 1) {
-  GRID =
-    GRID1 %>%
+  GRID_OG = GRID1
+  GRID = GRID_OG %>%
     mutate(
       p1 = p, p2 = p, p3 = p, p4 = p, p5 = p, p6 = p,
       q1 = q, q2 = q, q3 = q, q4 = q, q5 = q, q6 = q,
@@ -39,9 +39,8 @@ if (version_ == 1) {
     select(-c(p,q))
   ns = c(1,5,10,100,1000,10000)
 } else if (version_ == 2) {
-  # GRID = plot_grid_maxEspnScore_SMM_v2
-  GRID =
-    GRID2 %>%
+  GRID_OG = GRID2
+  GRID = GRID_OG %>%
     as_tibble() %>%
     mutate(
       p1 = qE, p2 = qE, p3 = qE, p4 = qL, p5 = qL, p6 = qL,
@@ -55,7 +54,9 @@ if (version_ == 1) {
 }
 idxs_lower = nrow(GRID)/num_folds_parralelization_ * (fold_-1)
 idxs_upper = nrow(GRID)/num_folds_parralelization_ * fold_
+GRID_OG = GRID_OG[floor(idxs_lower):ceiling(idxs_upper),]
 GRID = GRID[floor(idxs_lower):ceiling(idxs_upper),]
+
 
 results = matrix(nrow=nrow(GRID), ncol=length(ns))
 colnames(results) = paste0("n=",ns)
@@ -66,11 +67,11 @@ for (i in 1:nrow(GRID)) {
   
   results[i,] = eMaxWeightedScoreByRound_gpb(m,prs,qrs,ns,score_method=GRID$score_method[i],print_every_n=1000)
 }
-GRID = bind_cols(GRID,results)
-GRID
+GRID_OG = bind_cols(GRID_OG,results)
+GRID_OG
 
-GRIDa = GRID %>%
-  pivot_longer(cols=-c(p1,p2,p3,p4,p5,p6,q1,q2,q3,q4,q5,q6,score_method)) %>%
+GRIDa = GRID_OG %>%
+  pivot_longer(cols=starts_with("n=")) %>%
   rename(eMaxScore = value) %>%
   mutate(n = as.numeric(str_sub(name, start=3))) %>%
   relocate(eMaxScore, .before=score_method) %>%
