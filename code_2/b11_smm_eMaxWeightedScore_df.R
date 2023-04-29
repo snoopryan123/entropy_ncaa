@@ -8,7 +8,7 @@ GRID1 = expand.grid(
   q = seq(0,1,by=0.1),
   score_method = "Hamming"
 ) %>% as_tibble()
-GRID1
+# GRID1
 
 GRID2 = expand.grid(
   p = 0.75,
@@ -18,7 +18,7 @@ GRID2 = expand.grid(
   qL = seq(0.5,1,by=0.05),
   score_method = "ESPN"
 ) %>% as_tibble()
-GRID2
+# GRID2
 
 # version_=1
 # fold_=30
@@ -56,6 +56,8 @@ idxs_lower = nrow(GRID)/num_folds_parralelization_ * (fold_-1)
 idxs_upper = nrow(GRID)/num_folds_parralelization_ * fold_
 GRID_OG = GRID_OG[floor(idxs_lower):ceiling(idxs_upper),]
 GRID = GRID[floor(idxs_lower):ceiling(idxs_upper),]
+GRID_OG
+GRID
 
 
 results = matrix(nrow=nrow(GRID), ncol=length(ns))

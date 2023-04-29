@@ -8,6 +8,8 @@ version_ = as.numeric(args[1])
 #FIXME
 if (version_ == 1) {
   num_folds_parralelization_ = 66
+} else if (version_ == 2) {
+  num_folds_parralelization_ = 61
 } else {
   stop("")
 }
