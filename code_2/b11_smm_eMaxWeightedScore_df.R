@@ -10,6 +10,16 @@ GRID1 = expand.grid(
 )
 GRID1
 
+GRID2 = expand.grid(
+  p = 0.75,
+  # qE = seq(0,1,by=0.1),
+  # qL = seq(0,1,by=0.1),
+  qE = seq(0.5,1,by=0.05),
+  qL = seq(0.5,1,by=0.05),
+  score_method = "ESPN"
+)
+GRID2
+
 # version_=1
 # fold_=30
 # num_folds_parralelization_=66
@@ -30,6 +40,16 @@ if (version_ == 1) {
   ns = c(1,5,10,100,1000,10000)
 } else if (version_ == 2) {
   # GRID = plot_grid_maxEspnScore_SMM_v2
+  GRID =
+    GRID2 %>%
+    as_tibble() %>%
+    mutate(
+      p1 = qE, p2 = qE, p3 = qE, p4 = qL, p5 = qL, p6 = qL,
+      q1 = qE, q2 = qE, q3 = qE, q4 = qL, q5 = qL, q6 = qL,
+    ) %>%
+    select(-c(p,qE,qL))
+  ns = 10^(0:8)
+  # ns = c(1,5,10,100,1000,10000)
 } else {
   stop("this version_ has not yet been implemented")
 }

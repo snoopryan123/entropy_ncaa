@@ -3,6 +3,11 @@
 source("b11_smm_main.R")
 
 plot_df = read_csv(paste0(output_folder,"plot_grid_eMaxHammingScore.csv"))
+# plot_df = 
+#   read_csv(paste0(output_folder,"plot_grid_eMaxScore_v1.csv")) %>% 
+#   mutate(method="eWeightedMaxScore") %>%
+#   mutate(p = p1, q = q1) %>%
+#   rename(eMaxHammingScore = eMaxScore)
 
 my_palette_npq_v0 = c(
   rev(brewer.pal(name="Reds",n=9)[4:8]), 
@@ -15,11 +20,11 @@ my_palette_npq_v0 = c(
 ### n submitted Ber(q) brackets vs. 1 true Ber(p) bracket        ###
 ####################################################################
 
-for (method in unique(plot_df$method)) {
+for (method_ in unique(plot_df$method)) {
   # method = "pb"
   plot_eMaxHammingScoreSmm = 
     plot_df %>%
-    filter(method=="pb") %>%
+    filter(method==method_) %>%
     mutate(
       n_ = paste0("n = ", n),
       q = factor(q),
@@ -32,7 +37,7 @@ for (method in unique(plot_df$method)) {
     theme(panel.spacing = unit(2, "lines")) +
     ylab("expected max Hamming score")
   plot_eMaxHammingScoreSmm
-  ggsave(paste0(output_folder,"plot_eMaxHammingScoreSmm_",method,".png"),
+  ggsave(paste0(output_folder,"plot_eMaxHammingScoreSmm_",method_,".png"),
          width=12, height=6)
 }
 
