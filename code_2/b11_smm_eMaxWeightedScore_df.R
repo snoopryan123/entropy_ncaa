@@ -43,7 +43,7 @@ if (version_ == 1) {
   GRID = GRID_OG %>%
     as_tibble() %>%
     mutate(
-      p1 = qE, p2 = qE, p3 = qE, p4 = qL, p5 = qL, p6 = qL,
+      p1 = p, p2 = p, p3 = p, p4 = p, p5 = p, p6 = p,
       q1 = qE, q2 = qE, q3 = qE, q4 = qL, q5 = qL, q6 = qL,
     ) %>%
     select(-c(p,qE,qL))
