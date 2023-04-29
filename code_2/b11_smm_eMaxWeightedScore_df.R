@@ -52,12 +52,13 @@ if (version_ == 1) {
 } else {
   stop("this version_ has not yet been implemented")
 }
-df_folds = tibble(fold = cut(1:nrow(GRID), breaks=num_folds_parralelization_,labels=FALSE)) %>%
-  mutate(i = row_number()) %>%
+df_folds_0 = tibble(fold = cut(1:nrow(GRID), breaks=num_folds_parralelization_,labels=FALSE)) %>%
+  mutate(i = row_number()) 
+df_folds = df_folds_0 %>%
   filter(fold == fold_)
 idx_lower = df_folds$i[1]
 idx_upper = df_folds$i[2]
-c(idx_lower, idx_upper)
+print(paste0("idx ", c(idx_lower, idx_upper)))
 GRID_OG = GRID_OG[idx_lower:idx_upper,]
 GRID = GRID[idx_lower:idx_upper,]
 GRID_OG
