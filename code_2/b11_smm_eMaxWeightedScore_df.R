@@ -22,13 +22,13 @@ GRID2 = expand.grid(
 
 # version_=1
 # fold_=30
-# num_folds_parralelization_=66
+# num_folds_=66
 
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
 fold_ = as.numeric(args[1])
 version_ = as.numeric(args[2])
-num_folds_parralelization_ = as.numeric(args[3])
+num_folds_ = as.numeric(args[3])
 if (version_ == 1) {
   GRID_OG = GRID1
   GRID = GRID_OG %>%
@@ -52,15 +52,13 @@ if (version_ == 1) {
 } else {
   stop("this version_ has not yet been implemented")
 }
-df_folds_0 = tibble(fold = cut(1:nrow(GRID), breaks=num_folds_parralelization_,labels=FALSE)) %>%
+df_folds_0 = tibble(fold = cut(1:nrow(GRID), breaks=num_folds_,labels=FALSE)) %>%
   mutate(i = row_number()) 
-df_folds = df_folds_0 %>%
-  filter(fold == fold_)
-idx_lower = df_folds$i[1]
-idx_upper = df_folds$i[2]
-print(paste0("idx ", c(idx_lower, idx_upper)))
-GRID_OG = GRID_OG[idx_lower:idx_upper,]
-GRID = GRID[idx_lower:idx_upper,]
+df_folds = df_folds_0 %>% filter(fold == fold_)
+idxs = df_folds$i
+print(paste0("idxs ", idxs))
+GRID_OG = GRID_OG[idxs,]
+GRID = GRID[idxs,]
 GRID_OG
 GRID
 
