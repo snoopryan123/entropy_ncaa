@@ -9,7 +9,7 @@ version_ = as.numeric(args[1])
 if (version_ == 1) {
   num_folds_parralelization_ = 47
 } else if (version_ == 2) {
-  num_folds_parralelization_ = 55
+  num_folds_parralelization_ = 54
 } else {
   stop("")
 }

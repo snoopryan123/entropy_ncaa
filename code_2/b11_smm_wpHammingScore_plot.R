@@ -3,11 +3,7 @@
 source("b11_smm_main.R")
 
 plot_df = read_csv(paste0(output_folder,"plot_grid_wpHammingScore.csv"))
-
-plot_df = read_csv(paste0(output_folder, "plot_grid_wpMaxScore_v1.csv")) %>%
-  mutate(method="eWeightedMaxScore")
-
-
+# plot_df = read_csv(paste0(output_folder, "plot_grid_wpMaxScore_v1.csv")) ### check
 
 plot_df = plot_df %>% filter(n <= 1000 & k <= 1000)
 
