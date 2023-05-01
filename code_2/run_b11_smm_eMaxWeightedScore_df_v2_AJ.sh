@@ -10,10 +10,10 @@
 #$ -l m_mem_free=3G #10G
 
 ## ARRAY JOB
-#$ -t 1-61
+#$ -t 1-55
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
-Rscript --vanilla b11_smm_eMaxWeightedScore_df.R ${SGE_TASK_ID} 2 61
+Rscript --vanilla b11_smm_eMaxWeightedScore_df.R ${SGE_TASK_ID} 2 55
 
 
 
