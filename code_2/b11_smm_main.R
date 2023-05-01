@@ -378,7 +378,7 @@ wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8)
   cdfs_x_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
   cdfs_y_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
   for (i in 1:nrow(urs_vec)) {
-    # for (i in 1:1500) {
+  # for (i in 1:200) {
     if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
     
     urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
@@ -399,7 +399,8 @@ wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8)
     for (l in 1:length(ks)) {
       n = ns[j]
       k = ks[l]
-      wp[j,l] = sum( pus * rowSums(cdf_y_given_u^k * (cdf_x_given_u^n - lag(cdf_x_given_u, default=0)^n)) )
+      # browser()
+      wp[j,l] = sum( pus * rowSums(cdfs_y_u^k * (cdfs_x_u^n - lag(cdfs_x_u, default=0)^n)) )
     }
   }
   

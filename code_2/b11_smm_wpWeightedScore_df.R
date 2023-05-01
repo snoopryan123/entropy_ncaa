@@ -13,14 +13,21 @@ GRID1 = expand.grid(
 
 GRID2 = expand.grid(
   p = 0.75,
-  # qE = seq(0,1,by=0.1),
-  # qL = seq(0,1,by=0.1),
-  qE = seq(0.5,1,by=0.05),
-  qL = seq(0.5,1,by=0.05),
-  q_cutoff = seq(1.5, 5.5, by=1),
+  # qE = seq(0.5,1,by=0.05),
+  # qL = seq(0.5,1,by=0.05),
+  # rE = seq(0.5,1,by=0.05),
+  # rL = seq(0.5,1,by=0.05),
+  qE = seq(0.5,1,by=0.1),
+  qL = seq(0.5,1,by=0.1),
+  rE = seq(0.5,1,by=0.1),
+  rL = seq(0.5,1,by=0.1),
+  # q_cutoff = seq(1.5, 5.5, by=1),
+  # r_cutoff = seq(1.5, 5.5, by=1),
+  q_cutoff = seq(2.5, 4.5, by=1),
+  r_cutoff = seq(2.5, 4.5, by=1),
   score_method = "ESPN"
 ) %>% as_tibble()
-# GRID2
+GRID2
 
 # version_=1
 # fold_=30
@@ -59,7 +66,9 @@ if (version_ == 1) {
     ) %>%
     select(-c(p,qE,qL))
   # ns = 10^(0:8)
-  ns = c(1,5,10,100,1000,10000)
+  # ns = c(1,5,10,100,1000,10000)
+  ns = c(1,10,100)
+  ks = c(1,10,100)
 } else {
   stop("this version_ has not yet been implemented")
 }
