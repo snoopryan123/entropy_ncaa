@@ -249,7 +249,7 @@ cdf_eMaxWeightedScoreByRound_given_u_gpb <- function(mrs,w_vec,urs,qrs) {
 ### Compute the expected max ESPN score ###
 ###########################################
 
-eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESPN",print_every_n=2500) {
+eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESPN",print_every_n=1000) {
   ### number of rounds R
   R = log2(m+1) 
   ### assume m is a power of 2
@@ -263,6 +263,9 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   ### qrs = (q1,...,qR) must be a vector of length R, representing the true chalkiness in round r
   if (length(qrs) != R | length(prs) != R ) {
     stop("`prs` and `qrs` must have length R")
+  }
+  if (!all(prs == prs[1])) {
+    stop("as of now, this function is only supported for constant p, i.e. `prs` = c(p,p,p,...,p).")
   }
   
   ### get the GPB-weights for the scoring method
@@ -299,10 +302,11 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
     
     urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
     pu = prod(sapply(1:R, function(r) dbinom(urs[r], size=mrs[r], prob=1-prs[r]) )) ### assuming constant p for each "true" bit
+    pus[i] = pu
+    
     # ### compute the CDF of a Generalized Poisson Binomial distribution
     # cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,wrs,urs,qrs)
     cdf_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,w_vec,urs,qrs)
-    pus[i] = pu
     cdfs_u[i,] = cdf_given_u
   }
   
@@ -315,29 +319,92 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
   escore
 }
 
-# library(compiler)
-# eMaxWeightedScoreByRound_gpb_Compiled <- cmpfun(eMaxWeightedScoreByRound_gpb)
-
-# library(doParallel)
-# registerDoParallel(cores=12)
-# system.time(loopParallelD <- foreach(i=1:dim(m)[1], .combine=c) %dopar% mean(m[i,]))
-
-
-
-# ptm <- proc.time() # Start the clock!
-# # eMaxWeightedScoreByRound_gpb_Compiled(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
-# eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1)
-# ptm1 = proc.time() - ptm # Stop the clock
-# ptm1
-# ### about 8 minutes to do just one of these
 # ### check that the three EScores are the same
 # eMaxWeightedScoreByRound_gpb(m, prs=rep(0.7,6), qrs=rep(0.7,6), print_every_n=1, score_method = "Hamming")
-
-
-
-
 # eMaxHammingScore(m,p=0.7,q=0.8,method="pb")
 # eMaxHammingScore(m,p=0.7,q=0.8,method="gpb")
 # eMaxHammingScore(m,p=0.7,q=0.8,method="combinatorics")
 
+########################################################
+### Compute win probability, for SMM with ESPN score ###
+########################################################
 
+wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8),score_method="ESPN",print_every_n=1000) {
+  ### number of rounds R
+  R = log2(m+1) 
+  ### assume m is a power of 2
+  if (R %% 1 != 0) {
+    stop("m must be a power of 2")
+  }
+  ### number of bits (matches) in each round
+  mrs = 2^(R - 1:R)
+  
+  ### prs = (p1,...,pR) must be a vector of length R, representing the submitted chalkiness in round r
+  ### qrs = (q1,...,qR) must be a vector of length R, representing the true chalkiness in round r
+  if (length(qrs) != R | length(prs) != R ) {
+    stop("`prs` and `qrs` must have length R")
+  }
+  if (!all(prs == prs[1])) {
+    stop("as of now, this function is only supported for constant p, i.e. `prs` = c(p,p,p,...,p).")
+  }
+  
+  ### get the GPB-weights for the scoring method
+  if (score_method == "ESPN") {
+    ### wrs is a vector of length R, one value of w for each round,
+    ### where w is the number of points scored in this round
+    wrs = 2^(1:R - 1)
+  } else if (score_method == "Hamming") {
+    wrs = rep(1,R)
+  } else {
+    stop("this `score_method` is not supported")
+  }
+  w_vec = flatten_dbl(sapply(1:R, function(r) rep(wrs[r], mrs[r])))
+  
+  ### get all possible combinations of urs
+  mrs_lst = list()
+  for (r in 1:R) {
+    mrs_lst[[r]] = 0:mrs[r]
+  }
+  urs_vec = expand.grid(mrs_lst)
+  
+  # browser()
+  ### iterate over all possible combinations of urs
+  ### this is the main for loop, which is very time consuming!
+  num_a = length(
+    cdf_eMaxWeightedScoreByRound_given_u_gpb(
+      mrs,w_vec,as.numeric(urs_vec[1,]),qrs)
+  ) # max possible weighted score
+  pus = numeric(nrow(urs_vec))
+  cdfs_x_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
+  cdfs_y_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
+  for (i in 1:nrow(urs_vec)) {
+    # for (i in 1:1500) {
+    if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
+    
+    urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
+    pu = prod(sapply(1:R, function(r) dbinom(urs[r], size=mrs[r], prob=1-prs[r]) )) ### assuming constant p for each "true" bit
+    pus[i] = pu
+    
+    # ### compute the CDF of a Generalized Poisson Binomial distribution
+    cdf_x_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,w_vec,urs,qrs)
+    cdf_y_given_u = cdf_eMaxWeightedScoreByRound_given_u_gpb(mrs,w_vec,urs,rrs)
+    cdfs_x_u[i,] = cdf_x_given_u
+    cdfs_y_u[i,] = cdf_y_given_u
+  }
+  
+  wp = matrix(0, nrow=length(ns), ncol=length(ks))
+  rownames(wp) = paste0("n=",ns)
+  colnames(wp) = paste0("k=",ks)
+  for (j in 1:length(ns)) {
+    for (l in 1:length(ks)) {
+      n = ns[j]
+      k = ks[l]
+      wp[j,l] = sum( pus * rowSums(cdf_y_given_u^k * (cdf_x_given_u^n - lag(cdf_x_given_u, default=0)^n)) )
+    }
+  }
+  
+  return(wp)
+}
+
+# wpMaxWeightedScore(m,qrs=rep(0.75,6),rrs=rep(0.75,6),score_method="ESPN",print_every_n=1)
+# wpMaxWeightedScore(m,qrs=rep(0.75,6),rrs=rep(0.75,6),score_method="Hamming",print_every_n=1)
