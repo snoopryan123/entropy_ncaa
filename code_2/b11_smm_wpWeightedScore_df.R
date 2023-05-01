@@ -23,8 +23,10 @@ GRID2 = expand.grid(
   rL = seq(0.5,1,by=0.1),
   # q_cutoff = seq(1.5, 5.5, by=1),
   # r_cutoff = seq(1.5, 5.5, by=1),
-  q_cutoff = seq(2.5, 4.5, by=1),
-  r_cutoff = seq(2.5, 4.5, by=1),
+  # q_cutoff = seq(2.5, 4.5, by=1),
+  # r_cutoff = seq(2.5, 4.5, by=1),
+  q_cutoff = 3.5,
+  r_cutoff = 3.5,
   score_method = "ESPN"
 ) %>% as_tibble()
 GRID2
@@ -62,9 +64,15 @@ if (version_ == 1) {
       q3 = ifelse(3 < q_cutoff, qE, qL),
       q4 = ifelse(4 < q_cutoff, qE, qL),
       q5 = ifelse(5 < q_cutoff, qE, qL),
-      q6 = ifelse(6 < q_cutoff, qE, qL)
+      q6 = ifelse(6 < q_cutoff, qE, qL),
+      r1 = ifelse(1 < r_cutoff, rE, rL),
+      r2 = ifelse(2 < r_cutoff, rE, rL),
+      r3 = ifelse(3 < r_cutoff, rE, rL),
+      r4 = ifelse(4 < r_cutoff, rE, rL),
+      r5 = ifelse(5 < r_cutoff, rE, rL),
+      r6 = ifelse(6 < r_cutoff, rE, rL)
     ) %>%
-    select(-c(p,qE,qL))
+    select(-c(p,qE,qL,rE,rL))
   # ns = 10^(0:8)
   # ns = c(1,5,10,100,1000,10000)
   ns = c(1,10,100)
@@ -94,16 +102,16 @@ for (i in 1:nrow(GRID)) {
   
   results[,,i] = wpMaxWeightedScore(m,qrs=qrs,rrs=rrs,prs=prs,ns=ns,ks=ks,score_method=GRID$score_method[i],print_every_n=1000)
 }
-GRID_OG = bind_cols(GRID_OG,results)
-GRID_OG
-
-GRIDa = GRID_OG %>%
-  pivot_longer(cols=starts_with("n=")) %>%
-  rename(eMaxScore = value) %>%
-  mutate(n = as.numeric(str_sub(name, start=3))) %>%
-  relocate(eMaxScore, .before=score_method) %>%
-  relocate(n, .after=eMaxScore) %>%
-  select(-name)
+GRIDa = reshape2::melt(results) %>%
+  as_tibble() %>%
+  mutate(
+    n = as.numeric(str_sub(Var1,start=3)),
+    k = as.numeric(str_sub(Var2,start=3)),
+    i = as.numeric(str_sub(Var3,start=3)),
+  ) %>%
+  rename(wp = value) %>%
+  left_join( GRID_OG %>% mutate(i = row_number()), by="i") %>%
+  select(-c(Var1,Var2,Var3,i))
 GRIDa
 
 write_csv(GRIDa, paste0(output_folder,"plot_grid_wpMaxScore_v",version_,"_fold",fold_,".csv"))
