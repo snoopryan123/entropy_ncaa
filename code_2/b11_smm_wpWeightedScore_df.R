@@ -92,7 +92,7 @@ for (i in 1:nrow(GRID)) {
   qrs = c(GRID$q1[i], GRID$q2[i], GRID$q3[i], GRID$q4[i], GRID$q5[i], GRID$q6[i])
   rrs = c(GRID$r1[i], GRID$r2[i], GRID$r3[i], GRID$r4[i], GRID$r5[i], GRID$r6[i])
   
-  results[i,] = wpMaxWeightedScore(m,qrs,rrs,prs,ns,ks,score_method=GRID$score_method[i],print_every_n=1000)
+  results[,,i] = wpMaxWeightedScore(m,qrs=qrs,rrs=rrs,prs=prs,ns=ns,ks=ks,score_method=GRID$score_method[i],print_every_n=1000)
 }
 GRID_OG = bind_cols(GRID_OG,results)
 GRID_OG
