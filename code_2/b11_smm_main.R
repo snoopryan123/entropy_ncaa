@@ -329,7 +329,8 @@ eMaxWeightedScoreByRound_gpb <- function(m,prs,qrs,ns=10^(0:8),score_method="ESP
 ### Compute win probability, for SMM with ESPN score ###
 ########################################################
 
-wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8),score_method="ESPN",print_every_n=1000) {
+wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8),
+                               score_method="ESPN",print_every_n=1000) {
   ### number of rounds R
   R = log2(m+1) 
   ### assume m is a power of 2
@@ -367,7 +368,7 @@ wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8)
   }
   urs_vec = expand.grid(mrs_lst)
   
-  # browser()
+  # urs_vec = urs_vec[1:200,] ### for de-bugging purposes
   ### iterate over all possible combinations of urs
   ### this is the main for loop, which is very time consuming!
   num_a = length(
@@ -378,7 +379,6 @@ wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8)
   cdfs_x_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
   cdfs_y_u = matrix(nrow=nrow(urs_vec), ncol=num_a)
   for (i in 1:nrow(urs_vec)) {
-  # for (i in 1:200) {
     if (i %% print_every_n == 0) print(paste0(i,"/",nrow(urs_vec)))
     
     urs = as.numeric(urs_vec[i,]) ### vector (u1,...,uR)
@@ -400,7 +400,8 @@ wpMaxWeightedScore <- function(m,qrs,rrs,prs=rep(0.75,6),ns=10^(0:8),ks=10^(0:8)
       n = ns[j]
       k = ks[l]
       # browser()
-      wp[j,l] = sum( pus * rowSums(cdfs_y_u^k * (cdfs_x_u^n - lag(cdfs_x_u, default=0)^n)) )
+      wp[j,l] = sum( pus * rowSums(cdfs_y_u^k * (cdfs_x_u^n - t(lag(t(cdfs_x_u),default=0))^n)) )
+      ###wp[j,l] = sum( pus * rowSums(cdfs_y_u^k * (cdfs_x_u^n - lag(cdfs_x_u, default=0)^n)) )
     }
   }
   
