@@ -1,19 +1,19 @@
 
 #!/bin/bash
 
-#$ -N b12_tmm_eMaxScore_df
+#$ -N b12_tmm_eMaxScore_df_v1
 #$ -j y
 #$ -m e -M ryguy123@sas.upenn.edu 
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 
 ## MORE RAM
-#$ -l m_mem_free=10G
+#$ -l m_mem_free=5G
 
 ## ARRAY JOB
-#$ -t 1-3
+#$ -t 1-10
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
-Rscript --vanilla b12_tmm_eMaxScore_df.R ${SGE_TASK_ID}
+Rscript --vanilla b12_tmm_eMaxScore_df.R 1 ${SGE_TASK_ID}
 
 
 

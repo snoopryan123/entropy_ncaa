@@ -4,6 +4,8 @@ source("b12_tmm_main.R")
 # version_ = 1
 args = commandArgs(trailingOnly=TRUE)
 version_ = as.numeric(args[1])
+fold_ = as.numeric(args[2])
+num_folds = 10 #FIXME
 num_true_brackets = 100 #FIXME
 
 GRID1 = expand.grid(
@@ -86,7 +88,7 @@ if (version_ == 1) {
 
 ################################################################################
 
-set.seed(1235124)
+set.seed(1235124+fold_*23421) ### use fold_ to get a different random sample
 results = numeric(nrow(GRID))
 for (i in 1:nrow(GRID)) {
   print(paste0(i,"/",nrow(GRID)))
@@ -101,6 +103,6 @@ for (i in 1:nrow(GRID)) {
 }
 GRID_OG$eMaxHammingScore = results
 
-write_csv(GRID_OG, paste0(output_folder,"plot_grid_eMaxScore_v",version_,".csv"))
+write_csv(GRID_OG, paste0(output_folder,"plot_grid_eMaxScore_v",version_,"_fold",fold_,".csv"))
 
 
