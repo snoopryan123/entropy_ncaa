@@ -14,33 +14,6 @@ m = 63 ### number of games in the NCAA tournament, one below a power of 2
 ### Simulate N Brackets ###
 ###########################
 
-### sample N brackets using a constant p for each bit
-tmm_sample_n_brackets_p <- function(m,n,p) {
-  #####
-  # n == number of bitstrings to be sampled
-  # p == probability of a 1
-  #####
-  # browser()
-  R = log(m+1,base=2)
-  if (R %% 1 != 0) stop("m+1 must be a power of 2")
-  tourney = list()
-  tourney$m = m
-  tourney$R = R
-  tourney$n = n
-  tourney$p = p
-
-  for (rd in 1:tourney$R) {
-    m_rd = 2^((R-rd))
-    bitstring_rd = rbinom(n=m_rd*n, size=1, p=p)
-    tourney[[paste0("rd",rd,"_n")]] = bitstring_rd
-    # tourney[[paste0("probs_rd",rd,"_n")]] = probs_actual
-  }
-
-  return(tourney)
-}
-
-# bracket_set_a = tmm_sample_n_brackets_p(m=m,n=5,p=0.75)
-
 ### sample N brackets using a constant p for each bit within each round
 tmm_sample_n_brackets_prs <- function(m,n,prs) {
   #####
@@ -68,7 +41,7 @@ tmm_sample_n_brackets_prs <- function(m,n,prs) {
   return(tourney)
 }
 
-# bracket_set_aa = tmm_sample_n_brackets_prs(m=m,n=5,prs=c(0.6,0.7,0.75,0.8,0.85,0.9))
+# bracket_set_a = tmm_sample_n_brackets_prs(m=m,n=5,prs=c(0.6,0.7,0.75,0.8,0.85,0.9))
 
 ###########################
 ### Bracket Set Methods ###
@@ -89,8 +62,8 @@ tmm_extract_bracket <- function(bracket_set, i) {
   return(bracket_set)
 }
 
-# bracket_set_a = tmm_sample_n_brackets_p(m=m,n=5,p=0.75)
-# bracket_set_a2 = tmm_extract_bracket(bracket_set_a, 2) 
+# bracket_set_a = tmm_sample_n_brackets_prs(m=m,n=5,prs=rep(0.75,6))
+# bracket_set_a2 = tmm_extract_bracket(bracket_set_a, 2)
 
 tmm_extract_brackets <- function(bracket_set, bracket_idxs) {
   ###
@@ -116,20 +89,20 @@ tmm_extract_brackets <- function(bracket_set, bracket_idxs) {
   return(bracket_set)
 }
 
-# bracket_set_a = tmm_sample_n_brackets_p(m=m,n=5,p=0.75)
+# bracket_set_a = tmm_sample_n_brackets_prs(m=m,n=5,prs=rep(0.75,6))
 # bracket_set_a12 = tmm_extract_brackets(bracket_set_a, 1:2)
 
-tmm_merge_brackets_p <- function(bracket_set_1, bracket_set_2) {
+tmm_merge_brackets <- function(bracket_set_1, bracket_set_2) {
   ###
   # create a new bracket set which contains the brackets from bracket_set_1 and bracket_set_2
   ###
   bracket_set = list()
-  if (bracket_set_1$p != bracket_set_2$p) stop("bracket_set merge not supported if the p's are not the same")
+  if (bracket_set_1$prs != bracket_set_2$prs) stop("bracket_set merge not supported if the prs's are not the same")
   if (bracket_set_1$R != bracket_set_2$R) stop("bracket_set merge not supported if the R's are not the same")
   bracket_set$m = bracket_set_1$m
   bracket_set$R = bracket_set_1$R
   bracket_set$n = bracket_set_1$n + bracket_set_2$n
-  bracket_set$p = bracket_set_1$p
+  bracket_set$prs = bracket_set_1$prs
   for (rd in 1:bracket_set$R) {
     m_rd = 2^(6-rd)
     curr1_rd = bracket_set_1[[paste0("rd",rd,"_n")]]
@@ -147,9 +120,9 @@ tmm_merge_brackets_p <- function(bracket_set_1, bracket_set_2) {
   return(bracket_set)
 }
 
-# bracket_set_a = tmm_sample_n_brackets_p(m=m,n=1,p=0.75)
-# bracket_set_b = tmm_sample_n_brackets_p(m=m,n=1,p=0.75)
-# bracket_set_c = tmm_merge_brackets_p(bracket_set_a, bracket_set_b)
+# bracket_set_a = tmm_sample_n_brackets_prs(m=m,n=1,prs=rep(0.75,6))
+# bracket_set_b = tmm_sample_n_brackets_prs(m=m,n=1,prs=rep(0.75,6))
+# bracket_set_c = tmm_merge_brackets(bracket_set_a, bracket_set_b)
 
 ###########################
 ###  Score bracket sets ###
@@ -226,8 +199,8 @@ tmm_compute_max_score <- function(submitted_brackets, true_brackets,
   }
 }
 
-# ex_true_backets = tmm_sample_n_brackets_p(m,n=25,p=0.75)
-# ex_submitted_backets = tmm_sample_n_brackets_p(m,n=500,p=0.75)
+# ex_true_backets = tmm_sample_n_brackets_prs(m=m,n=25,prs=rep(0.75,6))
+# ex_submitted_backets = tmm_sample_n_brackets_prs(m=m,n=500,prs=rep(0.75,6))
 # ex_scores = tmm_compute_max_score(ex_submitted_backets, ex_true_backets, scoring_method = "Hamming")
 # ex_scores
 # ex_scoresE = tmm_compute_max_score(ex_submitted_backets, ex_true_backets, scoring_method = "Hamming", expected_score = T)
