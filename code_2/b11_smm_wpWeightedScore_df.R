@@ -77,6 +77,8 @@ if (version_ == 1) {
   # ns = c(1,5,10,100,1000,10000)
   ns = c(1,10,100)
   ks = c(1,10,100)
+  # ns = 10^(0:8)
+  # ks = 10^(0:8)
 } else {
   stop("this version_ has not yet been implemented")
 }

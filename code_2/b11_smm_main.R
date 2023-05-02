@@ -4,7 +4,7 @@
 ### n submitted Ber(q) brackets vs. 1 true Ber(p) bracket ###
 ################################################################
 
-source("a2_main.R")
+source("a0_loadStuff.R")
 
 output_folder = "plot_11/"
 m = 63 ### number of games in the NCAA tournament, one below a power of 2 
