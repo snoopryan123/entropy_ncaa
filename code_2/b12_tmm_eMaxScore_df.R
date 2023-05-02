@@ -22,7 +22,8 @@ GRID2 = expand.grid(
   qE = seq(0.5,1,by=0.05),
   qL = seq(0.5,1,by=0.05),
   q_cutoff = seq(1.5, 5.5, by=1),
-  n = 10^(0:5),
+  # n = 10^(0:5),
+  n = 10^(0:4),
   scoring_method = "Hamming"
 ) %>% as_tibble()
 GRID2
@@ -35,7 +36,8 @@ GRID3 = expand.grid(
   qL = seq(0.5,1,by=0.05),
   q_cutoff = seq(1.5, 5.5, by=1),
   # n = c(1,5,10,100,1000,10000),
-  n = 10^(0:5),
+  # n = 10^(0:5),
+  n = 10^(0:4),
   scoring_method = "ESPN"
 ) %>% as_tibble()
 GRID3

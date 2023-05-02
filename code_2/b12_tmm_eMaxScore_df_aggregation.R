@@ -14,4 +14,5 @@ for (fold_ in 1:num_folds) {
   df_fold = df_fold %>% mutate(fold = fold_)
   dfv = bind_rows(dfv, df_fold)
 }
+# dfv = dfv %>% group_by()
 write_csv(dfv, paste0(output_folder,"plot_grid_eMaxScore_v",version_,".csv"))

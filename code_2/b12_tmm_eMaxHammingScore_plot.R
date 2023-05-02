@@ -2,6 +2,11 @@
 source("b12_tmm_main.R")
 
 plot_df_tmmEHam1 = read_csv(paste0(output_folder,"plot_grid_eMaxScore_v",version_,".csv"))
+plot_df_tmmEHam1 = plot_df_tmmEHam1 %>%
+  group_by(p,q,n,scoring_method) %>%
+  mutate(eMaxHammingScore = mean(eMaxHammingScore)) %>%
+  ungroup() %>%
+  filter(fold == 1) 
 
 my_palette_npq_v0 = c(
   rev(brewer.pal(name="Reds",n=9)[4:8]), 
