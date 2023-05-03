@@ -43,7 +43,7 @@ GRID2 = expand.grid(
   r_cutoff = 3.5,
   n = c(10, 100),
   k = c(10, 100),
-  score_method = "Hamming"
+  scoring_method = "Hamming"
 ) %>% as_tibble() %>% filter(n == k)
 GRID2
 
@@ -65,7 +65,7 @@ GRID3 = expand.grid(
   r_cutoff = 3.5,
   n = c(10, 100),
   k = c(10, 100),
-  score_method = "ESPN"
+  scoring_method = "ESPN"
 ) %>% as_tibble() %>% filter(n == k)
 GRID3
 
