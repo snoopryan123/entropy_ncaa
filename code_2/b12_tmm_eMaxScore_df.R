@@ -2,6 +2,7 @@
 source("b12_tmm_main.R")
 
 # version_ = 1
+# fold_ = 1
 args = commandArgs(trailingOnly=TRUE)
 version_ = as.numeric(args[1])
 fold_ = as.numeric(args[2])
@@ -42,11 +43,11 @@ GRID3 = expand.grid(
 ) %>% as_tibble()
 GRID3
 
-#############################################
-### Expected Maximum Hamming Score in TMM ###
-#############################################
+#####################################
+### Expected Maximum Score in TMM ###
+#####################################
 
-print("version_=",version_)
+print(paste0("version_=",version_))
 if (version_ == 1) {
   GRID_OG = GRID1
   GRID = GRID_OG %>%
