@@ -72,7 +72,7 @@ if (version_ == 1) {
     select(-c(p,qE,qL))
   GRID
 } else if (version_ == 3) {
-  GRID_OG = GRID2
+  GRID_OG = GRID3
   GRID = GRID_OG %>%
     as_tibble() %>%
     mutate(
@@ -103,7 +103,11 @@ for (i in 1:nrow(GRID)) {
   results[i] = tmm_compute_max_score(subd_backet_set, true_backet_set, 
                                      scoring_method = GRID$scoring_method[i], expected_score = T)
 }
-GRID_OG$eMaxHammingScore = results
+if (version_ == 1 | version_ == 2) {
+  GRID_OG$eMaxHammingScore = results
+} else {
+  GRID_OG$eMaxScore = results
+}
 
 write_csv(GRID_OG, paste0(output_folder,"plot_grid_eMaxScore_v",version_,"_fold",fold_,".csv"))
 

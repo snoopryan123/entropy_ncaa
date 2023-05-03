@@ -4,7 +4,7 @@ source("b12_tmm_main.R")
 # version_ = 1
 args = commandArgs(trailingOnly=TRUE)
 version_ = as.numeric(args[1])
-if (version_ == 1) {
+if (version_ == 1 | version_1 == 2 | version_ == 3) {
   num_folds = 10 #FIXME
 }
 
