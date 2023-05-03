@@ -15,14 +15,16 @@ GRID1 = expand.grid(
   # r = seq(0.5,1,by=0.1)
   q = seq(0,1,by=0.05),
   r = seq(0.5,1,by=0.05),
-  n = c(10, 100),
+  n = c(1, 10, 100, 1000),
   k = c(10, 100),
+  # n = c(10, 100),
+  # k = c(10, 100),
   # n = 10^(0:4),
   # k = 10^(0:4),
   # n = 10^(0:8),
   # k = 10^(0:8),
   scoring_method = "Hamming"
-) %>% as_tibble() %>% filter(n == k)
+) %>% as_tibble() #%>% filter(n == k)
 GRID1
 
 GRID2 = expand.grid(
