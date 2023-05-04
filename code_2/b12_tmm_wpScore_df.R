@@ -71,6 +71,50 @@ GRID3 = expand.grid(
 ) %>% as_tibble() %>% filter(n == k)
 GRID3
 
+GRID4 = expand.grid(
+  p = 0.75,
+  # qE = seq(0.5,1,by=0.05),
+  # qL = seq(0.5,1,by=0.05),
+  # rE = seq(0.5,1,by=0.05),
+  # rL = seq(0.5,1,by=0.05),
+  qE = seq(0.5,1,by=0.1),
+  qL = seq(0.5,1,by=0.1),
+  rE = seq(0.5,1,by=0.1),
+  rL = seq(0.5,1,by=0.1),
+  # q_cutoff = seq(1.5, 5.5, by=1),
+  # r_cutoff = seq(1.5, 5.5, by=1),
+  # q_cutoff = seq(2.5, 4.5, by=1),
+  # r_cutoff = seq(2.5, 4.5, by=1),
+  q_cutoff = 1.5,
+  r_cutoff = 1.5,
+  n = c(10, 100),
+  k = c(10, 100),
+  scoring_method = "Hamming"
+) %>% as_tibble() %>% filter(n == k)
+GRID4
+
+GRID5 = expand.grid(
+  p = 0.75,
+  # qE = seq(0.5,1,by=0.05),
+  # qL = seq(0.5,1,by=0.05),
+  # rE = seq(0.5,1,by=0.05),
+  # rL = seq(0.5,1,by=0.05),
+  qE = seq(0.5,1,by=0.1),
+  qL = seq(0.5,1,by=0.1),
+  rE = seq(0.5,1,by=0.1),
+  rL = seq(0.5,1,by=0.1),
+  # q_cutoff = seq(1.5, 5.5, by=1),
+  # r_cutoff = seq(1.5, 5.5, by=1),
+  # q_cutoff = seq(2.5, 4.5, by=1),
+  # r_cutoff = seq(2.5, 4.5, by=1),
+  q_cutoff = 1.5,
+  r_cutoff = 1.5,
+  n = c(10, 100),
+  k = c(10, 100),
+  scoring_method = "ESPN"
+) %>% as_tibble() %>% filter(n == k)
+GRID5
+
 ##############################
 ### Win Probability in TMM ###
 ##############################
@@ -109,6 +153,48 @@ if (version_ == 1) {
   GRID
 } else if (version_ == 3) {
   GRID_OG = GRID3
+  GRID = GRID_OG %>%
+    as_tibble() %>%
+    mutate(
+      p1 = p, p2 = p, p3 = p, p4 = p, p5 = p, p6 = p,
+      q1 = ifelse(1 < q_cutoff, qE, qL),
+      q2 = ifelse(2 < q_cutoff, qE, qL),
+      q3 = ifelse(3 < q_cutoff, qE, qL),
+      q4 = ifelse(4 < q_cutoff, qE, qL),
+      q5 = ifelse(5 < q_cutoff, qE, qL),
+      q6 = ifelse(6 < q_cutoff, qE, qL),
+      r1 = ifelse(1 < r_cutoff, rE, rL),
+      r2 = ifelse(2 < r_cutoff, rE, rL),
+      r3 = ifelse(3 < r_cutoff, rE, rL),
+      r4 = ifelse(4 < r_cutoff, rE, rL),
+      r5 = ifelse(5 < r_cutoff, rE, rL),
+      r6 = ifelse(6 < r_cutoff, rE, rL)
+    ) %>%
+    select(-c(p,qE,qL,rE,rL))
+  GRID
+} else if (version_ == 4) {
+  GRID_OG = GRID4
+  GRID = GRID_OG %>%
+    as_tibble() %>%
+    mutate(
+      p1 = p, p2 = p, p3 = p, p4 = p, p5 = p, p6 = p,
+      q1 = ifelse(1 < q_cutoff, qE, qL),
+      q2 = ifelse(2 < q_cutoff, qE, qL),
+      q3 = ifelse(3 < q_cutoff, qE, qL),
+      q4 = ifelse(4 < q_cutoff, qE, qL),
+      q5 = ifelse(5 < q_cutoff, qE, qL),
+      q6 = ifelse(6 < q_cutoff, qE, qL),
+      r1 = ifelse(1 < r_cutoff, rE, rL),
+      r2 = ifelse(2 < r_cutoff, rE, rL),
+      r3 = ifelse(3 < r_cutoff, rE, rL),
+      r4 = ifelse(4 < r_cutoff, rE, rL),
+      r5 = ifelse(5 < r_cutoff, rE, rL),
+      r6 = ifelse(6 < r_cutoff, rE, rL)
+    ) %>%
+    select(-c(p,qE,qL,rE,rL))
+  GRID
+} else if (version_ == 5) {
+  GRID_OG = GRID5
   GRID = GRID_OG %>%
     as_tibble() %>%
     mutate(
