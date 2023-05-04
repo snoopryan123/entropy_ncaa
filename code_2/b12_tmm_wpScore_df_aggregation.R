@@ -2,7 +2,7 @@
 source("b12_tmm_main.R")
 
 num_folds = 10
-for (version_ in 1:3) {
+for (version_ in 1:5) {
   dfv = tibble()
   for (fold_ in 1:num_folds) {
     df_fold = read_csv(paste0(output_folder,"plot_grid_wpScore_v",version_,"_fold",fold_,".csv"))
