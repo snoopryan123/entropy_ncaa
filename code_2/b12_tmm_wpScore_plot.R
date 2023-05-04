@@ -60,15 +60,14 @@ for (p_ in unique(plot_df_tmmWpHam2$p)) {
   for (k_ in unique(plot_df_tmmWpHam2$k)) {
     n_ = k_
     
-    plot_wp_nkp2 =
+    df_plot_wp_nkp2 =
       plot_df_tmmWpHam2 %>%
       filter(q_cutoff == 3.5 & r_cutoff == 3.5) %>%
       filter(p == p_ & k == k_ & n == n_) %>%
-      # mutate(facet_ = paste0("rE = ", rE, ", qE = ", qE)) %>%
       mutate(
-        facet_ = paste0("rE = ", rE, ", qE = ", qE),
+        facet_ = paste0("rL = ", rL, ", qL = ", qL),
         facet_ = factor(facet_),
-        facet_ = fct_reorder(facet_, -qE)
+        facet_ = fct_reorder(facet_, -qL)
       ) %>%
       mutate(
         n_ = paste0("n=", n, ",  "),
@@ -88,10 +87,11 @@ for (p_ in unique(plot_df_tmmWpHam2$p)) {
         # title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, "\n", qr_)
       ) 
     
-    title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, "\n", plot_wp_nkp2$qr_[1]) 
+    title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, ", ", df_plot_wp_nkp2$scoring_method[1], " score",
+                    "\n", df_plot_wp_nkp2$qr_[1]) 
     
-    plot_wp_nkp2 = plot_wp_nkp2 %>%
-      ggplot(aes(x=rL, y=qL)) +
+    plot_wp_nkp2 = df_plot_wp_nkp2 %>%
+      ggplot(aes(x=rE, y=qE)) +
       facet_wrap(~facet_) +
       theme(panel.spacing = unit(2, "lines")) +
       labs(title = title_) +
@@ -131,15 +131,14 @@ for (p_ in unique(plot_df_tmmWpHam3$p)) {
   for (k_ in unique(plot_df_tmmWpHam3$k)) {
     n_ = k_
     
-    plot_wp_nkp3 =
+    df_plot_wp_nkp3 =
       plot_df_tmmWpHam3 %>%
       filter(q_cutoff == 3.5 & r_cutoff == 3.5) %>%
       filter(p == p_ & k == k_ & n == n_) %>%
-      # mutate(facet_ = paste0("rE = ", rE, ", qE = ", qE)) %>%
       mutate(
-        facet_ = paste0("rE = ", rE, ", qE = ", qE),
+        facet_ = paste0("rL = ", rL, ", qL = ", qL),
         facet_ = factor(facet_),
-        facet_ = fct_reorder(facet_, -qE)
+        facet_ = fct_reorder(facet_, -qL)
       ) %>%
       mutate(
         n_ = paste0("n=", n, ",  "),
@@ -159,10 +158,11 @@ for (p_ in unique(plot_df_tmmWpHam3$p)) {
         # title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, "\n", qr_)
       ) 
     
-    title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, "\n", plot_wp_nkp2$qr_[1]) 
+    title_ = paste0("p = ", p_, ", n = ", n_, ", k = ", k_, ", ", df_plot_wp_nkp3$scoring_method[1], " score",
+                    "\n", df_plot_wp_nkp3$qr_[1]) 
     
-    plot_wp_nkp3 = plot_wp_nkp3 %>%
-      ggplot(aes(x=rL, y=qL)) +
+    plot_wp_nkp3 = df_plot_wp_nkp3 %>%
+      ggplot(aes(x=rE, y=qE)) +
       facet_wrap(~facet_) +
       theme(panel.spacing = unit(2, "lines")) +
       labs(title = title_) +

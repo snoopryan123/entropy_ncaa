@@ -1,6 +1,12 @@
 
 source("b12_tmm_main.R")
 
+my_palette_npq_v0 = c(
+  rev(brewer.pal(name="Reds",n=9)[4:8]), 
+  "gray50",
+  brewer.pal(name="Blues",n=9)[3:8]
+)
+
 ###############################################################
 ### Plot Expected Max Hamming Score for Grid 1 (constant q) ###
 ###############################################################
@@ -11,12 +17,6 @@ plot_df_tmmEHam1 = plot_df_tmmEHam1 %>%
   mutate(eMaxHammingScore = mean(eMaxHammingScore)) %>%
   ungroup() %>%
   filter(fold == 1) 
-
-my_palette_npq_v0 = c(
-  rev(brewer.pal(name="Reds",n=9)[4:8]), 
-  "gray50",
-  brewer.pal(name="Blues",n=9)[3:8]
-)
 
 plot_eMaxHammingScoreTmm = 
   plot_df_tmmEHam1 %>%
@@ -126,7 +126,7 @@ plot_eMaxESPNScoreTmm_3 =
   ylab("expected max ESPN score")
 # plot_eMaxWeightedScoreSmm
 ggsave(paste0(output_folder,"plot_eMaxESPNScoreTmm_v3",".png"),
-       width=30, height=18)
+       width=20, height=18)
 
 
 

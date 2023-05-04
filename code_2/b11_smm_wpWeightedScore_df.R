@@ -31,6 +31,26 @@ GRID2 = expand.grid(
 ) %>% as_tibble()
 GRID2
 
+GRID3 = expand.grid(
+  p = 0.75,
+  # qE = seq(0.5,1,by=0.05),
+  # qL = seq(0.5,1,by=0.05),
+  # rE = seq(0.5,1,by=0.05),
+  # rL = seq(0.5,1,by=0.05),
+  qE = seq(0.5,1,by=0.1),
+  qL = seq(0.5,1,by=0.1),
+  rE = seq(0.5,1,by=0.1),
+  rL = seq(0.5,1,by=0.1),
+  # q_cutoff = seq(1.5, 5.5, by=1),
+  # r_cutoff = seq(1.5, 5.5, by=1),
+  # q_cutoff = seq(2.5, 4.5, by=1),
+  # r_cutoff = seq(2.5, 4.5, by=1),
+  q_cutoff = 1.5,
+  r_cutoff = 1.5,
+  score_method = "ESPN"
+) %>% as_tibble()
+GRID3
+
 # version_=1
 # fold_=30
 # num_folds_=66
@@ -55,6 +75,32 @@ if (version_ == 1) {
   # ns = c(1,5,10,100,1000,10000)
 } else if (version_ == 2) {
   GRID_OG = GRID2
+  GRID = GRID_OG %>%
+    as_tibble() %>%
+    mutate(
+      p1 = p, p2 = p, p3 = p, p4 = p, p5 = p, p6 = p,
+      q1 = ifelse(1 < q_cutoff, qE, qL),
+      q2 = ifelse(2 < q_cutoff, qE, qL),
+      q3 = ifelse(3 < q_cutoff, qE, qL),
+      q4 = ifelse(4 < q_cutoff, qE, qL),
+      q5 = ifelse(5 < q_cutoff, qE, qL),
+      q6 = ifelse(6 < q_cutoff, qE, qL),
+      r1 = ifelse(1 < r_cutoff, rE, rL),
+      r2 = ifelse(2 < r_cutoff, rE, rL),
+      r3 = ifelse(3 < r_cutoff, rE, rL),
+      r4 = ifelse(4 < r_cutoff, rE, rL),
+      r5 = ifelse(5 < r_cutoff, rE, rL),
+      r6 = ifelse(6 < r_cutoff, rE, rL)
+    ) %>%
+    select(-c(p,qE,qL,rE,rL))
+  # ns = 10^(0:8)
+  # ns = c(1,5,10,100,1000,10000)
+  ns = c(1,10,100)
+  ks = c(1,10,100)
+  # ns = 10^(0:8)
+  # ks = 10^(0:8)
+} else if (version_ == 3) {
+  GRID_OG = GRID3
   GRID = GRID_OG %>%
     as_tibble() %>%
     mutate(
