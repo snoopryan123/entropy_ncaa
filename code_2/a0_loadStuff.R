@@ -1,5 +1,6 @@
 library(tidyverse)
 library(latex2exp)
+library(fuzzyjoin)
 library(RColorBrewer)
 library(purrr)
 library(PoissonBinomial) ### Generalized Poisson Binomial distribution
