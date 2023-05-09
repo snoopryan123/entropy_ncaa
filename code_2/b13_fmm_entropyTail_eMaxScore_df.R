@@ -71,7 +71,7 @@ GRID
 
 #### keep the runtime down...
 if (max(GRID$n) <= 10000) {
-  NUM_RUNS = 150 #500
+  NUM_RUNS = 100 #500
 } else {
   NUM_RUNS = 5 #FIXME
 }
