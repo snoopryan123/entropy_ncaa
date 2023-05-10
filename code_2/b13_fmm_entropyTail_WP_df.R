@@ -17,13 +17,14 @@ if (file.exists(entropy_tailMap_filename)) {
 ### grid to search over
 GRID1 = expand.grid(
   h = sort(unique(entropy_tailMap$h)), ### how chalky we are
+  # opp_prob_method = c("naive_chalky"), ### how chalky they are
   opp_prob_method = c("naive_chalky"), ### how chalky they are
   n = 10^(2:4),
   k = 10^(2:4)
 ) %>%
   filter(n <= k) %>%
   # filter(n < k) %>% 
-  arrange(n,k)
+  arrange(opp_prob_method,n,k)
 GRID1
 
 ######################################################################

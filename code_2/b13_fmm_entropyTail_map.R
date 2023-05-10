@@ -41,13 +41,13 @@ plot_entropy_conversion =
   ggplot() +
   geom_point(aes(x=h, y=H), size=3) +
   xlab("entropy range of sampled brackets") +
-  ylab("mean entropy of sampled brackets") +
+  ylab("mean entropy h of sampled brackets") +
   geom_hline(yintercept=48.7, color="gray60", linetype="dashed") +
   theme(
     # axis.title.x = element_text(size=15),
     axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size=15)
   )
-# plot_entropy_conversion
+plot_entropy_conversion
 ggsave(paste0(output_folder, "plot_fmm_entropy_tail_map.png"), plot_entropy_conversion,
        width=10, height=7)
 
