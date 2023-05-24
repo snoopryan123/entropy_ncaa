@@ -326,16 +326,33 @@ Q_mat_chalkyLambda <- function(lambda, strat, prob_method="P_538_2022") {
   ### check
   # all(P_upper >= 1/2)
   
+  # d <- function(p) {
+  #   ### p is a vector of probabilities in [1/2, 1]
+  #   ### e.g.,   p = c(1/2, 5/8, 3/4, 7/8, 1)
+  #   temp = tibble(p - 1/2, 1 - p)
+  #   4 * do.call(pmin, temp)
+  # }
+  # ### check
+  # # d(P_upper)
+  # # P_upper[1:10]
+  # # d(P_upper)[1:10]
+  
   d <- function(p) {
     ### p is a vector of probabilities in [1/2, 1]
     ### e.g.,   p = c(1/2, 5/8, 3/4, 7/8, 1)
-    temp = tibble(p - 1/2, 1 - p)
-    4 * do.call(pmin, temp)
+    2*(p - 1/2)
   }
   ### check
   # d(P_upper)
   # P_upper[1:10]
   # d(P_upper)[1:10]
+  
+  d_A <- function(p) {
+    2*(p - 1/2)
+  }
+  d_B <- function(p) {
+    2*(1 - p)
+  }
   
   if (strat == 1) {
     Q_upper = (1-lambda)*P_upper + lambda*1
@@ -346,6 +363,26 @@ Q_mat_chalkyLambda <- function(lambda, strat, prob_method="P_538_2022") {
     Q_upper = (1-lambda_d)*P_upper + lambda_d*1
     ### check
     # all(Q_upper >= 1/2 & Q_upper <= 1)
+  } else if (strat == 3) {
+    if (0 <= lambda & lambda <= 1/2) {
+      L = 2*lambda
+      Q_upper = (1-L)*1/2 + L*P_upper
+    } else if (1/2 <= lambda & lambda <= 1) {
+      L = 2*(lambda-1/2)
+      Q_upper = (1-L)*P_upper + L*1
+    } else {
+      stop(paste0("lambda = ", lambda, " must be in [0,1]"))
+    }
+  } else if (strat == 4) {
+    if (0 <= lambda & lambda <= 1/2) {
+      L = 2*(1/2-lambda)*d_B(P_upper)
+      Q_upper = (1-L)*P_upper + L*1/2
+    } else if (1/2 <= lambda & lambda <= 1) {
+      L = 2*(lambda-1/2)*d_A(P_upper)
+      Q_upper = (1-L)*P_upper + L*1
+    } else {
+      stop(paste0("lambda = ", lambda, " must be in [0,1]"))
+    }
   } else {
     stop(paste0("strat = ", strat, " is not implemented in sample_n_brackets_chalkyLambda"))
   }
@@ -378,6 +415,10 @@ Q_mat_chalkyLambda <- function(lambda, strat, prob_method="P_538_2022") {
 # Q_mat_chalkyLambda(lambda=0.8, strat=2)[1:5,1:5]
 # Q_mat_chalkyLambda(lambda=1, strat=1)[1:5,1:5]
 # Q_mat_chalkyLambda(lambda=1, strat=2)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=1, strat=3)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=1, strat=4)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=0, strat=3)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=0, strat=4)[1:5,1:5]
 
 sample_n_brackets_chalkyLambda <- function(n, lambda, strat, prob_method="P_538_2022") {
   ### n is a positive integer (e.g., n = 1000)
