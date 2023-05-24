@@ -13,7 +13,7 @@
 #$ -t 1-2
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
-Rscript --vanilla b13_fmm_entropyTail_eMaxScore_df.R 1 ${SGE_TASK_ID} 2
+Rscript --vanilla b14_fmm_chalkyLambda_eMaxScore_df.R 1 ${SGE_TASK_ID} 2
 
 
 
