@@ -18,10 +18,16 @@ P_538_2022 = read.csv( paste0("../data/P_538_2022.csv"), row.names = 1, header= 
 # PROB_METHOD = "P_538_2022"
 # PROB_METHOD = "P1"
 
-P <- function(team_1s, team_2s, prob_method="P_538_2022") {
+P <- function(team_1s, team_2s, prob_method="P_538_2022", P_matrix=NULL) {
   if (prob_method == "P_538_2022") {
     ### team i beats team j according to ELO
     probs = P_538_2022[ cbind(team_1s, team_2s) ]
+  } else if (prob_method == "custom_P_matrix") {
+    if (is.null(P_matrix)) {
+      stop(paste0("to use prob_method = ", "custom_P_matrix, you must specify P_matrix"))
+    }
+    ### team i beats team j according to ELO
+    probs = P_matrix[ cbind(team_1s, team_2s) ]
   } else if (prob_method == "naive_chalky") {
     ### team i beats team j w.p. 0.90 if better seed
     seed_1s = (tibble(team_idx = team_1s) %>% left_join(START_OF_TOURNEY, by = "team_idx"))$seed
@@ -32,6 +38,16 @@ P <- function(team_1s, team_2s, prob_method="P_538_2022") {
     probs = rep(0.5, length(team_1s))
   } else {
     stop("prob_method not implemented in P function")
+  }
+  return(probs)
+}
+
+P_mat <- function(prob_method="P_538_2022") {
+  if (prob_method == "P_538_2022") {
+    ### team i beats team j according to ELO
+    probs = P_538_2022
+  } else {
+    stop(paste0("prob_method = ", prob_method, " is not implemented in P_mat function"))
   }
   return(probs)
 }
@@ -51,7 +67,7 @@ even <- function(x) x%%2 == 0
 sample_winners <- function(probs) { as.numeric( runif(n = length(probs)) <= probs ) }
 
 ### sample N brackets
-sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
+sample_n_brackets <- function(n, prob_method="P_538_2022", P_matrix=NULL, keep_probs=FALSE) {
   #####
   # n == number of brackets to be sampled
   # prob_method in {"P_538_2022", "naively_chalky"} 
@@ -68,7 +84,7 @@ sample_n_brackets <- function(n, prob_method="P_538_2022", keep_probs=FALSE) {
     team_1s = curr_rd[odd(1:length(curr_rd))]
     team_2s = curr_rd[even(1:length(curr_rd))]
     probs_actual = P(team_1s, team_2s)
-    probs_createBracket = P(team_1s, team_2s, prob_method=prob_method)
+    probs_createBracket = P(team_1s, team_2s, prob_method=prob_method, P_matrix=P_matrix)
     if (keep_probs) {
       tourney_n[[paste0("probs_rd",rd,"_n")]] = probs_actual
       tourney_n[[paste0("probs_createBracket_rd",rd,"_n")]] = probs_createBracket
@@ -295,6 +311,94 @@ sample_n_brackets_entropyRange <- function(n, hL, hU, prob_method="P_538_2022") 
 # bracket_set = sample_n_brackets_entropyRange(n, 46, 49)
 # entropies = compute_entropies(bracket_set)
 # c(min(entropies), max(entropies))
+
+#####################
+### Entropy Range ###
+#####################
+
+Q_mat_chalkyLambda <- function(lambda, strat, prob_method="P_538_2022") {
+  ### lambda is a real number between 0 and 1 (e.g., lambda=1/2)
+  ### strat in {1,2} denotes which chalky lambda strategy to use
+  ### return a matrix Q = Q{ij} 
+  
+  P_ = P_mat(prob_method = prob_method)
+  P_upper = P_[upper.tri(P_, diag = FALSE)]
+  ### check
+  # all(P_upper >= 1/2)
+  
+  d <- function(p) {
+    ### p is a vector of probabilities in [1/2, 1]
+    ### e.g.,   p = c(1/2, 5/8, 3/4, 7/8, 1)
+    temp = tibble(p - 1/2, 1 - p)
+    4 * do.call(pmin, temp)
+  }
+  ### check
+  # d(P_upper)
+  # P_upper[1:10]
+  # d(P_upper)[1:10]
+  
+  if (strat == 1) {
+    Q_upper = (1-lambda)*P_upper + lambda*1
+    ### check
+    # all(Q_upper >= 1/2 & Q_upper <= 1)
+  } else if (strat == 2) {
+    lambda_d = lambda * d(P_upper)
+    Q_upper = (1-lambda_d)*P_upper + lambda_d*1
+    ### check
+    # all(Q_upper >= 1/2 & Q_upper <= 1)
+  } else {
+    stop(paste0("strat = ", strat, " is not implemented in sample_n_brackets_chalkyLambda"))
+  }
+  ### check
+  # lambda = 0.5 #1
+  # P_upper_1 = seq(0.5,1,b=0.05)
+  # Q_upper_1 = (1-lambda)*P_upper_1 + lambda*1
+  # Q_upper_2 = (1-lambda*d(P_upper_1))*P_upper_1 + lambda*d(P_upper_1)*1
+  # tibble(lambda, P_upper_1, Q_upper_1, Q_upper_2)
+  
+  Q_upper_ = matrix(nrow=nrow(P_), ncol=ncol(P_))
+  Q_upper_[upper.tri(Q_upper_, diag = FALSE)] = Q_upper
+  # Q_upper_[1:5,1:5] ### check
+  Q_lower_ = 1 - t(Q_upper_)
+  # Q_lower_[1:5,1:5] ### check
+  Q_upper_[is.na(Q_upper_)] = 0
+  Q_lower_[is.na(Q_lower_)] = 0
+  diag(Q_upper_) = NA
+  diag(Q_lower_) = NA
+  Q_ = Q_upper_ + Q_lower_
+  # Q_[1:5,1:5] ### check
+  # (Q_ + t(Q_))[1:5,1:5] ### check
+
+  # browser()
+  
+  return(Q_)
+}
+# ### check
+# Q_mat_chalkyLambda(lambda=0.8, strat=1)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=0.8, strat=2)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=1, strat=1)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=1, strat=2)[1:5,1:5]
+
+sample_n_brackets_chalkyLambda <- function(n, lambda, strat, prob_method="P_538_2022") {
+  ### n is a positive integer (e.g., n = 1000)
+  ### lambda is a real number between 0 and 1 (e.g., lambda=1/2)
+  ### strat in {1,2} denotes which chalky lambda strategy to use
+  ### return n sampled brackets
+  
+  Q_ = Q_mat_chalkyLambda(lambda, strat, prob_method=prob_method)
+  bracket_set = sample_n_brackets(n, prob_method="custom_P_matrix", P_matrix=Q_)
+  # bracket_set = sample_n_brackets(n, prob_method="custom_P_matrix", P_matrix=Q_, keep_probs=TRUE) 
+  return(bracket_set)
+}
+
+# Q_mat_chalkyLambda(lambda=1, strat=1)[1:5,1:5]
+# sample_n_brackets_chalkyLambda(n=100, lambda=1, strat=1)
+# Q_mat_chalkyLambda(lambda=0.8, strat=2)[1:5,1:5]
+# sample_n_brackets_chalkyLambda(n=100, lambda=0.8, strat=2)
+# Q_mat_chalkyLambda(lambda=0.2, strat=2)[1:5,1:5]
+# sample_n_brackets_chalkyLambda(n=100, lambda=0.2, strat=2)
+# Q_mat_chalkyLambda(lambda=0, strat=2)[1:5,1:5]
+# sample_n_brackets_chalkyLambda(n=100, lambda=0, strat=2)
 
 #########################
 ### Bracket Diverstiy ###
