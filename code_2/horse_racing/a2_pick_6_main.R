@@ -57,49 +57,54 @@ alpha
 # m
 
 #############################
-### opponent's strategy R ###
+### lambda-chalky tickets ###
 #############################
 
-R_opp_tilted <- function(lambda,P,m) {
-  ### lambda in [0,1] is a tilt parameter measuring how chalky the opponents' strategy is
+lambda_a_chalky_P <- function(lambda,a,P) {
+  ### lambda in [0,1] is a tilt parameter measuring how chalky our strategy is
+  ### a in 1,...,m is a cutoff parameter indicating which horses we want to tilt upwards or downwards
   ### P is a probability matrix such that P[i,j] is the true probability that horse i wins race j
-  ### m is the vector m = (m_1,...,m_s) horses in each of the s races
-  ### output R, a probability matrix such that R[i,j] is the probability that an opponent picks horse i to win race j
-  R = matrix(0, nrow=nrow(P), ncol=ncol(P))
-  rownames(R) = rownames(P)
-  colnames(R) = colnames(P)
-  R
+  ### output a probability matrix Q such that Q[i,j] is the probability that we pick horse i to win race j
+  Q = matrix(0, nrow=nrow(P), ncol=ncol(P))
+  rownames(Q) = rownames(P)
+  colnames(Q) = colnames(P)
+  Q
   s = length(m) # number of horse races
   for (j in 1:s) {
-    m_j = m[j]
-    longshots = unname(which(P[,j] < 1/m_j))
-    favorites = unname(which(P[,j] >= 1/m_j))
-    for (i in longshots) {
-      R[i,j] = (1-lambda)*P[i,j]
+    m_j = unname(m[j])
+    if (1 <= a & a < m_j) {
+      cutoff = sort(P[,j], decreasing = TRUE)[a]
+      ###cutoff = 1/m_j
+      longshots = unname(which(P[,j] < cutoff))
+      favorites = unname(which(P[,j] >= cutoff))
+    } else {
+      stop(paste0("a = ", a, " is invalid"))
     }
-    G_j = sum(P[longshots,j] - R[longshots,j])
-    for (i in favorites) {
-      R[i,j] = P[i,j] + G_j * P[i,j]/sum(P[favorites,j])
+    # uniform dist
+    u = c(rep(1/m_j, m_j), rep(0,length(P[,j])-m_j)) 
+    # lambda-a chalky dist
+    c_a = rep(0, length(P[,j]))
+    c_a[favorites] = P[favorites,j]
+    c_a = c_a/sum(c_a) 
+    if (0 <= lambda & lambda <= 1/2) {
+      Q[,j] = (1-2*lambda)*u + (2*lambda)*P[,j]
+    } else if (1/2 <= lambda & lambda <= 1) {
+      Q[,j] = (1-2*(lambda-1/2))*P[,j] + (2*(lambda-1/2))*c_a
+    } else {
+      stop(paste0("lambda = ", lambda, " is invalid"))
     }
   }
-  R
+  Q
 }
-
 # ### check
-# colSums(R_opp_tilted(lambda=0,P,m))
-# R_opp_tilted(lambda=0,P,m)
-# P
-# colSums(R_opp_tilted(lambda=0.5,P,m))
-# R_opp_tilted(lambda=0.5,P,m)
-# P
-# colSums(R_opp_tilted(lambda=1,P,m))
-# R_opp_tilted(lambda=1,P,m)
-# P
-
-### an example
-R0 = R_opp_tilted(lambda=0,P,m)
-Rhalf = R_opp_tilted(lambda=0.5,P,m)
-R1 = R_opp_tilted(lambda=1,P,m)
+# lambda_a_chalky_P(lambda=0, a=3, P)
+# lambda_a_chalky_P(lambda=0.5, a=3, P)
+# all(lambda_a_chalky_P(lambda=0.5, a=3, P) == P)
+# lambda_a_chalky_P(lambda=1, a=3, P)
+# lambda_a_chalky_P(lambda=0.75, a=3, P)
+# colSums(lambda_a_chalky_P(lambda=0.75, a=3, P))
+# lambda_a_chalky_P(lambda=1, a=1, P)
+# lambda_a_chalky_P(lambda=1, a=6, P)
 
 ########################################################
 ### Expected Profit Procedure, vectorized over n,k,C ###
@@ -218,7 +223,7 @@ E_W_ratio <- function(P,Q,R,ns,ks,print_every_n=1e5) {
   # browser()
   for (i in 1:nrow(all_taus)) {
     tau = as.numeric(all_taus[i,])
-    if ((i-1) %% print_every_n == 0) print(paste0("iteration i=",i, " tau=",paste(tau,collapse=" ")))
+    if ((i-1) %% print_every_n == 0) print(paste0("iteration i=",i,"/",nrow(all_taus), " tau=",paste(tau,collapse=" ")))
     RESULT = RESULT + E_profit_term_given_tau(tau,P,Q,ns,R,ks,matrix_version = TRUE)
   }
   RESULT
@@ -253,9 +258,5 @@ E_profit <- function(P,Q,R,ns,ks,Cs,alphas,print_every_n=1e5) {
 ### check
 # E_profit(P,Q=P,R=P,ns=10^(1:6),ks=10^(1:6),Cs=c(0,2500,38000,1e5),alphas=c(0,0.05,0.18)) ### takes abt 1 minute
 # E_profit(P,Q=P,R=P,ns=10^(1:6),ks=10^(1:6),Cs=c(0,2500,38000,1e5),alphas=c(0,0.05,0.18)) ### takes abt 1 minute
-
-
-
-
 
 
