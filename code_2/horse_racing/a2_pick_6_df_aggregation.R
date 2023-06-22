@@ -1,5 +1,5 @@
 
-source("b11_smm_main.R")
+source("a2_pick_6_main.R")
 
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
