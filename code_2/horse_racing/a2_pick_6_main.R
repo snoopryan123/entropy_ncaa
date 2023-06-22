@@ -69,6 +69,9 @@ lambda_a_chalky_P <- function(lambda,a,P) {
   rownames(Q) = rownames(P)
   colnames(Q) = colnames(P)
   Q
+  ### m = (m_1,...,m_s), where m_j is the number of horses in race j,
+  ### which is the number of nonzero entries in P[,j]
+  m = colSums(P != 0)
   s = length(m) # number of horse races
   for (j in 1:s) {
     m_j = unname(m[j])
