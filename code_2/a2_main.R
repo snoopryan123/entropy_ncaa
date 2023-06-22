@@ -411,14 +411,23 @@ Q_mat_chalkyLambda <- function(lambda, strat, prob_method="P_538_2022") {
   return(Q_)
 }
 # ### check
-# Q_mat_chalkyLambda(lambda=0.8, strat=1)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=0.8, strat=2)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=1, strat=1)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=1, strat=2)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=1, strat=3)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=1, strat=4)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=0, strat=3)[1:5,1:5]
-# Q_mat_chalkyLambda(lambda=0, strat=4)[1:5,1:5]
+# Q_mat_chalkyLambda(lambda=0, strat=1)[1:5,1:5] # == P
+# Q_mat_chalkyLambda(lambda=1/2, strat=1)[1:5,1:5] # chalkier
+# Q_mat_chalkyLambda(lambda=1, strat=1)[1:5,1:5] # full chalk
+# 
+# Q_mat_chalkyLambda(lambda=0, strat=2)[1:5,1:5] # == P
+# Q_mat_chalkyLambda(lambda=1/2, strat=2)[1:5,1:5] # chalkier
+# Q_mat_chalkyLambda(lambda=1, strat=2)[1:5,1:5] # chalkier
+# 
+# Q_mat_chalkyLambda(lambda=1, strat=3)[1:5,1:5] # full chalk
+# Q_mat_chalkyLambda(lambda=1/2, strat=3)[1:5,1:5] # == P
+# Q_mat_chalkyLambda(lambda=0, strat=3)[1:5,1:5] # full 1/2
+# 
+# Q_mat_chalkyLambda(lambda=1, strat=4)[1:5,1:5] # chalkier
+# Q_mat_chalkyLambda(lambda=1/2, strat=4)[1:5,1:5] # == P
+# Q_mat_chalkyLambda(lambda=0, strat=4)[1:5,1:5] # rarer
+
+
 
 sample_n_brackets_chalkyLambda <- function(n, lambda, strat, prob_method="P_538_2022") {
   ### n is a positive integer (e.g., n = 1000)
