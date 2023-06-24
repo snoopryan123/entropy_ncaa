@@ -252,9 +252,8 @@ E_W_ratio <- function(P,Q,R,ns,ks,print_every_n=1e5) {
   RESULT = 0
   # browser()
   for (i in 1:nrow(all_taus)) {
-    if ((i-1) %% print_every_n == 0) print(paste0("iteration i=",i,"/",nrow(all_taus), " tau=",paste(tau,collapse=" ")))
-    
     tau = as.numeric(all_taus[i,])
+    if ((i-1) %% print_every_n == 0) print(paste0("iteration i=",i,"/",nrow(all_taus), " tau=",paste(tau,collapse=" ")))
     RESULT = RESULT + E_profit_term_given_tau(tau,P,Q,ns,R,ks,matrix_version = TRUE)
   }
   RESULT
