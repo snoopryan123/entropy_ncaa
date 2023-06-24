@@ -72,7 +72,7 @@ for (i in 1:nrow(GRID)) {
   results[[i]] = EP_i
 }
 results1 = bind_rows(results)
-results2 = results1 %>% left_join(GRID) %>% select(-i)
+results2 = results1 %>% left_join(GRID, multiple = "all") %>% select(-i)
 write_csv(results2, paste0(output_folder,"plot_grid_eProfit_v",version_,"_fold",fold_,".csv"))
 
 
