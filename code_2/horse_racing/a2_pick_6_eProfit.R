@@ -19,16 +19,9 @@ GRID1 = expand.grid(
 ) %>% as_tibble()
 GRID1
 
-# GRID1 = expand.grid(
-#   lambda = seq(0,1,by=0.05),
-#   a = 1:6,
-#   lambda_opp = seq(0.5,1,by=0.05),
-#   a_opp = 3
-# ) %>% as_tibble()
-# GRID1
-
 ### hyperparams
-ks = sort(unique(c(10^(1:6), 5000, 15000, 25000, 50000, 150000, 250000)))
+ks = sort(unique(c(10^(1:6), 5000, 15000, 25000, 50000, 150000, 250000, 500000, 750000, 1500000, 2e6)))
+# ks = 10^(1:8)
 ns = ks
 # ns = 10^(1:6)
 # Cs = c(0,2500,38016,1e5,1e6)
