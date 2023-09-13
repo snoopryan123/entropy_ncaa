@@ -7,6 +7,7 @@ plot_df2 = read_csv(paste0(output_folder,"plot_grid_eMaxScore_v2.csv"))
 plot_df2 = plot_df2 %>%
   group_by(q_cutoff,n) %>%
   mutate(max_score = ifelse(eMaxScore == max(eMaxScore), eMaxScore, NA)) %>%
+  mutate(eMaxScore = eMaxScore*10, max_score=max_score*10) %>%
   ungroup()
 
 # plot_df2 = plot_df2 %>% filter(n <= 100)
@@ -41,12 +42,12 @@ my_palette_npq_v0 = c(
 #   ylab("expected max Hamming score")
 # plot_eMaxWeightedScoreSmm
 
-
-# # q_cutoff_ = 4.5
+# 
+# q_cutoff_ = 4.5
 # for (q_cutoff_ in seq(1.5,5.5,by=1)) {
-#   
+# 
 #   plot_df2qc = plot_df2 %>% filter(q_cutoff == q_cutoff_)
-#   
+# 
 #   # title_ = paste0(
 #   #   paste0("p = ", unique(plot_df2qc$p), "\n"),
 #   #   paste0("q",(1:6)[1:6 < unique(plot_df2qc$q_cutoff)], " = qE", collapse=", "),
@@ -54,7 +55,7 @@ my_palette_npq_v0 = c(
 #   #   paste0("q",(1:6)[1:6 > unique(plot_df2qc$q_cutoff)], " = qL", collapse=", "),
 #   #   collapse=""
 #   # )
-#   
+# 
 #   title_ = paste0(
 #     # paste0("p = ", unique(plot_df2qc$p), "\n"),
 #     paste0("p = ", unique(plot_df2qc$p), ",  "),
@@ -65,8 +66,8 @@ my_palette_npq_v0 = c(
 #       paste0("q",(1:6)[1:6 > unique(plot_df2qc$q_cutoff)], collapse="="), "=qL"
 #     )
 #   )
-#   
-#   plot_eMaxWeightedScoreSmm = 
+# 
+#   plot_eMaxWeightedScoreSmm =
 #     plot_df2qc %>%
 #     mutate(
 #       n_ = paste0("n = ", n),
@@ -112,7 +113,7 @@ plot_eMaxWeightedScoreSmm =
   geom_point(aes(y = max_score), size=2, shape=21, stroke=1.5) +
   scale_color_manual(name="qL", values=my_palette_npq_v0) +
   theme(panel.spacing = unit(2, "lines")) +
-  labs(title = paste0("p = ", unique(plot_df2qc$p))) +
+  labs(title = paste0("p = ", unique(plot_df2$p))) +
   theme(text = element_text(size=40)) +
   theme(strip.text.x = element_text(size = 18)) +
   ylab("expected max ESPN score")

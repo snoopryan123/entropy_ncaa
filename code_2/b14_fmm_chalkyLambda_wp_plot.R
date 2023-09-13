@@ -19,6 +19,9 @@ plot_df_1 = plot_df %>%
   ungroup()
 plot_df_1
 
+#FIXME # changed this for the paper...
+plot_df_1 = plot_df_1 %>% mutate(strat = ifelse(strat == 3, 2, strat))
+
 my_palette_h_wp = c(
   brewer.pal(name="PuRd",n=9)[3:8]
   # rev(brewer.pal(name="Reds",n=9)[4:8]), 

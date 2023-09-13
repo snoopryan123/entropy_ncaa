@@ -12,7 +12,7 @@ plot_df_1 = plot_df %>%
   mutate(max_wp = ifelse(wp==max(wp), wp, NA) ) %>%
   mutate(
     opp_prob_method = case_when(
-      opp_prob_method == "naive_chalky" ~ "naively chalky",
+      opp_prob_method == "naive_chalky" ~ "colloquially-chalky",
       TRUE ~ opp_prob_method
     )
   ) %>%
