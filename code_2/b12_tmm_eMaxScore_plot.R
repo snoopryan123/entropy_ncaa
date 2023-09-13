@@ -50,37 +50,54 @@ plot_df_tmmEHam2 = plot_df_tmmEHam2 %>%
   mutate(max_score = ifelse(eMaxHammingScore == max(eMaxHammingScore), eMaxHammingScore, NA)) %>%
   ungroup()
 
-plot_eMaxHammingScoreTmm_2 = 
-  plot_df_tmmEHam2 %>% 
-  # filter(n %in% c(1,10,100,10000)) %>%
-  filter(n %in% c(1,10,100)) %>%
-  group_by(q_cutoff) %>%
-  mutate(
-    n_ = paste0("n=", n, ",  "),
-    qE_str = paste0(
-      paste0("q",(1:6)[1:6 < q_cutoff[1]], collapse="="), "=qE,  "
-    ),
-    qL_str = paste0(
-      paste0("q",(1:6)[1:6 > q_cutoff[1]], collapse="="), "=qL"
-    ),
-    nq_ = paste0(n_, qE_str, qL_str)
-  ) %>%
-  ungroup() %>%
-  ggplot(aes(x=qE,color=factor(qL),y=eMaxHammingScore)) +
-  # facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=4) +
-  facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=3) +
-  geom_line(linewidth=1) +
-  geom_point(aes(y = max_score), size=2, shape=21, stroke=1.5) +
-  scale_color_manual(name="qL", values=my_palette_npq_v0) +
-  theme(panel.spacing = unit(2, "lines")) +
-  labs(title = paste0("p = ", unique(plot_df_tmmEHam2$p))) +
-  theme(text = element_text(size=40)) +
-  theme(strip.text.x = element_text(size = 18)) +
-  ylab("expected max Hamming score")
-# plot_eMaxWeightedScoreSmm
-ggsave(paste0(output_folder,"plot_eMaxHammingScoreTmm_v2",".png"),
-       width=20, height=18)
+for (clipped_ in c(TRUE,FALSE)) {
+  # clipped_ = TRUE
 
+  plot_eMaxHammingScoreTmm_2 = 
+    plot_df_tmmEHam2 %>% 
+    # filter(n %in% c(1,10,100,10000)) %>%
+    filter(n %in% c(1,10,100)) %>%
+    mutate(clipped = clipped_) %>%
+    filter(ifelse(clipped, 
+                  q_cutoff < 4.5,
+                  TRUE)) %>%
+    group_by(q_cutoff) %>%
+    mutate(
+      n_ = paste0("n=", n, ",  "),
+      qE_str = paste0(
+        paste0("q",(1:6)[1:6 < q_cutoff[1]], collapse="="), "=qE,  "
+      ),
+      qL_str = paste0(
+        paste0("q",(1:6)[1:6 > q_cutoff[1]], collapse="="), "=qL"
+      ),
+      nq_ = paste0(n_, qE_str, qL_str)
+    ) %>%
+    ungroup() %>%
+    ggplot(aes(x=qE,color=factor(qL),y=eMaxHammingScore)) +
+    # facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=4) +
+    facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=3) +
+    geom_line(linewidth=1) +
+    geom_point(aes(y = max_score), size=2, shape=21, stroke=1.5) +
+    scale_color_manual(name="qL", values=my_palette_npq_v0) +
+    labs(title = paste0("p = ", unique(plot_df_tmmEHam2$p))) +
+    theme(
+      plot.title = element_text(size = if (clipped_) 40 else 70),
+      strip.text.x = element_text(size = if (clipped_) 19 else 18),
+      axis.text.x = element_text(size = if (clipped_) 30 else 40),
+      axis.text.y = element_text(size = if (clipped_) 30 else 40),
+      axis.title.x = element_text(size = if (clipped_) 40 else 80),
+      axis.title.y = element_text(size = if (clipped_) 40 else 80),
+      legend.title = element_text(size = if (clipped_) 35 else 70), 
+      legend.text  = element_text(size = if (clipped_) 35 else 50),
+      legend.key.size = unit(if (clipped_) 1 else 2, "lines"),
+      panel.spacing = unit(1.5, "lines")
+    ) +
+    ylab("expected max Hamming score")
+    # plot_eMaxHammingScoreTmm_2
+    ggsave(paste0(output_folder,"plot_eMaxHammingScoreTmm_v2",if (clipped_) "_clipped",".png"),
+            width=if (clipped_) 18 else 20, height=if (clipped_) 12 else 18
+           )
+}
 
 ###########################################################
 ### Plot Expected Max ESPN Score for Grid 2 (qE, qL) ###
@@ -97,37 +114,55 @@ plot_df_tmmESPN3 = plot_df_tmmESPN3 %>%
   mutate(max_score = ifelse(eMaxScore == max(eMaxScore), eMaxScore, NA)) %>%
   ungroup()
 
-plot_eMaxESPNScoreTmm_3 = 
-  plot_df_tmmESPN3 %>% 
-  # filter(n %in% c(1,10,100,10000)) %>%
-  filter(n %in% c(1,10,100)) %>%
-  group_by(q_cutoff) %>%
-  mutate(
-    n_ = paste0("n=", n, ",  "),
-    qE_str = paste0(
-      paste0("q",(1:6)[1:6 < q_cutoff[1]], collapse="="), "=qE,  "
-    ),
-    qL_str = paste0(
-      paste0("q",(1:6)[1:6 > q_cutoff[1]], collapse="="), "=qL"
-    ),
-    nq_ = paste0(n_, qE_str, qL_str)
-  ) %>%
-  ungroup() %>%
-  ggplot(aes(x=qE,color=factor(qL),y=eMaxScore)) +
-  # facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=4) +
-  facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=3) +
-  geom_line(linewidth=1) +
-  geom_point(aes(y = max_score), size=3, shape=31, stroke=1.5) +
-  scale_color_manual(name="qL", values=my_palette_npq_v0) +
-  theme(panel.spacing = unit(3, "lines")) +
-  labs(title = paste0("p = ", unique(plot_df_tmmESPN3$p))) +
-  theme(text = element_text(size=40)) +
-  theme(strip.text.x = element_text(size = 18)) +
-  ylab("expected max ESPN score")
-# plot_eMaxWeightedScoreSmm
-ggsave(paste0(output_folder,"plot_eMaxESPNScoreTmm_v3",".png"),
-       width=20, height=18)
 
+for (clipped_ in c(TRUE,FALSE)) {
+  # clipped_ = TRUE
+  
+  plot_eMaxESPNScoreTmm_3 = 
+    plot_df_tmmESPN3 %>% 
+    # filter(n %in% c(1,10,100,10000)) %>%
+    filter(n %in% c(1,10,100)) %>%
+    mutate(clipped = clipped_) %>%
+    filter(ifelse(clipped, 
+                  q_cutoff < 4.5,
+                  TRUE)) %>%
+    group_by(q_cutoff) %>%
+    mutate(
+      n_ = paste0("n=", n, ",  "),
+      qE_str = paste0(
+        paste0("q",(1:6)[1:6 < q_cutoff[1]], collapse="="), "=qE,  "
+      ),
+      qL_str = paste0(
+        paste0("q",(1:6)[1:6 > q_cutoff[1]], collapse="="), "=qL"
+      ),
+      nq_ = paste0(n_, qE_str, qL_str)
+    ) %>%
+    ungroup() %>%
+    ggplot(aes(x=qE,color=factor(qL),y=eMaxScore)) +
+    # facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=4) +
+    facet_wrap(~fct_reorder(nq_,q_cutoff), ncol=3) +
+    geom_line(linewidth=1) +
+    geom_point(aes(y = max_score), size=3, shape=31, stroke=1.5) +
+    scale_color_manual(name="qL", values=my_palette_npq_v0) +
+    labs(title = paste0("p = ", unique(plot_df_tmmESPN3$p))) +
+    theme(
+      plot.title = element_text(size = if (clipped_) 40 else 70),
+      strip.text.x = element_text(size = if (clipped_) 19 else 18),
+      axis.text.x = element_text(size = if (clipped_) 30 else 40),
+      axis.text.y = element_text(size = if (clipped_) 30 else 40),
+      axis.title.x = element_text(size = if (clipped_) 40 else 80),
+      axis.title.y = element_text(size = if (clipped_) 40 else 80),
+      legend.title = element_text(size = if (clipped_) 35 else 70), 
+      legend.text  = element_text(size = if (clipped_) 35 else 50),
+      legend.key.size = unit(if (clipped_) 1 else 2, "lines"),
+      panel.spacing = unit(1.5, "lines")
+    ) +
+    ylab("expected max ESPN score")
+  plot_eMaxESPNScoreTmm_3
+  ggsave(paste0(output_folder,"plot_eMaxESPNScoreTmm_v3",if (clipped_) "_clipped",".png"),
+         width=if (clipped_) 18 else 20, height=if (clipped_) 12 else 18
+  )
+}
 
 
 

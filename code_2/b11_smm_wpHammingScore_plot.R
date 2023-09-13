@@ -20,12 +20,14 @@ my_palette_nk1 = c(
 
 for (p_ in unique(plot_df$p)) {
   for (k_ in unique(plot_df$k)) {
+  # p_ = 0.75
+  # k_ = 100
   plot_wp1_kp =
     plot_df %>%
     filter(p == p_ & k == k_) %>%
     mutate(n_ = paste0("n = ", n)) %>%
     ggplot(aes(y=q, x=r)) +
-    facet_wrap(~n_) +
+    facet_wrap(~n_,nrow=1) +
     theme(panel.spacing = unit(2, "lines")) +
     labs(title=paste0("k = ", k_, ", p = ", p_)) +
     geom_tile(aes(fill=wp)) +
@@ -34,12 +36,13 @@ for (p_ in unique(plot_df$p)) {
     geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
     # scale_fill_gradientn(name="win\nprobability", colours = terrain.colors(7))
     scale_fill_gradientn(name="win\nprobability", colours = rev(terrain.colors(7)))
-  plot_wp1_kp
+  # plot_wp1_kp
   ggsave(
     paste0(output_folder, "plot_wpHammingScore_k",format(k_, scientific=T),"p",p_,".png"), 
     plot_wp1_kp,
     # width=12,height=10
-    width=10,height=8
+    width=16,height=4
+    # width=10,height=8
   )
   
   # plot_wp2_kp =
