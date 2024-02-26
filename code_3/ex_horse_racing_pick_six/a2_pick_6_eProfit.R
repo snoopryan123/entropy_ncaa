@@ -15,9 +15,13 @@ num_folds_ = as.numeric(args[3])
 ### Parallelize ###
 ###################
 
+print("num horses in each race:")
+apply(P, MARGIN=2, FUN=function(x) sum(x!=0))
+
 GRID1 = expand.grid(
   lambda = c(0.5, 1, 1.25, 1.5, 2),
-  a = (1:nrow(P))/nrow(P),
+  # a = (1:nrow(P))/nrow(P),
+  a = seq(1/10, 1, by=1/10),
   lambda_opp = c(1/4, 1/2, 2/3, 4/5, 1, 5/4, 3/2, 2, 4)
 ) %>% as_tibble()
 GRID1
