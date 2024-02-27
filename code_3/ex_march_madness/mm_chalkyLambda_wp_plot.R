@@ -1,13 +1,23 @@
 
+###################
+filewd = getwd()
+setwd("..")
 source("a2_main.R")
-output_folder = "./plot_14/"
+setwd(filewd)
+###################
 
-plot_df = bind_rows(
-  read_csv(paste0(output_folder, "plot_grid_wp_fmm_chalkyLambda_v1_fold_1.csv")),
-  read_csv(paste0(output_folder, "plot_grid_wp_fmm_chalkyLambda_v1_fold_2.csv"))
-)
+output_folder = "./plots/"
+num_folds_ = 19
 
-plot_df_1 = plot_df %>% 
+plot_df = tibble()
+for (fold in 1:num_folds_) {
+  df_fold = read_csv(paste0(output_folder, "plot_grid_wp_fmm_chalkyLambda_v1_fold_",fold,".csv"), show_col_types = F)
+  df_fold$fold = fold
+  plot_df = bind_rows(plot_df, df_fold)
+}
+
+plot_df_1 = 
+  plot_df %>% 
   pivot_longer(cols=c("wpESPN_scores", "wpHamming_scores")) %>%
   rename(scoring_function = name) %>%
   rename(wp = value) %>%
@@ -19,9 +29,6 @@ plot_df_1 = plot_df %>%
   ungroup()
 plot_df_1
 
-#FIXME # changed this for the paper...
-plot_df_1 = plot_df_1 %>% mutate(strat = ifelse(strat == 3, 2, strat))
-
 my_palette_h_wp = c(
   brewer.pal(name="PuRd",n=9)[3:8]
   # rev(brewer.pal(name="Reds",n=9)[4:8]), 
@@ -29,73 +36,36 @@ my_palette_h_wp = c(
   # brewer.pal(name="Blues",n=9)[3:8]
 )
 
-#######################################
-### Plot Expected Max Hamming Score ###
-#######################################
+###############
+### Plot WP ###
+###############
 
-for (strat_ in unique(plot_df_1$strat)) {
-  for (opp_ in unique(plot_df_1$opp_prob_method)) {
-    for (k_ in unique(plot_df_1$k)) {
-      opp_str = case_when(
-        opp_ == "naive_chalky" ~ "naively chalky",
-        TRUE ~ opp_
-      )
-      pltttt = 
-        plot_df_1 %>%
-        filter(k == k_) %>%
-        filter(opp_prob_method == opp_) %>%
-        filter(strat == strat_) %>%
-        mutate(
-          # n_ = paste0("n = ", n),
-          n_ = paste0(n),
-          k_ = paste0(k),
-          scoring_function = factor(scoring_function, levels=c("Hamming","ESPN"))
-        ) %>%
-        # filter(n >= 100) %>% #FIXME
-        ggplot(aes(color = n_, x = lambda, y = wp)) + 
-        facet_wrap(~scoring_function, scales="free_y") +
-        geom_line(linewidth=1) +
-        xlab(TeX("$\\lambda$")) +
-        ylab("win probability") +
-        # labs(title=TeX(paste0("$\\lambda$-strategy ", strat_))) +
-        # labs(title=paste0("k = ", k_, ", ", opp_, " opponents")) +
-        labs(title=TeX(paste0("k = ", k_, ", ", opp_str, " opponents, ", "$\\lambda$-strategy ", strat_))) +
-        scale_color_manual(name="n", values=my_palette_h_wp) +
-        geom_point(aes(y=max_wp), shape=21, size=2.5, stroke=0.5)
-      pltttt
-      ggsave(paste0(output_folder, "plot_fmm_chalkyLambda_wp_k=",k_,"_opp=",opp_,"_strat=",strat_,".png"),
-             width=12, height=5)
-    }
-  }
-}
+k_ = 10000
+opp_str = "naively chalky"
+pltttt = 
+  plot_df_1 %>%
+  mutate(
+    opp_prob_method = 
+      ifelse(opp_prob_method == "naive_chalky", "naively chalky", opp_prob_method)
+  ) %>%
+  filter(
+    k == k_,
+    scoring_function == "ESPN",
+    opp_prob_method == opp_str,
+    strat == 3,
+  ) %>%
+  filter(n %in% c(100, 500, 1000, 10000)) %>%
+  mutate(n_ = paste0(n), n_=fct_reorder(n_, n), k_ = paste0(k), k_=fct_reorder(k_, k),) %>%
+  ggplot(aes(color = n_, x = lambda, y = wp)) + 
+  geom_line(linewidth=1) +
+  xlab(TeX("$\\lambda$")) +
+  ylab("win probability") +
+  scale_x_continuous(breaks=seq(0,1,by=0.1)) +
+  labs(title=TeX(paste0("k = ", k_, " ", opp_str, " opponents"))) +
+  scale_color_manual(name="n", values=my_palette_h_wp) +
+  geom_point(aes(y=max_wp), shape=21, size=2.5, stroke=0.5)
+# pltttt
+ggsave(paste0(output_folder, "plot_mm_chalkyLambda_wp.png"), width=10, height=6)
 
-
-#############################################################
-### Which strategy is the best at each (n,k,ScoreFunc) ?? ###
-#############################################################
-
-df1 = bind_rows(
-  plot_df %>% mutate(strat = paste0("lambda_strategy_",strat)),
-  read_csv(paste0("plot_13/", "plot_grid_wp_fmm_v1_fold_1.csv")) %>% 
-    # select(-c(entropy_cutoff,left_tail)) %>% 
-    mutate(strat = "entropy_tail"),
-)
-
-df2 = df1 %>%
-  filter(n >= 100) %>%
-  group_by(n,k,strat) %>%
-  summarise(
-    wpHamming_score = max(wpHamming_scores),
-    wpESPN_score    = max(wpESPN_scores),
-    .groups = "drop"
-  )
-df2
-
-
-df_strats_wpHamming_score = spread(df2 %>% select(-wpESPN_score),  strat, wpHamming_score)
-df_strats_wpHamming_score
-
-df_strats_wpESPN_score    = spread(df2 %>% select(-wpHamming_score),  strat, wpESPN_score)
-df_strats_wpESPN_score
 
 
