@@ -2,9 +2,84 @@
 source("a2_pick_6_main.R")
 
 plot_df0 = read_csv("plots/plot_grid_eProfit_v1.csv")
-plot_df1 = plot_df0 %>% 
-  ### get just one opp. strategy
-  filter(lambda_opp == 0.8) %>%
+plot_df1 = 
+  plot_df0 %>% 
+  group_by(C,alpha,k,lambda_opp) %>%
+  mutate(
+    max_E_profit = max(E_profit)
+  )
+plot_df1
+
+Cs = unique(plot_df1$C)
+alphas = unique(plot_df1$alpha)
+ks = unique(plot_df1$k)
+
+# C_ = 38016
+C_ = 1000000
+alpha_ = 0.05
+k_ = 1000000
+
+plot_df2 = plot_df1 %>% filter(C == C_, alpha == alpha_, k == k_)
+
+data.frame(
+  plot_df1 %>% 
+    group_by(C,alpha,k,lambda_opp) %>%
+    summarise(
+      max_E_profit = max(E_profit),
+      n = n[which(E_profit == max(E_profit))[1]]
+    )
+)
+
+plot_df1 %>%
+  filter(C == C_, alpha == alpha_, k == k_) %>%
+  distinct() %>%
+  ggplot(aes(x = factor(lambda_opp), y=E_profit, color=factor(n))) +
+  # ggplot(aes(x = factor(lambda_opp), y=E_profit, color=factor(n))) +
+  # xlab("index(a)") +
+  # labs(title=TeX(paste0("$\\lambda = 1, \\alpha = 0.05,$ C = ", C_)), color="n") +
+  # ggplot(aes(x = factor(n), y=E_profit, color=factor(index_a))) +
+  # xlab("n") +
+  # labs(title=TeX("$\\lambda = 1, \\alpha = 0.05, C = 38016$"), color="index(a)") +
+  theme(axis.text.x = element_text(size=12)) +
+  # facet_wrap(~k_str) +
+  # facet_wrap(~ factor(lambda_opp), scales = "free") +
+  geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
+  geom_point(size=4, alpha=0.7) +
+  ylab("expected profit") 
+
+x
+
+
+
+
+
+plot_df1 %>%
+  filter(C == C_, alpha == alpha_, k == k_) %>%
+  distinct() %>%
+  ggplot(aes(x = factor(lambda_opp), y=E_profit, color=factor(n))) +
+  # ggplot(aes(x = factor(lambda_opp), y=E_profit, color=factor(n))) +
+  # xlab("index(a)") +
+  # labs(title=TeX(paste0("$\\lambda = 1, \\alpha = 0.05,$ C = ", C_)), color="n") +
+  # ggplot(aes(x = factor(n), y=E_profit, color=factor(index_a))) +
+  # xlab("n") +
+  # labs(title=TeX("$\\lambda = 1, \\alpha = 0.05, C = 38016$"), color="index(a)") +
+  theme(axis.text.x = element_text(size=12)) +
+  # facet_wrap(~k_str) +
+  # facet_wrap(~ factor(lambda_opp), scales = "free") +
+  geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
+  geom_point(size=4, alpha=0.7) +
+  ylab("expected profit") 
+
+x
+
+
+
+
+
+
+
+
+  
   ### clean the df
   select(-c(E_W_ratio, t)) %>% 
   relocate(C, .before=n) %>%
