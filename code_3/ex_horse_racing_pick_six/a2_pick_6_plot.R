@@ -19,23 +19,22 @@ alphas
 ks
 
 # C_ = 38016
-C_ = 100000
+# C_ = 100000
 alpha_ = 0.05
 k_ = 1000000
 
-plot_df2 = plot_df1 %>% filter(C == C_, alpha == alpha_, k == k_)
+# data.frame(
+#   plot_df1 %>% 
+#     group_by(C,alpha,k,lambda_opp) %>%
+#     summarise(
+#       max_E_profit = max(E_profit),
+#       n = n[which(E_profit == max(E_profit))[1]]
+#     )
+# )
 
-data.frame(
-  plot_df1 %>% 
-    group_by(C,alpha,k,lambda_opp) %>%
-    summarise(
-      max_E_profit = max(E_profit),
-      n = n[which(E_profit == max(E_profit))[1]]
-    )
-)
-
-plot_df1 %>%
-  filter(lambda_opp < 4) %>%
+plot_picksix_1 = 
+  plot_df1 %>%
+  # filter(lambda_opp < 4) %>%
   # filter(C == C_, alpha == alpha_, k == k_) %>%
   filter(C %in% c(38016, 1e6)) %>%
   filter(alpha == alpha_, k == k_) %>%
@@ -44,13 +43,15 @@ plot_df1 %>%
          C_str = fct_reorder(C_str, C)) %>%
   mutate(lambda_opp = round(lambda_opp, 3)) %>%
   ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
-  labs(title=TeX("$\\lambda = 1, \\alpha = 0.05$"), color="n") +
+  labs(title=TeX("$\\lambda = 1, \\alpha = 0.05, k = 1000000$"), color="n") +
   theme(axis.text.x = element_text(size=12)) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
   facet_wrap(~ C_str, scales="free_y") +
   xlab(TeX("$\\lambda_{opp}$")) +
+  theme(legend.text = element_text(size=12)) +
   geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
   geom_point(size=2, shape=21, stroke=2) +
   ylab("expected profit") 
-
+# plot_picksix_1
+ggsave(paste0(output_folder, "plot_picksix_1.png"), plot_picksix_1, width=11, height=5)
 
