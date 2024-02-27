@@ -83,8 +83,8 @@ if (SAVEPHOTOS | !file.exists(fname)) {
   # lambda_opps = c(2.5, 5, 10)
   # lambda_opps = seq(1, 5, length.out=11)
   # lambda_opps = sort(unique(c(1/lambda_opps, 1, lambda_opps)))
-  K = 8
-  lambda_opps = sort(unique(c(seq(1/5, 1, length.out=K), seq(1, 5, length.out=K))))
+  KKKKK = 8
+  lambda_opps = sort(unique(c(seq(1/5, 1, length.out=KKKKK), seq(1, 5, length.out=KKKKK))))
   plot_df = tibble()
   for (lambda_opp in lambda_opps) {
     r_l = tilted_P_divMax(P, lambda_opp = lambda_opp)[,"race 6"]
