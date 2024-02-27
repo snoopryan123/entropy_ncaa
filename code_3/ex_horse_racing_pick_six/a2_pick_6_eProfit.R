@@ -35,7 +35,7 @@ ns = c(
   seq(1/10, 1, by=1/10)*1e5,
   seq(1/10, 1, by=1/10)*1e6
 )
-Cs = c(38016, 1e6)
+Cs = c(38016, 1e5, 1e6)
 alphas = c(0.05)
 
 print(paste0("version_=",version_))
