@@ -77,7 +77,14 @@ tilted_P_divMax <- function(P, lambda_opp) {
 ### VISUALIZE
 fname = paste0(output_folder, "plot_tilted_P_divMax.png")
 if (SAVEPHOTOS | !file.exists(fname)) {
-  lambda_opps = c(0.25, 0.5, 2/3, 0.8, 1, 1.25, 1.5, 2, 4)
+  # lambda_opps = c(0.25, 0.5, 2/3, 0.8, 1, 1.25, 1.5, 2, 4)
+  # lambda_opps = c(1.25, 1.5, 2, 2.5, 3, 3.5, 4)
+  # lambda_opps = c(2, 3, 4, 5)
+  # lambda_opps = c(2.5, 5, 10)
+  # lambda_opps = seq(1, 5, length.out=11)
+  # lambda_opps = sort(unique(c(1/lambda_opps, 1, lambda_opps)))
+  K = 8
+  lambda_opps = sort(unique(c(seq(1/5, 1, length.out=K), seq(1, 5, length.out=K))))
   plot_df = tibble()
   for (lambda_opp in lambda_opps) {
     r_l = tilted_P_divMax(P, lambda_opp = lambda_opp)[,"race 6"]
@@ -87,12 +94,15 @@ if (SAVEPHOTOS | !file.exists(fname)) {
   }
   plot_tilted_P_divMax = 
     plot_df %>%
-    mutate(lambda_opp = paste0("lambda opp = ", round(lambda_opp,2))) %>%
+    mutate(
+      lambda_opp_str = paste0("lambda opp = ", round(lambda_opp,2)), 
+      lambda_opp_str = fct_reorder(lambda_opp_str, lambda_opp)
+    ) %>%
     ggplot(aes(x = i, y = r)) +
-    facet_wrap(~factor(lambda_opp)) +
+    facet_wrap(~factor(lambda_opp_str), nrow=3) +
     geom_col(fill="black")
   # plot_tilted_P_divMax
-  ggsave(fname, plot_tilted_P_divMax, width=9, height=6)
+  ggsave(fname, plot_tilted_P_divMax, width=15, height=7)
 }
 
 tilted_P <- function(P, lambda, a) {

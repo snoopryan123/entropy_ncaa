@@ -3,7 +3,11 @@ source("a2_pick_6_main.R")
 
 ### since this is so computationally intensive, split into folds
 args = commandArgs(trailingOnly=TRUE)
-version_ = as.numeric(args[1])
+if (length(args) > 0) {
+  version_ = as.numeric(args[1])
+} else {
+  version_ = 1
+}
 
 #FIXME
 if (version_ == 1) {

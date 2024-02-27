@@ -22,7 +22,8 @@ GRID1 = expand.grid(
   lambda = c(0.5, 1, 1.25, 1.5, 2),
   # a = (1:nrow(P))/nrow(P),
   a = seq(1/10, 1, by=1/10),
-  lambda_opp = c(1/4, 1/2, 2/3, 4/5, 1, 5/4, 3/2, 2, 4)
+  # lambda_opp = c(1/4, 1/2, 2/3, 4/5, 1, 5/4, 3/2, 2, 4)
+  lambda_opp = sort(unique(c(seq(1/5, 1, length.out=K), seq(1, 5, length.out=K))))
 ) %>% as_tibble()
 GRID1
 
@@ -35,7 +36,7 @@ ns = c(
   seq(1/10, 1, by=1/10)*1e5,
   seq(1/10, 1, by=1/10)*1e6
 )
-Cs = c(38016, 1e5, 1e6)
+Cs = c(38016, 1e6)
 alphas = c(0.05)
 
 print(paste0("version_=",version_))
