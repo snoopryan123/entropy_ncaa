@@ -3,7 +3,7 @@
 
 #$ -N mm_chalkyLambda_wp_df_v1
 #$ -j y
-#$ -m e -M ryguy123@sas.upenn.edu 
+####$ -m e -M ryguy123@sas.upenn.edu 
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 
 ## MORE RAM

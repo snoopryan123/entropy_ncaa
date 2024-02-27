@@ -54,6 +54,30 @@ colnames(P) = paste("race",1:ncol(P))
 rownames(P) = paste("horse",1:nrow(P))
 P
 
+### VISUALIZE
+fname = paste0(output_folder, "plot_P.png")
+if (SAVEPHOTOS | !file.exists(fname)) {
+  plot_df_P = as_tibble(P)
+  plot_df_P1 = 
+    plot_df_P %>%
+    pivot_longer(everything(), names_to = "race", values_to = "p") %>%
+    # mutate(j = as.numeric(str_remove(race, "race "))) %>%
+    mutate(j = race) %>%
+    group_by(race) %>%
+    mutate(i = 1:n()) %>%
+    ungroup()
+  plot_df_P1
+  plot_P = 
+    plot_df_P1 %>%
+    ggplot(aes(x = i, y = p)) +
+    facet_wrap(~ j) +
+    xlab("horse index i") + ylab("true win probability p") +
+    scale_x_continuous(breaks=seq(1,16,by=4)) +
+    geom_col(fill="black")
+  # plot_P
+  ggsave(fname, plot_P, width=8, height=4)
+}
+
 ###################################
 ### lambda-tilted probabilities ###
 ###################################
@@ -100,6 +124,8 @@ if (SAVEPHOTOS | !file.exists(fname)) {
     ) %>%
     ggplot(aes(x = i, y = r)) +
     facet_wrap(~factor(lambda_opp_str), nrow=3) +
+    xlab("horse index i") + 
+    ylab("probability r that opponents \n select horse i to win") +
     geom_col(fill="black")
   # plot_tilted_P_divMax
   ggsave(fname, plot_tilted_P_divMax, width=15, height=7)
@@ -163,6 +189,8 @@ if (SAVEPHOTOS | !file.exists(fname)) {
     mutate(a = paste0("a = ", round(a,3))) %>%
     ggplot(aes(x = i, y = q)) +
     facet_wrap(~factor(a) + factor(lambda), ncol=length(lambdas)) +
+    xlab("horse index i") + 
+    ylab("probability q that we select horse i to win") +
     geom_col(fill="black")
   # plot_tilted_P
   ggsave(fname, plot_tilted_P, width=12, height=17)

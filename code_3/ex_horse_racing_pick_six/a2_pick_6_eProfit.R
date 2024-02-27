@@ -28,24 +28,32 @@ GRID1 = expand.grid(
 GRID1
 
 ### hyperparams
-ks = 1e6
-ns = c(
-  0,
-  seq(1/10, 1, by=1/10)*1e3,
-  seq(1/10, 1, by=1/10)*1e4,
-  seq(1/10, 1, by=1/10)*1e5,
-  seq(1/10, 1, by=1/10)*1e6
-)
 Cs = c(38016, 1e6)
 alphas = c(0.05)
 
 print(paste0("version_=",version_))
 if (version_ == 1) {
-  GRID = GRID1
-  GRID
+  ks = 1e6
+  ns = c(
+    0,
+    seq(1/10, 1, by=1/10)*1e3,
+    seq(1/10, 1, by=1/10)*1e4,
+    seq(1/10, 1, by=1/10)*1e5,
+    seq(1/10, 1, by=1/10)*1e6
+  )
+} else if (version_ == 2) {
+  ks = 2.5*1e4
+  ns = c(
+    0,
+    seq(1/10, 1, by=1/10)*2.5*1e2,
+    seq(1/10, 1, by=1/10)*2.5*1e3,
+    seq(1/10, 1, by=1/10)*2.5*1e4
+  )
 } else {
   stop("this version_ has not yet been implemented")
 }
+GRID = GRID1
+GRID
 
 ### parallelize
 df_folds_0 =
