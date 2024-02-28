@@ -10,7 +10,7 @@ if (length(args) > 0) {
 }
 
 #FIXME
-if (version_ == 1) {
+if (version_ == 1 | version_ == 2) {
   num_folds_parralelization_ = 45
 } else {
   stop("")

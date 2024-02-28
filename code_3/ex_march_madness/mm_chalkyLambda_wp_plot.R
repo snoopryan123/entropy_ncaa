@@ -41,12 +41,12 @@ my_palette_h_wp = c(
 ###############
 
 k_ = 10000
-opp_str = "naively chalky"
+opp_str = "colloquially chalky"
 pltttt = 
   plot_df_1 %>%
   mutate(
     opp_prob_method = 
-      ifelse(opp_prob_method == "naive_chalky", "naively chalky", opp_prob_method)
+      ifelse(opp_prob_method == "naive_chalky", "colloquially chalky", opp_prob_method)
   ) %>%
   filter(
     k == k_,

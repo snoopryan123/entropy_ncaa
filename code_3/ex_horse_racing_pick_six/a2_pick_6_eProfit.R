@@ -28,11 +28,11 @@ GRID1 = expand.grid(
 GRID1
 
 ### hyperparams
-Cs = c(38016, 1e6)
 alphas = c(0.05)
 
 print(paste0("version_=",version_))
 if (version_ == 1) {
+  Cs = c(38016, 1e6)
   ks = 1e6
   ns = c(
     0,
@@ -42,6 +42,7 @@ if (version_ == 1) {
     seq(1/10, 1, by=1/10)*1e6
   )
 } else if (version_ == 2) {
+  Cs = c(5e4, 1e5, 2.5e5, 5e5, 1e6)
   ks = 2.5*1e4
   ns = c(
     0,

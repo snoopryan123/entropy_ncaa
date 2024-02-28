@@ -1,7 +1,9 @@
 
 source("a2_pick_6_main.R")
 
-plot_df0 = read_csv("plots/plot_grid_eProfit_v1.csv")
+# version_ = 1
+version_ = 2
+plot_df0 = read_csv(paste0("plots/plot_grid_eProfit_v",version_,".csv"))
 plot_df0
 plot_df1 = 
   plot_df0 %>% 
@@ -18,10 +20,13 @@ Cs
 alphas
 ks
 
+alpha_ = 0.05
+k_ = ks[1]
+
 # C_ = 38016
 # C_ = 100000
-alpha_ = 0.05
-k_ = 1000000
+# alpha_ = 0.05
+# k_ = 1000000
 
 # data.frame(
 #   plot_df1 %>% 
@@ -32,26 +37,53 @@ k_ = 1000000
 #     )
 # )
 
-plot_picksix_1 = 
-  plot_df1 %>%
-  # filter(lambda_opp < 4) %>%
-  # filter(C == C_, alpha == alpha_, k == k_) %>%
-  filter(C %in% c(38016, 1e6)) %>%
-  filter(alpha == alpha_, k == k_) %>%
-  filter(E_profit == max_E_profit) %>%
-  mutate(C_str = paste0("C = ", C),
-         C_str = fct_reorder(C_str, C)) %>%
-  mutate(lambda_opp = round(lambda_opp, 3)) %>%
-  ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
-  labs(title=TeX("$\\lambda = 1, \\alpha = 0.05, k = 1000000$"), color="n") +
-  theme(axis.text.x = element_text(size=12)) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  facet_wrap(~ C_str, scales="free_y") +
-  xlab(TeX("$\\lambda_{opp}$")) +
-  theme(legend.text = element_text(size=12)) +
-  geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
-  geom_point(size=2, shape=21, stroke=2) +
-  ylab("expected profit") 
-# plot_picksix_1
-ggsave(paste0(output_folder, "plot_picksix_1.png"), plot_picksix_1, width=11, height=5)
+
+if (version_ == 1) {
+  plot_picksix_1 = 
+    plot_df1 %>%
+    # filter(lambda_opp < 4) %>%
+    # filter(C == C_, alpha == alpha_, k == k_) %>%
+    filter(C %in% c(38016, 1e6)) %>%
+    filter(alpha == alpha_, k == k_) %>%
+    filter(E_profit == max_E_profit) %>%
+    mutate(C_str = paste0("C = ", C),
+           C_str = fct_reorder(C_str, C)) %>%
+    mutate(lambda_opp = round(lambda_opp, 3)) %>%
+    ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
+    labs(title=TeX(paste0("$\\lambda$ = 1, $\\alpha$ = 0.05, k = ", k_)), color="n") +
+    theme(axis.text.x = element_text(size=12)) +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+    facet_wrap(~ C_str, scales="free_y") +
+    xlab(TeX("$\\lambda_{opp}$")) +
+    theme(legend.text = element_text(size=12)) +
+    geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
+    geom_point(size=2, shape=21, stroke=2) +
+    ylab("expected profit") 
+  # plot_picksix_1
+} else if (version_ == 2) {
+  plot_picksix_1 = 
+    plot_df1 %>%
+    # filter(lambda_opp < 4) %>%
+    # filter(C == C_, alpha == alpha_, k == k_) %>%
+    # filter(C %in% c(38016, 1e6)) %>%
+    filter(C %in% c(1e6)) %>%
+    filter(alpha == alpha_, k == k_) %>%
+    filter(E_profit == max_E_profit) %>%
+    mutate(C_str = paste0("C = ", C),
+           C_str = fct_reorder(C_str, C)) %>%
+    mutate(lambda_opp = round(lambda_opp, 3)) %>%
+    ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
+    labs(title=TeX(paste0("$\\lambda$ = 1, $\\alpha$ = 0.05, k = ", k_)), color="n") +
+    theme(axis.text.x = element_text(size=12)) +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+    facet_wrap(~ C_str, scales="free_y") +
+    xlab(TeX("$\\lambda_{opp}$")) +
+    theme(legend.text = element_text(size=12)) +
+    geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
+    geom_point(size=2, shape=21, stroke=2) +
+    ylab("expected profit") 
+  # plot_picksix_1
+}
+
+ggsave(paste0(output_folder, "plot_picksix_1_v",version_,".png"), plot_picksix_1, width=11, height=5)
 
