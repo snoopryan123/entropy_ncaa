@@ -82,15 +82,64 @@ if (SAVEPHOTOS | !file.exists(fname)) {
 ### lambda-tilted probabilities ###
 ###################################
 
-tilted_P <- function(P, lambda, phi) {
+tilted_P_divMax <- function(P, lambda_opp) {
+  ### lambda_opp in [0,1] is a tilt parameter controlling the entropy of the strategy
+  ### P is a probability matrix such that P[i,j] is the true probability that horse i wins race j
+  ### output a probability matrix R such that R[i,j] is the probability that one picks horse i to win race j
+  
+  R_raw <- apply(P, MARGIN=2, FUN=function(x) x/x[1])
+  R_lambda_opp <- R_raw**lambda_opp
+  R <- apply(R_lambda_opp, MARGIN=2, FUN=function(x) x/sum(x))
+  R
+}
+# ### check
+# P
+# tilted_P_divMax(P, lambda_opp=1)
+# tilted_P_divMax(P, lambda_opp=5)
+# tilted_P_divMax(P, lambda_opp=1/5)
+
+### VISUALIZE
+fname = paste0(output_folder, "plot_tilted_P_divMax.png")
+if (SAVEPHOTOS | !file.exists(fname)) {
+  # lambda_opps = c(0.25, 0.5, 2/3, 0.8, 1, 1.25, 1.5, 2, 4)
+  # lambda_opps = c(1.25, 1.5, 2, 2.5, 3, 3.5, 4)
+  # lambda_opps = c(2, 3, 4, 5)
+  # lambda_opps = c(2.5, 5, 10)
+  # lambda_opps = seq(1, 5, length.out=11)
+  # lambda_opps = sort(unique(c(1/lambda_opps, 1, lambda_opps)))
+  KKKKK = 8
+  lambda_opps = sort(unique(c(seq(1/5, 1, length.out=KKKKK), seq(1, 5, length.out=KKKKK))))
+  plot_df = tibble()
+  for (lambda_opp in lambda_opps) {
+    r_l = tilted_P_divMax(P, lambda_opp = lambda_opp)[,"race 6"]
+    r_l = r_l[r_l != 0 ]
+    plot_df_l = tibble(r = r_l, i=1:length(r_l), lambda_opp=lambda_opp)
+    plot_df = bind_rows(plot_df, plot_df_l)
+  }
+  plot_tilted_P_divMax = 
+    plot_df %>%
+    mutate(
+      lambda_opp_str = paste0("lambda opp = ", round(lambda_opp,2)), 
+      lambda_opp_str = fct_reorder(lambda_opp_str, lambda_opp)
+    ) %>%
+    ggplot(aes(x = i, y = r)) +
+    facet_wrap(~factor(lambda_opp_str), nrow=3) +
+    xlab("horse index i") + 
+    ylab("probability r that opponents \n select horse i to win") +
+    geom_col(fill="black")
+  # plot_tilted_P_divMax
+  ggsave(fname, plot_tilted_P_divMax, width=15, height=7)
+}
+
+tilted_P <- function(P, lambda, a) {
   ### lambda in [0,1] is a tilt parameter controlling the entropy of the strategy
   ### P is a probability matrix such that P[i,j] is the true probability that horse i wins race j
   ### output a probability matrix Q such that Q[i,j] is the probability that we picks horse i to win race j
-  ### phi in [1,m] determines
+  ### a in [1,m] determines
   
   Q_raw <- apply(P, MARGIN=2, FUN=function(x) { 
     m = sum(x!=0); 
-    tilt_cutoff_idx = round(phi*m); 
+    tilt_cutoff_idx = round(a*m); 
     if (lambda < 1) {
       v1 = x[1:tilt_cutoff_idx]/x[tilt_cutoff_idx]
       if (tilt_cutoff_idx+1 <= length(x)) { v2 = x[(tilt_cutoff_idx+1):length(x)]/x[tilt_cutoff_idx] } else {v2 = NULL} 
@@ -110,15 +159,15 @@ tilted_P <- function(P, lambda, phi) {
 }
 # ### check
 # P
-# tilted_P(P, lambda=1, phi=1)
-# tilted_P(P, lambda=1, phi=1/2)
-# tilted_P(P, lambda=1, phi=1/6)
+# tilted_P(P, lambda=1, a=1)
+# tilted_P(P, lambda=1, a=1/2)
+# tilted_P(P, lambda=1, a=1/6)
 # P
-# tilted_P(P, lambda=5, phi=1)
-# tilted_P(P, lambda=10, phi=1)
+# tilted_P(P, lambda=5, a=1)
+# tilted_P(P, lambda=10, a=1)
 # P
-# tilted_P(P, lambda=5, phi=1/2)
-# tilted_P(P, lambda=10, phi=1/2)
+# tilted_P(P, lambda=5, a=1/2)
+# tilted_P(P, lambda=10, a=1/2)
 
 ### VISUALIZE
 fname = paste0(output_folder, "plot_tilted_P.png")
@@ -127,19 +176,19 @@ if (SAVEPHOTOS | !file.exists(fname)) {
   as = c(seq(1/8, 1, by=1/8))
   plot_df = tibble()
   for (lambda in lambdas) {
-    for (phi in as) {
-      q_l = tilted_P(P, lambda = lambda, phi = phi)[,"race 6"]
+    for (a in as) {
+      q_l = tilted_P(P, lambda = lambda, a = a)[,"race 6"]
       q_l = q_l[q_l != 0 ]
-      plot_df_l = tibble(q = q_l, i=1:length(q_l), lambda=lambda, phi=phi)
+      plot_df_l = tibble(q = q_l, i=1:length(q_l), lambda=lambda, a=a)
       plot_df = bind_rows(plot_df, plot_df_l)
     }
   }
   plot_tilted_P = 
     plot_df %>%
     mutate(lambda = paste0("lambda = ", round(lambda,2))) %>%
-    mutate(phi = paste0("phi = ", round(phi,3))) %>%
+    mutate(a = paste0("a = ", round(a,3))) %>%
     ggplot(aes(x = i, y = q)) +
-    facet_wrap(~factor(phi) + factor(lambda), ncol=length(lambdas)) +
+    facet_wrap(~factor(a) + factor(lambda), ncol=length(lambdas)) +
     xlab("horse index i") + 
     ylab("probability q that we select horse i to win") +
     geom_col(fill="black")

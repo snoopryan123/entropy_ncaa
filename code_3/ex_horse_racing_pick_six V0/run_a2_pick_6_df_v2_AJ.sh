@@ -3,7 +3,7 @@
 
 #$ -N a2_pick_6_eProfit_v2
 #$ -j y
-#$ -m e -M ryguy123@sas.upenn.edu 
+####$ -m e -M ryguy123@sas.upenn.edu 
 #$ -o job_output/$JOB_NAME-$JOB_ID.log
 
 ## MORE RAM

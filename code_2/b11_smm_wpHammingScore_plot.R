@@ -5,7 +5,7 @@ source("b11_smm_main.R")
 plot_df = read_csv(paste0(output_folder,"plot_grid_wpHammingScore.csv"))
 # plot_df = read_csv(paste0(output_folder, "plot_grid_wpMaxScore_v1.csv")) ### check
 
-plot_df = plot_df %>% filter(n <= 1000 & k <= 1000)
+# plot_df = plot_df %>% filter(n <= 1000 & k <= 1000)
 
 my_palette_nk1 = c(
   rev(brewer.pal(name="PuRd",n=9)[4:9]),
@@ -22,12 +22,38 @@ for (p_ in unique(plot_df$p)) {
   for (k_ in unique(plot_df$k)) {
   # p_ = 0.75
   # k_ = 100
-  plot_wp1_kp =
-    plot_df %>%
+  if (k_ <= 1000) {
+    plot_wp1_kp =
+      plot_df %>% 
+      filter(n <= 1000 & k <= 1000) %>%
+      filter(p == p_ & k == k_) %>%
+      mutate(n_ = paste0("n = ", n)) %>%
+      ggplot(aes(y=q, x=r)) +
+      facet_wrap(~n_,nrow=1) +
+      theme(panel.spacing = unit(2, "lines")) +
+      labs(title=paste0("k = ", k_, ", p = ", p_)) +
+      geom_tile(aes(fill=wp)) +
+      geom_vline(aes(xintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+      geom_hline(aes(yintercept = p_), color="gray60", linetype="dashed", linewidth=0.5) +
+      geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
+      # scale_fill_gradientn(name="win\nprobability", colours = terrain.colors(7))
+      scale_fill_gradientn(name="win\nprobability", colours = rev(terrain.colors(7)))
+    # plot_wp1_kp
+    ggsave(
+      paste0(output_folder, "plot_wpHammingScore_k",format(k_, scientific=T),"p",p_,".png"), 
+      plot_wp1_kp,
+      # width=12,height=10
+      width=16,height=4
+      # width=10,height=8
+    )
+  }
+  
+  plot_wp2_kp =
+    plot_df %>% 
     filter(p == p_ & k == k_) %>%
     mutate(n_ = paste0("n = ", n)) %>%
     ggplot(aes(y=q, x=r)) +
-    facet_wrap(~n_,nrow=1) +
+    facet_wrap(~n_,nrow=3) +
     theme(panel.spacing = unit(2, "lines")) +
     labs(title=paste0("k = ", k_, ", p = ", p_)) +
     geom_tile(aes(fill=wp)) +
@@ -36,12 +62,13 @@ for (p_ in unique(plot_df$p)) {
     geom_abline(aes(slope = 1, intercept=0), color="gray60", linetype="dashed", linewidth=0.5) +
     # scale_fill_gradientn(name="win\nprobability", colours = terrain.colors(7))
     scale_fill_gradientn(name="win\nprobability", colours = rev(terrain.colors(7)))
-  # plot_wp1_kp
+  # plot_wp2_kp
   ggsave(
-    paste0(output_folder, "plot_wpHammingScore_k",format(k_, scientific=T),"p",p_,".png"), 
-    plot_wp1_kp,
-    # width=12,height=10
-    width=16,height=4
+    # paste0(output_folder, "plot_wp1_k",format(k_, scientific=T),"p",p_,".png"), 
+    paste0(output_folder, "plot_wp1_k",k_,"p",p_,".png"), 
+    plot_wp2_kp,
+    width=12,height=10
+    # width=16,height=4
     # width=10,height=8
   )
   

@@ -21,10 +21,9 @@ apply(P, MARGIN=2, FUN=function(x) sum(x!=0))
 KKKKK = 8
 GRID1 = expand.grid(
   lambda = c(0.5, 1, 1.25, 1.5, 2),
-  # phi = (1:nrow(P))/nrow(P),
-  phi = seq(1/10, 1, by=1/10),
-  lambda_opp = sort(unique(c(seq(1/5, 1, length.out=KKKKK), seq(1, 5, length.out=KKKKK)))),
-  phi_opp = 1
+  # a = (1:nrow(P))/nrow(P),
+  a = seq(1/10, 1, by=1/10),
+  lambda_opp = sort(unique(c(seq(1/5, 1, length.out=KKKKK), seq(1, 5, length.out=KKKKK))))
 ) %>% as_tibble()
 GRID1
 
@@ -77,8 +76,8 @@ results = list()
 for (i in 1:nrow(GRID)) {
   print(paste0(i,"/",nrow(GRID)))
   
-  Q_i = tilted_P(P, lambda = GRID$lambda[i], phi = GRID$phi[i])
-  R_i = tilted_P(P, lambda = GRID$lambda_opp[i], phi = GRID$phi_opp[i])
+  Q_i = tilted_P(P, lambda = GRID$lambda[i], a = GRID$a[i])
+  R_i = tilted_P_divMax(P, lambda_opp = GRID$lambda_opp[i])
   EP_i = E_profit(P,Q_i,R_i,ns,ks,Cs,alphas,print_every_n=1e5)
   EP_i$i = i
   results[[i]] = EP_i
