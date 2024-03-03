@@ -37,6 +37,12 @@ k_ = ks[1]
 #     )
 # )
 
+my_palette = c(
+  brewer.pal(name="PuRd",n=9)[3:8]
+  # rev(brewer.pal(name="Reds",n=9)[4:8]), 
+  # "gray50",
+  # brewer.pal(name="Blues",n=9)[3:8]
+)
 
 if (version_ == 1) {
   plot_picksix_1 = 
@@ -49,7 +55,7 @@ if (version_ == 1) {
     mutate(C_str = paste0("C = ", C),
            C_str = fct_reorder(C_str, C),
            lambda_opp = round(lambda_opp, 3),
-           lambda_a = paste0("\u03BB = ", lambda, ", a = ", a)
+           lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
     ) %>%
     # ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
     # labs(title=TeX(paste0("$\\alpha$ = 0.05, k = ", k_)), color="n") +
@@ -80,13 +86,14 @@ if (version_ == 1) {
     mutate(C_str = paste0("C = ", C),
            C_str = fct_reorder(C_str, C),
            lambda_opp = round(lambda_opp, 3),
-           lambda_a = paste0("\u03BB = ", lambda, ", a = ", a)
+           lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
     ) %>%
-    filter(n %in% c(500, 1000, 5000, 10000, 25000)) %>%
+    filter(n %in% c(1000, 5000, 10000, 25000)) %>%
     group_by(alpha,k,C,n,lambda_opp) %>%
     mutate(
       max_E_profit = max(E_profit),
-      lambda_a = lambda_a[max(E_profit) == E_profit]
+      lambda_a = lambda_a[max(E_profit) == E_profit],
+      lambda_a = fct_reorder(lambda_a, lambda)
     ) %>%
     # distinct() %>%
     ungroup() %>%
@@ -97,7 +104,8 @@ if (version_ == 1) {
        color = factor(n),
        # shape = factor(n),
        # y=E_profit,
-       shape=factor(lambda_a)
+       # shape=factor(lambda_a)
+       shape=lambda_a
     )) +
     labs(
       title=TeX(paste0("$\\alpha$ = 0.05, k = ", k_, ", C = ", C_)), 
@@ -109,6 +117,7 @@ if (version_ == 1) {
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
     xlab(TeX("$\\lambda_{opp}$")) +
     theme(legend.text = element_text(size=12)) +
+    scale_color_manual(values=my_palette) +
     # scale_color_manual(values=c("firebrick", "dodgerblue2", "forestgreen")) +
     geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
     geom_point(size=4, stroke=2) +
@@ -127,9 +136,9 @@ if (version_ == 1) {
     mutate(C_str = paste0("C = ", C),
            C_str = fct_reorder(C_str, C),
            lambda_opp = round(lambda_opp, 3),
-           lambda_a = paste0("\u03BB = ", lambda, ", a = ", a)
+           lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
     ) %>%
-    filter(n %in% c(500, 1000, 5000, 10000, 25000)) %>%
+    filter(n %in% c(1000, 5000, 10000, 25000)) %>%
     group_by(alpha,k,C,n,lambda_opp) %>%
     mutate(
       max_E_profit = max(E_profit),
@@ -157,6 +166,7 @@ if (version_ == 1) {
     xlab(TeX("$\\lambda_{opp}$")) +
     theme(legend.text = element_text(size=12)) +
     # scale_color_manual(values=c("firebrick", "dodgerblue2", "forestgreen")) +
+    scale_color_manual(values=my_palette) +
     geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
     geom_point(size=4, stroke=2) +
     # geom_point(size=1, stroke=2) +
@@ -175,7 +185,7 @@ if (version_ == 1) {
   #   mutate(C_str = paste0("C = ", C),
   #          C_str = fct_reorder(C_str, C),
   #          lambda_opp = round(lambda_opp, 3),
-  #          lambda_a = paste0("\u03BB = ", lambda, ", a = ", a)
+  #          lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
   #   ) %>%
   #   ggplot(aes(x = factor(lambda_opp), 
   #              y=max_E_profit,
@@ -210,7 +220,7 @@ if (version_ == 1) {
   #   mutate(C_str = paste0("C = ", C),
   #          C_str = fct_reorder(C_str, C),
   #          lambda_opp = round(lambda_opp, 3),
-  #          lambda_a = paste0("\u03BB = ", lambda, ", a = ", a)
+  #          lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
   #   ) %>%
   #   # ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(n))) +
   #   # ggplot(aes(x = factor(lambda_opp), y=max_E_profit, color=factor(lambda_a))) +

@@ -6,7 +6,8 @@ args = commandArgs(trailingOnly=TRUE)
 if (length(args) > 0) {
   version_ = as.numeric(args[1])
 } else {
-  version_ = 1
+  # version_ = 1
+  version_ = 2
 }
 
 #FIXME
