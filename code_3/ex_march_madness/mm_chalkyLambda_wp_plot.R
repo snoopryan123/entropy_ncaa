@@ -6,7 +6,7 @@ source("a2_main.R")
 setwd(filewd)
 ###################
 
-output_folder = "./plots/"
+# output_folder = "./plots/"
 num_folds_ = 19
 
 plot_df = tibble()

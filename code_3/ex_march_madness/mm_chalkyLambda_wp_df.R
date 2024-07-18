@@ -2,11 +2,13 @@
 # version_ = 1
 # fold_ = 1
 # num_folds_ = 19
+# PROB_METHOD = "P1"
 
 args = commandArgs(trailingOnly=TRUE)
 version_ = as.numeric(args[1]) ### which GRID to search over
 fold_ = as.numeric(args[2])
 num_folds_ = as.numeric(args[3])
+PROB_METHOD = as.character(args[4])
 
 ###################
 filewd = getwd()
@@ -14,8 +16,6 @@ setwd("..")
 source("a2_main.R")
 setwd(filewd)
 ###################
-
-output_folder = "./plots/"
 
 ############################
 ### Grids to Search Over ###

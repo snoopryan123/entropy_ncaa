@@ -4,7 +4,7 @@ theme_update(text = element_text(size=25))
 theme_update(plot.title = element_text(hjust = 0.5))
 
 #############################
-### Actual 2022 538 ELO's ###
+### Actual 2021 538 ELO's ###
 #############################
 
 d538 = read_csv("../data/538_ELO.csv")
@@ -65,8 +65,8 @@ P_538_2022_P_plot
 
 
 write.csv(P_538_2022, "../data/P_538_2022.csv")
-ggsave("plot_P_538_2022/P_538_2022_elo_plot.png", P_538_2022_elo_plot, width=7,height=6)
-ggsave("plot_P_538_2022/P_538_2022_P_plot.png", P_538_2022_P_plot, width=7,height=6)
+ggsave("plot_P_538_2022_elo_plot.png", P_538_2022_elo_plot, width=7,height=6)
+ggsave("plot_P_538_2022_P_plot.png", P_538_2022_P_plot, width=7,height=6)
 
 
 #################
@@ -94,8 +94,7 @@ P1_plot
 
 P1[1:6,1:6]
 
-ggsave("plot_P1/P1_elo_plot.png", elo_plot, width=7, height=6)
-ggsave("plot_P1/P1_win_probs.png", P1_plot, width=7,height=6)
-
 write.csv(P1, "../data/P1.csv")
+ggsave("plot_P1_elo_plot.png", elo_plot, width=7, height=6)
+ggsave("plot_P1_win_probs.png", P1_plot, width=7,height=6)
 

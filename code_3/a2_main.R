@@ -1,6 +1,13 @@
 
 source("a0_loadStuff.R")
 
+# PROB_METHOD = if (exists(PROB_METHOD)) PROB_METHOD else "P_538_2022"
+# PROB_METHOD = "P_538_2022"
+# PROB_METHOD = "P1"
+
+if (!exists("PROB_METHOD")) stop("need to specify PROB_METHOD")
+output_folder = paste0("plots/plot_", PROB_METHOD, "_")
+
 ################
 ### Get Data ###
 ################
@@ -10,18 +17,23 @@ m = 63 ### number of games in March Madness
 
 D = read_csv("../data/538_ELO.csv") %>% rename(game_id = initial_game_num) ##%>% arrange(game_id)
 START_OF_TOURNEY = D %>% arrange(game_id) %>% select(team_idx, game_id, seed) %>% mutate(round = 1)
+rm(D)
 START_OF_TOURNEY
 
-P_538_2022 = read.csv( paste0("../data/P_538_2022.csv"), row.names = 1, header= TRUE)
-# P_538_2022 = read.csv( paste0("../data/P1.csv"), row.names = 1, header= TRUE)
-
-# PROB_METHOD = "P_538_2022"
-# PROB_METHOD = "P1"
+if (PROB_METHOD == "P_538_2022") {
+  # P_538_2022 = read.csv( paste0("../data/P_538_2022.csv"), row.names = 1, header= TRUE)
+  PMAT = read.csv( paste0("../data/P_538_2022.csv"), row.names = 1, header= TRUE)
+} else if (PROB_METHOD == "P1") {
+  # P1 = read.csv( paste0("../data/P1.csv"), row.names = 1, header= TRUE)
+  PMAT = read.csv( paste0("../data/P1.csv"), row.names = 1, header= TRUE)
+} else {
+  stop("need to specify PROB_METHOD")
+}
 
 P <- function(team_1s, team_2s, prob_method="P_538_2022", P_matrix=NULL) {
-  if (prob_method == "P_538_2022") {
+  if (prob_method == "P_538_2022" | prob_method == "P1") {
     ### team i beats team j according to ELO
-    probs = P_538_2022[ cbind(team_1s, team_2s) ]
+    probs = PMAT[ cbind(team_1s, team_2s) ]
   } else if (prob_method == "custom_P_matrix") {
     if (is.null(P_matrix)) {
       stop(paste0("to use prob_method = ", "custom_P_matrix, you must specify P_matrix"))
@@ -43,19 +55,14 @@ P <- function(team_1s, team_2s, prob_method="P_538_2022", P_matrix=NULL) {
 }
 
 P_mat <- function(prob_method="P_538_2022") {
-  if (prob_method == "P_538_2022") {
+  if (prob_method == "P_538_2022" | prob_method == "P1") {
     ### team i beats team j according to ELO
-    probs = P_538_2022
+    probs = PMAT
   } else {
     stop(paste0("prob_method = ", prob_method, " is not implemented in P_mat function"))
   }
   return(probs)
 }
-
-###
-P_file = "P_538_2022" # "P_538_2022" # "P1"
-plot_folder = paste0("plot_", P_file, "/")
-##output_folder = paste0("job_outpit",P_file, "/")
 
 ###########################
 ### Simulate N Brackets ###

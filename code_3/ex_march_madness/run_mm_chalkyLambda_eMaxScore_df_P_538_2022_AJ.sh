@@ -13,7 +13,7 @@
 #$ -t 1-19
 #$ -o job_output/$JOB_NAME-$JOB_ID-$TASK_ID.log
 
-Rscript --vanilla mm_chalkyLambda_eMaxScore_df.R 1 ${SGE_TASK_ID} 19
+Rscript --vanilla mm_chalkyLambda_eMaxScore_df.R 1 ${SGE_TASK_ID} 19 P_538_2022
 
 
 
