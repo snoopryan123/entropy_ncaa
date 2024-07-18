@@ -93,7 +93,7 @@ for (RUN in 1:NUM_RUNS) {
     n = GRID$n[i]
     lambda = GRID$lambda[i]
     strat = GRID$strat[i]
-    our_submitted_backets = sample_n_brackets_chalkyLambda(n, lambda, strat, prob_method="P_538_2022") 
+    our_submitted_backets = sample_n_brackets_chalkyLambda(n, lambda, strat, prob_method=PROB_METHOD) 
     
     ### sample opponents' k brackets
     k = GRID$k[i]

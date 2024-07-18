@@ -87,7 +87,7 @@ for (RUN in 1:NUM_RUNS) {
     n = GRID$n[i]
     lambda = GRID$lambda[i]
     strat = GRID$strat[i]
-    our_submitted_backets = sample_n_brackets_chalkyLambda(n, lambda, strat, prob_method="P_538_2022") 
+    our_submitted_backets = sample_n_brackets_chalkyLambda(n, lambda, strat, prob_method=PROB_METHOD) 
     
     ### compute the expected max score of our sampled bracket set
     scores_ESPN    = compute_max_score(our_submitted_backets, true_backets, "ESPN", expected_score=T)
