@@ -1,4 +1,8 @@
 
+# PROB_METHOD = "P_538_2022"
+PROB_METHOD = "P1"
+output_folder = paste0("plots/plot_", PROB_METHOD, "_")
+
 ###################
 filewd = getwd()
 setwd("..")
