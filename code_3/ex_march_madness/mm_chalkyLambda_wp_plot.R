@@ -1,6 +1,6 @@
 
-PROB_METHOD = "P_538_2022"
-# PROB_METHOD = "P1"
+# PROB_METHOD = "P_538_2022"
+PROB_METHOD = "P1"
 output_folder = paste0("plots/plot_", PROB_METHOD, "_")
 
 ###################
@@ -59,16 +59,16 @@ pltttt =
     strat == 3,
   ) %>%
   filter(n %in% c(100, 500, 1000, 10000)) %>%
-  mutate(n_ = paste0(n), n_=fct_reorder(n_, n), k_ = paste0(k), k_=fct_reorder(k_, k),) %>%
+  mutate(n_ = paste0(format_comma(n)), n_=fct_reorder(n_, n), k_ = paste0(k), k_=fct_reorder(k_, k),) %>%
   ggplot(aes(color = n_, x = lambda, y = wp)) + 
   geom_line(linewidth=1) +
   xlab(TeX("$\\lambda$")) +
   ylab("win probability") +
   scale_x_continuous(breaks=seq(0,1,by=0.1)) +
-  labs(title=TeX(paste0("k = ", k_, " ", opp_str, " opponents"))) +
+  labs(title=TeX(paste0("k = ", format_comma(k_), " ", opp_str, " opponents"))) +
   scale_color_manual(name="n", values=my_palette_h_wp) +
   geom_point(aes(y=max_wp), shape=21, size=2.5, stroke=0.5)
-# pltttt
+pltttt
 ggsave(paste0(output_folder, "plot_mm_chalkyLambda_wp.png"), width=10, height=6)
 
 

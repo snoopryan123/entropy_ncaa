@@ -1,6 +1,6 @@
 
-# PROB_METHOD = "P_538_2022"
-PROB_METHOD = "P1"
+PROB_METHOD = "P_538_2022"
+# PROB_METHOD = "P1"
 output_folder = paste0("plots/plot_", PROB_METHOD, "_")
 
 ###################
@@ -51,7 +51,7 @@ plot_fmm_chalkyLambda_eMaxScore =
     strat == 3,
   ) %>%
   filter(n %in% c(100, 500, 1000, 10000)) %>%
-  mutate(n_ = paste0(n), n_=fct_reorder(n_, n)) %>%
+  mutate(n_ = paste0(format_comma(n)), n_=fct_reorder(n_, n)) %>%
   # filter(n >= 100) %>% #FIXME
   ggplot(aes(color = n_, x = lambda, y = eMaxScore)) + 
   geom_line(linewidth=1) +
