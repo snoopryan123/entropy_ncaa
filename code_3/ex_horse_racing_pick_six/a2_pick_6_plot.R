@@ -83,7 +83,7 @@ if (version_ == 1) {
     filter(C == C_) %>%
     filter(alpha == alpha_, k == k_) %>%
     # filter(E_profit == max_E_profit) %>%
-    mutate(C_str = paste0("C = ", C),
+    mutate(C_str = paste0("C = ", format_comma(C)),
            C_str = fct_reorder(C_str, C),
            lambda_opp = round(lambda_opp, 3),
            lambda_a = paste0("\u03BB = ", lambda, ", phi = ", phi)
@@ -92,6 +92,7 @@ if (version_ == 1) {
     group_by(alpha,k,C,n,lambda_opp) %>%
     mutate(
       max_E_profit = max(E_profit),
+      max_E_profit_ = fct_reorder(format_comma(max_E_profit), max_E_profit),
       lambda_a = lambda_a[max(E_profit) == E_profit],
       lambda_a = fct_reorder(lambda_a, lambda)
     ) %>%
@@ -101,14 +102,15 @@ if (version_ == 1) {
         x = factor(lambda_opp),
         # x = lambda_opp, 
         y = max_E_profit,
-       color = factor(n),
+        # y = max_E_profit_,
+        color = factor(fct_reorder(format_comma(n),n)),
        # shape = factor(n),
        # y=E_profit,
        # shape=factor(lambda_a)
        shape=lambda_a
     )) +
     labs(
-      title=TeX(paste0("$\\alpha$ = 0.05, k = ", k_, ", C = ", C_)), 
+      title=TeX(paste0("$\\alpha$ = 0.05, k = ", format_comma(k_), ", C = ", format_comma(C_))), 
       color="n",
       # shape = "n"
       shape="strategy"
@@ -118,13 +120,11 @@ if (version_ == 1) {
     xlab(TeX("$\\lambda_{opp}$")) +
     theme(legend.text = element_text(size=12)) +
     scale_color_manual(values=my_palette) +
+    scale_y_continuous(name = "expected profit", labels = format_comma) +
     # scale_color_manual(values=c("firebrick", "dodgerblue2", "forestgreen")) +
     geom_hline(yintercept=0, linetype="dashed", color="gray60", linewidth=1) +
-    geom_point(size=4, stroke=2) +
-    # geom_point(size=1, stroke=2) +
-    # geom_line(linewidth=1) +
-    ylab("expected profit") 
-  plot_picksix_1A
+    geom_point(size=4, stroke=2) 
+  # plot_picksix_1A
   ggsave(paste0(output_folder, "plot_picksix_1A_v",version_,".png"), 
          plot_picksix_1A, width=10, height=6)
   
@@ -142,7 +142,9 @@ if (version_ == 1) {
     group_by(alpha,k,C,n,lambda_opp) %>%
     mutate(
       max_E_profit = max(E_profit),
-      lambda_a = lambda_a[max(E_profit) == E_profit]
+      lambda_a = lambda_a[max(E_profit) == E_profit],
+      # n_ = format_comma(n),
+      # k_ = format_comma(k),
     ) %>%
     # distinct() %>%
     ungroup() %>%
@@ -152,6 +154,8 @@ if (version_ == 1) {
       y = max_E_profit,
       color = factor(n),
       shape = factor(n),
+      # color = factor(n_),
+      # shape = factor(n_),
       # y=E_profit,
       # shape=factor(lambda_a)
     )) +
